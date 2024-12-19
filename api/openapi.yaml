@@ -1,0 +1,938 @@
+openapi: 3.0.3
+info:
+  title: OrdeRS BookStore Sample Service API
+  license:
+    name: Apache 2.0
+    url: https://github.com/grntlrduck-cloud/ordeRS/blob/main/LICENSE
+  version: 0.0.1
+servers:
+  - url: https://gocrud-book-store-service.grntlrduck.cloud/api/v1
+tags:
+  - name: discount
+    description: Avaerything about the discount codes in the store
+  - name: author
+    description: Averything about the book authors associated with the books
+  - name: book
+    description: Everything about the books in the store
+  - name: store
+    description: Everything about the orders and inventory in the store
+paths:
+  /discount:
+    post:
+      tags:
+        - discount
+      summary: Add a new discount to the store
+      description: Add a new discount to the store
+      operationId: AddDiscount
+      requestBody:
+        description: Create a new discount in the store
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewDiscountCode"
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiscountCode"
+        "400":
+          description: Invalid input
+        "422":
+          description: Validation exception
+
+  /discount/{discountId}:
+    get:
+      tags:
+        - discount
+      summary: Finds discount by Id
+      description: Returns discounbt for given Id
+      operationId: GetDiscountById
+      parameters:
+        - name: discountId
+          in: path
+          description: Id of discount to return
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DiscountCode"
+        "400":
+          description: DiscountCode not found
+    patch:
+      tags:
+        - discount
+      summary: Update an existing discount
+      description: Update an existing discount by Id
+      operationId: UpdateDiscount
+      parameters:
+        - name: discountId
+          in: path
+          description: Id of discount to return
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existing discount in the store
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DiscountCodeProperties"
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiscountCode"
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Discount not found
+        "422":
+          description: Validation exception
+    delete:
+      tags:
+        - discount
+      summary: Deletes a discount
+      description: delete a discount
+      operationId: DeleteDiscount
+      parameters:
+        - name: discountId
+          in: path
+          description: discount to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        "400":
+          description: Invalid discountId value
+
+  /author:
+    post:
+      tags:
+        - author
+      summary: Add a new author to the store
+      description: Add a new author to the store
+      operationId: AddAuthor
+      requestBody:
+        description: Create a new author in the store
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewAuthor"
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Author"
+        "400":
+          description: Invalid input
+        "422":
+          description: Validation exception
+
+  /author/{authorId}:
+    get:
+      tags:
+        - author
+      summary: Finds book by Id
+      description: Returns author for given Id
+      operationId: GetAuthorById
+      parameters:
+        - name: authorId
+          in: path
+          description: Id of author to return
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Author"
+        "400":
+          description: Author not found
+    patch:
+      tags:
+        - author
+      summary: Update an existing author
+      description: Update an existing author by Id
+      operationId: UpdateAuthor
+      parameters:
+        - name: authorId
+          in: path
+          description: Id of author to return
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existing author in the store
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthorProperties"
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Author"
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Author not found
+        "422":
+          description: Validation exception
+    delete:
+      tags:
+        - author
+      summary: Deletes a author
+      description: delete a author
+      operationId: DeleteAuthor
+      parameters:
+        - name: authorId
+          in: path
+          description: author to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        "400":
+          description: Invalid authorId value
+
+  /book:
+    post:
+      tags:
+        - book
+      summary: Add a new book to the store
+      description: Add a new book to the store
+      operationId: AddBook
+      requestBody:
+        description: Create a new book in the store
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewBook"
+        required: true
+      responses:
+        "201":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+        "400":
+          description: Invalid input
+        "422":
+          description: Validation exception
+
+  /book/{bookId}:
+    get:
+      tags:
+        - book
+      summary: Finds book by Id
+      description: Returns book for given Id
+      operationId: GetBookById
+      parameters:
+        - name: bookId
+          in: path
+          description: Id of book to return
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Book"
+        "400":
+          description: Book not found
+    patch:
+      tags:
+        - book
+      summary: Update an existing book
+      description: Update an existing book by Id
+      operationId: UpdateBook
+      parameters:
+        - name: bookId
+          in: path
+          description: Id of book to return
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existent pet in the store
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookProperties"
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Book not found
+        "422":
+          description: Validation exception
+    delete:
+      tags:
+        - book
+      summary: Deletes a book
+      description: delete a book
+      operationId: DeleteBook
+      parameters:
+        - name: bookId
+          in: path
+          description: BookId to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        "400":
+          description: Invalid bookId value
+
+  /book/findByAuthorId:
+    get:
+      tags:
+        - book
+      summary: Finds Books by AuthorId
+      description: Multiple AuthorIds can be provided with comma separated strings.
+      operationId: GetBooksByAuthors
+      parameters:
+        - name: authors
+          in: query
+          description: Authors to filter by
+          required: true
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Book"
+        "400":
+          description: Invalid author values
+
+  /book/findbyGenereId:
+    get:
+      tags:
+        - book
+      summary: Finds Books by GenereId
+      description: Multiple GenereIds can be provided with comma separated strings.
+      operationId: GetBooksByGeneres
+      parameters:
+        - name: genres
+          in: query
+          description: Generef to filter by
+          required: true
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Book"
+        "400":
+          description: Invalid genre values
+
+  /book/findbyStatus:
+    get:
+      tags:
+        - book
+      summary: Finds Books by status
+      description: Multiple GenereIds can be provided with comma separated strings.
+      operationId: GetBooksByStatus
+      parameters:
+        - name: status
+          in: query
+          description: Status to filter by
+          required: true
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Book"
+        "400":
+          description: Invalid status value
+
+  /store/inventory:
+    get:
+      tags:
+        - store
+      summary: Returns book inventories by status
+      description: Returns a cursor paginated response of InventoryPage
+      operationId: GetInventory
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Inventory"
+
+  /store/order:
+    post:
+      tags:
+        - store
+      summary: Place an order for a book
+      description: Place a new order in the store.
+      operationId: PlaceOrder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewOrder"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "400":
+          description: Invalid input
+        "422":
+          description: Validation exception
+
+  /store/order/{orderId}:
+    get:
+      tags:
+        - store
+      summary: Find purchase order by Id.
+      description: Get order information by Id.
+      operationId: GetOrderById
+      parameters:
+        - name: orderId
+          in: path
+          description: Id of order that needs to be fetched
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Order not found
+    patch:
+      tags:
+        - store
+      summary: Update an existing book
+      description: Update an existing book by Id
+      operationId: UpdateOrder
+      parameters:
+        - name: orderId
+          in: path
+          description: Id of order to return
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Properties to update
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderProperties"
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Order not found
+        "422":
+          description: Validation exception
+    delete:
+      tags:
+        - store
+      summary: Delete purchase order by Id
+      description: Delete a given, will set the order status to canceled
+      operationId: deleteOrder
+      parameters:
+        - name: orderId
+          in: path
+          description: ID of the order that needs to be deleted
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: successful operation
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Order not found
+components:
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: X-API-KEY
+      in: header
+  schemas:
+    NewBook:
+      type: object
+      properties:
+        title:
+          type: string
+        release:
+          type: string
+          description: the date when this edition of the book was released
+          format: date
+          example: 2024-12-09
+        first_release:
+          type: string
+          description: the date when the first edition of the book was release
+          format: date
+          example: 2024-12-09
+        authors:
+          type: array
+          items:
+            type: string
+            example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
+            description: the authorIds
+        generes:
+          type: array
+          items:
+            type: string
+            example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
+            description: the genreIds to attach to the book
+        discount_codes:
+          type: array
+          items:
+            type: string
+            example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
+            description: the discountCodeIds to attach to the book
+        series:
+          type: string
+        edition:
+          type: integer
+          description: the edition of this book
+          format: int32
+        price:
+          type: number
+          description: the price of this book in Dollar
+          format: double
+      required: [title, release, authors, price, available, status]
+
+    BookProperties:
+      type: object
+      properties:
+        title:
+          type: string
+        release:
+          type: string
+          description: the date when this edition of the book was released
+          format: date
+          example: 2024-12-09
+        first_release:
+          type: string
+          description: the date when the first edition of the book was release
+          format: date
+          example: 2024-12-09
+        authors:
+          type: array
+          items:
+            type: string
+            example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
+            description: the authorIds
+        generes:
+          type: array
+          items:
+            type: string
+            example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
+            description: the genreIds to attach to the book
+        discount_codes:
+          type: array
+          items:
+            type: string
+            example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
+            description: the discountCodeIds to attach to the book
+        series:
+          type: string
+        edition:
+          type: integer
+          description: the edition of this book
+          format: int32
+        price:
+          type: number
+          description: the price of this book in Dollar
+          format: double
+
+    Book:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
+        title:
+          type: string
+        release:
+          type: string
+          description: the date when this edition of the book was released
+          format: date
+          example: 2024-12-09
+        first_release:
+          type: string
+          description: the date when the first edition of the book was release
+          format: date
+          example: 2024-12-09
+        authors:
+          type: array
+          items:
+            $ref: "#/components/schemas/Author"
+        generes:
+          $ref: "#/components/schemas/Genre"
+        series:
+          type: string
+        edition:
+          type: integer
+          description: the edition of this book
+          format: int32
+        price:
+          type: number
+          description: the price of this book in Dollar
+          format: double
+        discounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/DiscountCode"
+        available:
+          type: integer
+          format: int32
+          description: The number of available items
+        status:
+          type: string
+          description: the inventory state of the book
+          enum:
+            - available
+            - re-ordered
+            - out-of-stock
+      required:
+        [
+          id,
+          title,
+          release,
+          first_release,
+          edition,
+          author,
+          price,
+          available,
+          status,
+        ]
+
+    NewDiscountCode:
+      type: object
+      properties:
+        percentage_discount:
+          type: integer
+          format: int32
+        valid_from:
+          type: string
+          format: date
+        valid_to:
+          type: string
+          format: date
+        code:
+          type: string
+          example: DISCOUNT_20
+      required: [precenetage_discount, valid_from, valid_to, code]
+
+    DiscountCode:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
+        percentage_discount:
+          type: integer
+          format: int32
+        valid_from:
+          type: string
+          format: date
+        valid_to:
+          type: string
+          format: date
+        code:
+          type: string
+          example: DISCOUNT_20
+      required: [id, precenetage_discount, valid_from, valid_to, code]
+
+    DiscountCodeProperties:
+      type: object
+      properties:
+        percentage_discount:
+          type: integer
+          format: int32
+        valid_from:
+          type: string
+          format: date
+        valid_to:
+          type: string
+          format: date
+
+    NewAuthor:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Prof. Dr.
+        first_name:
+          type: string
+        second_names:
+          type: array
+          items:
+            type: string
+        last_name:
+          type: string
+        date_of_birth:
+          type: string
+          format: date
+          example: 2024-12-09
+        date_of_death:
+          type: string
+          format: date
+          example: 2024-12-09
+      required: [first_name, last_name, date_of_birth]
+
+    Author:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
+        title:
+          type: string
+          example: Prof. Dr.
+        first_name:
+          type: string
+        second_names:
+          type: array
+          items:
+            type: string
+        last_name:
+          type: string
+        date_of_birth:
+          type: string
+          format: date
+          example: 2024-12-09
+        date_of_death:
+          type: string
+          format: date
+          example: 2024-12-09
+      required: [id, first_name, last_name, date_of_birth]
+
+    AuthorProperties:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Prof. Dr.
+        first_name:
+          type: string
+        second_names:
+          type: array
+          items:
+            type: string
+        last_name:
+          type: string
+        date_of_death:
+          type: string
+          format: date
+          example: 2024-12-09
+
+    Genre:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
+        name:
+          type: string
+          example: horror
+      required: [id, name]
+
+    OrderProperties:
+      type: object
+      properties:
+        quantity:
+          type: integer
+          format: int32
+          example: 7
+        shipping_date:
+          type: string
+          format: date-time
+        status:
+          type: string
+          description: Order Status
+          example: approved
+          enum:
+            - placed
+            - shipped
+            - delivered
+            - canceled
+        complete:
+          type: boolean
+      required: [shipping_date, quantity, status]
+
+    NewOrder:
+      type: object
+      properties:
+        bookId:
+          type: string
+          example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
+        customerId:
+          type: string
+          example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
+        quantity:
+          type: integer
+          format: int32
+          example: 7
+        shipping_date:
+          type: string
+          format: date-time
+        shipping_address_override:
+          $ref: "#/components/schemas/Address"
+        status:
+          type: string
+          description: Order Status
+          example: approved
+          enum:
+            - placed
+            - shipped
+            - delivered
+            - canceled
+        complete:
+          type: boolean
+      required: [bookId, customerId, shipping_date, quantity, status]
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
+        bookId:
+          type: string
+          example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
+        customerId:
+          type: string
+          example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
+        quantity:
+          type: integer
+          format: int32
+          example: 7
+        shipping_date:
+          type: string
+          format: date-time
+        shipping_address_override:
+          $ref: "#/components/schemas/Address"
+        status:
+          type: string
+          description: Order Status
+          example: approved
+          enum:
+            - placed
+            - shipped
+            - delivered
+            - canceled
+        complete:
+          type: boolean
+      required: [id, bookId, customerId, shipping_date, quantity, status]
+
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+          example: Berlinerstrasse
+        street_number:
+          type: string
+          example: 12b
+        zip_code:
+          type: string
+          example: "123456"
+        city:
+          type: string
+          example: Munich
+        province:
+          type: string
+          example: Kingdom Bavaria
+        country:
+          type: string
+          example: Germany
+
+    Inventory:
+      type: object
+      properties:
+        books_available:
+          type: integer
+          format: int32
+        books_reordered:
+          type: integer
+          format: int32
+        books_out_of_stock:
+          type: integer
+          format: int32
