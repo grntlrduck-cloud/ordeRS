@@ -4,9 +4,9 @@ configure:
 api_codegen:
 	openapi-generator-cli generate \
     -i api/openapi.yaml \
-    -g rust \
-    -o temp_generated \
-    --global-property models,modelDocs=false,apis=false
-	mkdir -p src/adapters/rest/models && \
-  mv temp_generated/src/models/* src/adapters/rest/models/ && \
-  rm -rf temp_generated
+    -g rust-axum \
+    -o openapi \
+   --additional-properties=generateAliasAsModel=true,modelPackage=models,singleFile=true
+
+build_container:
+	docker buildx build --platform linux/arm64 -t orde-rs-service:latest . 

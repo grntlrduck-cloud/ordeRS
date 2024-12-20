@@ -1,9 +1,9 @@
-[package]
-name = "orde_rs"
-version = "0.1.0"
-edition = "2021"
+[workspace]
+members = [
+  "app", # the actual application
+  "probe", # container health check probe
+  "openapi" # generate lib based on api/openapi.yaml
+]
 
-[dependencies]
-actix-web = "4.9.0" # web framework
-svix-ksuid = { version = "0.8.0", features = ["serde"] } # use ksuid for gloablly unique and time sorted ids
-chrono = { version = "0.4", features = ["serde"] } # handle date time serialization
+  
+resolver = "2"

@@ -1,0 +1,15 @@
+[package]
+name = "app"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+openapi = { path = "../openapi" } # the generated library
+serde = "1.0.216"
+axum = "0.7" # web framework
+tower = "0.5.2" # middleware for axum
+tower-http = { version = "0.6.2", features = ["trace"] } # additional http utilities
+tokio = { version = "1.0", features = ["full"] } # async runtime
+svix-ksuid = { version = "0.8.0", features = ["serde"] } # use ksuid for globally unique and time sorted ids
+chrono = { version = "0.4", features = ["serde"] } # handle date time serialization
+reqwest = { version = "0.12.9", default-features = false, features = ["rustls-tls", "json"] } # http client with rustls
