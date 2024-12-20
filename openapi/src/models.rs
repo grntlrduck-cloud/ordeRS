@@ -7,177 +7,141 @@ use validator::Validate;
 use crate::header;
 use crate::{models, types::*};
 
-      
-      
-    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
-    #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))] 
-    pub struct DeleteAuthorPathParams {
-            /// author to delete
-                pub author_id: String,
-    }
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
+#[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
+pub struct DeleteAuthorPathParams {
+    /// author to delete
+    pub author_id: String,
+}
 
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
+#[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
+pub struct GetAuthorByIdPathParams {
+    /// Id of author to return
+    pub author_id: String,
+}
 
-      
-    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
-    #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))] 
-    pub struct GetAuthorByIdPathParams {
-            /// Id of author to return
-                pub author_id: String,
-    }
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
+#[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
+pub struct UpdateAuthorPathParams {
+    /// Id of author to return
+    pub author_id: String,
+}
 
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
+#[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
+pub struct DeleteBookPathParams {
+    /// BookId to delete
+    pub book_id: String,
+}
 
-      
-    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
-    #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))] 
-    pub struct UpdateAuthorPathParams {
-            /// Id of author to return
-                pub author_id: String,
-    }
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
+#[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
+pub struct GetBookByIdPathParams {
+    /// Id of book to return
+    pub book_id: String,
+}
 
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
+#[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
+pub struct GetBooksByAuthorsQueryParams {
+    /// Authors to filter by
+    #[serde(rename = "authors")]
+    pub authors: Vec<String>,
+}
 
-      
-      
-    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
-    #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))] 
-    pub struct DeleteBookPathParams {
-            /// BookId to delete
-                pub book_id: String,
-    }
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
+#[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
+pub struct GetBooksByGeneresQueryParams {
+    /// Generef to filter by
+    #[serde(rename = "genres")]
+    pub genres: Vec<String>,
+}
 
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
+#[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
+pub struct GetBooksByStatusQueryParams {
+    /// Status to filter by
+    #[serde(rename = "status")]
+    pub status: Vec<String>,
+}
 
-      
-    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
-    #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))] 
-    pub struct GetBookByIdPathParams {
-            /// Id of book to return
-                pub book_id: String,
-    }
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
+#[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
+pub struct UpdateBookPathParams {
+    /// Id of book to return
+    pub book_id: String,
+}
 
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
+#[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
+pub struct DeleteDiscountPathParams {
+    /// discount to delete
+    pub discount_id: String,
+}
 
-      
-    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
-    #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))] 
-    pub struct GetBooksByAuthorsQueryParams {
-            /// Authors to filter by
-                #[serde(rename = "authors")]
-                pub authors: Vec<String>,
-    }
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
+#[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
+pub struct GetDiscountByIdPathParams {
+    /// Id of discount to return
+    pub discount_id: String,
+}
 
-      
-    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
-    #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))] 
-    pub struct GetBooksByGeneresQueryParams {
-            /// Generef to filter by
-                #[serde(rename = "genres")]
-                pub genres: Vec<String>,
-    }
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
+#[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
+pub struct UpdateDiscountPathParams {
+    /// Id of discount to return
+    pub discount_id: String,
+}
 
-      
-    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
-    #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))] 
-    pub struct GetBooksByStatusQueryParams {
-            /// Status to filter by
-                #[serde(rename = "status")]
-                pub status: Vec<String>,
-    }
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
+#[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
+pub struct DeleteOrderPathParams {
+    /// ID of the order that needs to be deleted
+    pub order_id: i64,
+}
 
-      
-    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
-    #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))] 
-    pub struct UpdateBookPathParams {
-            /// Id of book to return
-                pub book_id: String,
-    }
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
+#[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
+pub struct GetOrderByIdPathParams {
+    /// Id of order that needs to be fetched
+    pub order_id: String,
+}
 
-
-      
-      
-    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
-    #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))] 
-    pub struct DeleteDiscountPathParams {
-            /// discount to delete
-                pub discount_id: String,
-    }
-
-
-      
-    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
-    #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))] 
-    pub struct GetDiscountByIdPathParams {
-            /// Id of discount to return
-                pub discount_id: String,
-    }
-
-
-      
-    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
-    #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))] 
-    pub struct UpdateDiscountPathParams {
-            /// Id of discount to return
-                pub discount_id: String,
-    }
-
-
-      
-    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
-    #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))] 
-    pub struct DeleteOrderPathParams {
-            /// ID of the order that needs to be deleted
-                pub order_id: i64,
-    }
-
-
-      
-      
-    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
-    #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))] 
-    pub struct GetOrderByIdPathParams {
-            /// Id of order that needs to be fetched
-                pub order_id: String,
-    }
-
-
-      
-      
-    #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
-    #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))] 
-    pub struct UpdateOrderPathParams {
-            /// Id of order to return
-                pub order_id: String,
-    }
-
-
-
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
+#[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
+pub struct UpdateOrderPathParams {
+    /// Id of order to return
+    pub order_id: String,
+}
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
 pub struct Address {
     #[serde(rename = "street")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub street: Option<String>,
 
     #[serde(rename = "street_number")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub street_number: Option<String>,
 
     #[serde(rename = "zip_code")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub zip_code: Option<String>,
 
     #[serde(rename = "city")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub city: Option<String>,
 
     #[serde(rename = "province")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub province: Option<String>,
 
     #[serde(rename = "country")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub country: Option<String>,
-
 }
-
 
 impl Address {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
@@ -199,57 +163,31 @@ impl Address {
 impl std::fmt::Display for Address {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-
-            self.street.as_ref().map(|street| {
-                [
-                    "street".to_string(),
-                    street.to_string(),
-                ].join(",")
-            }),
-
-
+            self.street
+                .as_ref()
+                .map(|street| ["street".to_string(), street.to_string()].join(",")),
             self.street_number.as_ref().map(|street_number| {
-                [
-                    "street_number".to_string(),
-                    street_number.to_string(),
-                ].join(",")
+                ["street_number".to_string(), street_number.to_string()].join(",")
             }),
-
-
-            self.zip_code.as_ref().map(|zip_code| {
-                [
-                    "zip_code".to_string(),
-                    zip_code.to_string(),
-                ].join(",")
-            }),
-
-
-            self.city.as_ref().map(|city| {
-                [
-                    "city".to_string(),
-                    city.to_string(),
-                ].join(",")
-            }),
-
-
-            self.province.as_ref().map(|province| {
-                [
-                    "province".to_string(),
-                    province.to_string(),
-                ].join(",")
-            }),
-
-
-            self.country.as_ref().map(|country| {
-                [
-                    "country".to_string(),
-                    country.to_string(),
-                ].join(",")
-            }),
-
+            self.zip_code
+                .as_ref()
+                .map(|zip_code| ["zip_code".to_string(), zip_code.to_string()].join(",")),
+            self.city
+                .as_ref()
+                .map(|city| ["city".to_string(), city.to_string()].join(",")),
+            self.province
+                .as_ref()
+                .map(|province| ["province".to_string(), province.to_string()].join(",")),
+            self.country
+                .as_ref()
+                .map(|country| ["country".to_string(), country.to_string()].join(",")),
         ];
 
-        write!(f, "{}", params.into_iter().flatten().collect::<Vec<_>>().join(","))
+        write!(
+            f,
+            "{}",
+            params.into_iter().flatten().collect::<Vec<_>>().join(",")
+        )
     }
 }
 
@@ -281,25 +219,45 @@ impl std::str::FromStr for Address {
         while key_result.is_some() {
             let val = match string_iter.next() {
                 Some(x) => x,
-                None => return std::result::Result::Err("Missing value while parsing Address".to_string())
+                None => {
+                    return std::result::Result::Err(
+                        "Missing value while parsing Address".to_string(),
+                    )
+                }
             };
 
             if let Some(key) = key_result {
                 #[allow(clippy::match_single_binding)]
                 match key {
                     #[allow(clippy::redundant_clone)]
-                    "street" => intermediate_rep.street.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "street" => intermediate_rep.street.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "street_number" => intermediate_rep.street_number.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "street_number" => intermediate_rep.street_number.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "zip_code" => intermediate_rep.zip_code.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "zip_code" => intermediate_rep.zip_code.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "city" => intermediate_rep.city.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "city" => intermediate_rep.city.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "province" => intermediate_rep.province.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "province" => intermediate_rep.province.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "country" => intermediate_rep.country.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
-                    _ => return std::result::Result::Err("Unexpected key while parsing Address".to_string())
+                    "country" => intermediate_rep.country.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
+                    _ => {
+                        return std::result::Result::Err(
+                            "Unexpected key while parsing Address".to_string(),
+                        )
+                    }
                 }
             }
 
@@ -325,13 +283,16 @@ impl std::str::FromStr for Address {
 impl std::convert::TryFrom<header::IntoHeaderValue<Address>> for HeaderValue {
     type Error = String;
 
-    fn try_from(hdr_value: header::IntoHeaderValue<Address>) -> std::result::Result<Self, Self::Error> {
+    fn try_from(
+        hdr_value: header::IntoHeaderValue<Address>,
+    ) -> std::result::Result<Self, Self::Error> {
         let hdr_value = hdr_value.to_string();
         match HeaderValue::from_str(&hdr_value) {
-             std::result::Result::Ok(value) => std::result::Result::Ok(value),
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Invalid header value for Address - value: {} is invalid {}",
-                     hdr_value, e))
+            std::result::Result::Ok(value) => std::result::Result::Ok(value),
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Invalid header value for Address - value: {} is invalid {}",
+                hdr_value, e
+            )),
         }
     }
 }
@@ -342,23 +303,24 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<Address> {
 
     fn try_from(hdr_value: HeaderValue) -> std::result::Result<Self, Self::Error> {
         match hdr_value.to_str() {
-             std::result::Result::Ok(value) => {
-                    match <Address as std::str::FromStr>::from_str(value) {
-                        std::result::Result::Ok(value) => std::result::Result::Ok(header::IntoHeaderValue(value)),
-                        std::result::Result::Err(err) => std::result::Result::Err(
-                            format!("Unable to convert header value '{}' into Address - {}",
-                                value, err))
+            std::result::Result::Ok(value) => {
+                match <Address as std::str::FromStr>::from_str(value) {
+                    std::result::Result::Ok(value) => {
+                        std::result::Result::Ok(header::IntoHeaderValue(value))
                     }
-             },
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Unable to convert header: {:?} to string: {}",
-                     hdr_value, e))
+                    std::result::Result::Err(err) => std::result::Result::Err(format!(
+                        "Unable to convert header value '{}' into Address - {}",
+                        value, err
+                    )),
+                }
+            }
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Unable to convert header: {:?} to string: {}",
+                hdr_value, e
+            )),
         }
     }
 }
-
-
-
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
@@ -367,14 +329,14 @@ pub struct Author {
     pub id: String,
 
     #[serde(rename = "title")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
 
     #[serde(rename = "first_name")]
     pub first_name: String,
 
     #[serde(rename = "second_names")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub second_names: Option<Vec<String>>,
 
     #[serde(rename = "last_name")]
@@ -384,15 +346,18 @@ pub struct Author {
     pub date_of_birth: chrono::naive::NaiveDate,
 
     #[serde(rename = "date_of_death")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub date_of_death: Option<chrono::naive::NaiveDate>,
-
 }
-
 
 impl Author {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
-    pub fn new(id: String, first_name: String, last_name: String, date_of_birth: chrono::naive::NaiveDate, ) -> Author {
+    pub fn new(
+        id: String,
+        first_name: String,
+        last_name: String,
+        date_of_birth: chrono::naive::NaiveDate,
+    ) -> Author {
         Author {
             id,
             title: None,
@@ -411,41 +376,36 @@ impl Author {
 impl std::fmt::Display for Author {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-
             Some("id".to_string()),
             Some(self.id.to_string()),
-
-
-            self.title.as_ref().map(|title| {
-                [
-                    "title".to_string(),
-                    title.to_string(),
-                ].join(",")
-            }),
-
-
+            self.title
+                .as_ref()
+                .map(|title| ["title".to_string(), title.to_string()].join(",")),
             Some("first_name".to_string()),
             Some(self.first_name.to_string()),
-
-
             self.second_names.as_ref().map(|second_names| {
                 [
                     "second_names".to_string(),
-                    second_names.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(","),
-                ].join(",")
+                    second_names
+                        .iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<_>>()
+                        .join(","),
+                ]
+                .join(",")
             }),
-
-
             Some("last_name".to_string()),
             Some(self.last_name.to_string()),
-
             // Skipping date_of_birth in query parameter serialization
 
             // Skipping date_of_death in query parameter serialization
-
         ];
 
-        write!(f, "{}", params.into_iter().flatten().collect::<Vec<_>>().join(","))
+        write!(
+            f,
+            "{}",
+            params.into_iter().flatten().collect::<Vec<_>>().join(",")
+        )
     }
 }
 
@@ -478,26 +438,53 @@ impl std::str::FromStr for Author {
         while key_result.is_some() {
             let val = match string_iter.next() {
                 Some(x) => x,
-                None => return std::result::Result::Err("Missing value while parsing Author".to_string())
+                None => {
+                    return std::result::Result::Err(
+                        "Missing value while parsing Author".to_string(),
+                    )
+                }
             };
 
             if let Some(key) = key_result {
                 #[allow(clippy::match_single_binding)]
                 match key {
                     #[allow(clippy::redundant_clone)]
-                    "id" => intermediate_rep.id.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "id" => intermediate_rep.id.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "title" => intermediate_rep.title.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "title" => intermediate_rep.title.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "first_name" => intermediate_rep.first_name.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
-                    "second_names" => return std::result::Result::Err("Parsing a container in this style is not supported in Author".to_string()),
+                    "first_name" => intermediate_rep.first_name.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
+                    "second_names" => {
+                        return std::result::Result::Err(
+                            "Parsing a container in this style is not supported in Author"
+                                .to_string(),
+                        )
+                    }
                     #[allow(clippy::redundant_clone)]
-                    "last_name" => intermediate_rep.last_name.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "last_name" => intermediate_rep.last_name.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "date_of_birth" => intermediate_rep.date_of_birth.push(<chrono::naive::NaiveDate as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "date_of_birth" => intermediate_rep.date_of_birth.push(
+                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "date_of_death" => intermediate_rep.date_of_death.push(<chrono::naive::NaiveDate as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
-                    _ => return std::result::Result::Err("Unexpected key while parsing Author".to_string())
+                    "date_of_death" => intermediate_rep.date_of_death.push(
+                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
+                    _ => {
+                        return std::result::Result::Err(
+                            "Unexpected key while parsing Author".to_string(),
+                        )
+                    }
                 }
             }
 
@@ -507,12 +494,28 @@ impl std::str::FromStr for Author {
 
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(Author {
-            id: intermediate_rep.id.into_iter().next().ok_or_else(|| "id missing in Author".to_string())?,
+            id: intermediate_rep
+                .id
+                .into_iter()
+                .next()
+                .ok_or_else(|| "id missing in Author".to_string())?,
             title: intermediate_rep.title.into_iter().next(),
-            first_name: intermediate_rep.first_name.into_iter().next().ok_or_else(|| "first_name missing in Author".to_string())?,
+            first_name: intermediate_rep
+                .first_name
+                .into_iter()
+                .next()
+                .ok_or_else(|| "first_name missing in Author".to_string())?,
             second_names: intermediate_rep.second_names.into_iter().next(),
-            last_name: intermediate_rep.last_name.into_iter().next().ok_or_else(|| "last_name missing in Author".to_string())?,
-            date_of_birth: intermediate_rep.date_of_birth.into_iter().next().ok_or_else(|| "date_of_birth missing in Author".to_string())?,
+            last_name: intermediate_rep
+                .last_name
+                .into_iter()
+                .next()
+                .ok_or_else(|| "last_name missing in Author".to_string())?,
+            date_of_birth: intermediate_rep
+                .date_of_birth
+                .into_iter()
+                .next()
+                .ok_or_else(|| "date_of_birth missing in Author".to_string())?,
             date_of_death: intermediate_rep.date_of_death.into_iter().next(),
         })
     }
@@ -524,13 +527,16 @@ impl std::str::FromStr for Author {
 impl std::convert::TryFrom<header::IntoHeaderValue<Author>> for HeaderValue {
     type Error = String;
 
-    fn try_from(hdr_value: header::IntoHeaderValue<Author>) -> std::result::Result<Self, Self::Error> {
+    fn try_from(
+        hdr_value: header::IntoHeaderValue<Author>,
+    ) -> std::result::Result<Self, Self::Error> {
         let hdr_value = hdr_value.to_string();
         match HeaderValue::from_str(&hdr_value) {
-             std::result::Result::Ok(value) => std::result::Result::Ok(value),
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Invalid header value for Author - value: {} is invalid {}",
-                     hdr_value, e))
+            std::result::Result::Ok(value) => std::result::Result::Ok(value),
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Invalid header value for Author - value: {} is invalid {}",
+                hdr_value, e
+            )),
         }
     }
 }
@@ -541,49 +547,48 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<Author> {
 
     fn try_from(hdr_value: HeaderValue) -> std::result::Result<Self, Self::Error> {
         match hdr_value.to_str() {
-             std::result::Result::Ok(value) => {
-                    match <Author as std::str::FromStr>::from_str(value) {
-                        std::result::Result::Ok(value) => std::result::Result::Ok(header::IntoHeaderValue(value)),
-                        std::result::Result::Err(err) => std::result::Result::Err(
-                            format!("Unable to convert header value '{}' into Author - {}",
-                                value, err))
+            std::result::Result::Ok(value) => {
+                match <Author as std::str::FromStr>::from_str(value) {
+                    std::result::Result::Ok(value) => {
+                        std::result::Result::Ok(header::IntoHeaderValue(value))
                     }
-             },
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Unable to convert header: {:?} to string: {}",
-                     hdr_value, e))
+                    std::result::Result::Err(err) => std::result::Result::Err(format!(
+                        "Unable to convert header value '{}' into Author - {}",
+                        value, err
+                    )),
+                }
+            }
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Unable to convert header: {:?} to string: {}",
+                hdr_value, e
+            )),
         }
     }
 }
-
-
-
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
 pub struct AuthorProperties {
     #[serde(rename = "title")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
 
     #[serde(rename = "first_name")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub first_name: Option<String>,
 
     #[serde(rename = "second_names")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub second_names: Option<Vec<String>>,
 
     #[serde(rename = "last_name")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub last_name: Option<String>,
 
     #[serde(rename = "date_of_death")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub date_of_death: Option<chrono::naive::NaiveDate>,
-
 }
-
 
 impl AuthorProperties {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
@@ -604,43 +609,34 @@ impl AuthorProperties {
 impl std::fmt::Display for AuthorProperties {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-
-            self.title.as_ref().map(|title| {
-                [
-                    "title".to_string(),
-                    title.to_string(),
-                ].join(",")
-            }),
-
-
-            self.first_name.as_ref().map(|first_name| {
-                [
-                    "first_name".to_string(),
-                    first_name.to_string(),
-                ].join(",")
-            }),
-
-
+            self.title
+                .as_ref()
+                .map(|title| ["title".to_string(), title.to_string()].join(",")),
+            self.first_name
+                .as_ref()
+                .map(|first_name| ["first_name".to_string(), first_name.to_string()].join(",")),
             self.second_names.as_ref().map(|second_names| {
                 [
                     "second_names".to_string(),
-                    second_names.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(","),
-                ].join(",")
+                    second_names
+                        .iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<_>>()
+                        .join(","),
+                ]
+                .join(",")
             }),
-
-
-            self.last_name.as_ref().map(|last_name| {
-                [
-                    "last_name".to_string(),
-                    last_name.to_string(),
-                ].join(",")
-            }),
-
+            self.last_name
+                .as_ref()
+                .map(|last_name| ["last_name".to_string(), last_name.to_string()].join(",")),
             // Skipping date_of_death in query parameter serialization
-
         ];
 
-        write!(f, "{}", params.into_iter().flatten().collect::<Vec<_>>().join(","))
+        write!(
+            f,
+            "{}",
+            params.into_iter().flatten().collect::<Vec<_>>().join(",")
+        )
     }
 }
 
@@ -671,22 +667,42 @@ impl std::str::FromStr for AuthorProperties {
         while key_result.is_some() {
             let val = match string_iter.next() {
                 Some(x) => x,
-                None => return std::result::Result::Err("Missing value while parsing AuthorProperties".to_string())
+                None => {
+                    return std::result::Result::Err(
+                        "Missing value while parsing AuthorProperties".to_string(),
+                    )
+                }
             };
 
             if let Some(key) = key_result {
                 #[allow(clippy::match_single_binding)]
                 match key {
                     #[allow(clippy::redundant_clone)]
-                    "title" => intermediate_rep.title.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "title" => intermediate_rep.title.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "first_name" => intermediate_rep.first_name.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
-                    "second_names" => return std::result::Result::Err("Parsing a container in this style is not supported in AuthorProperties".to_string()),
+                    "first_name" => intermediate_rep.first_name.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
+                    "second_names" => return std::result::Result::Err(
+                        "Parsing a container in this style is not supported in AuthorProperties"
+                            .to_string(),
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "last_name" => intermediate_rep.last_name.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "last_name" => intermediate_rep.last_name.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "date_of_death" => intermediate_rep.date_of_death.push(<chrono::naive::NaiveDate as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
-                    _ => return std::result::Result::Err("Unexpected key while parsing AuthorProperties".to_string())
+                    "date_of_death" => intermediate_rep.date_of_death.push(
+                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
+                    _ => {
+                        return std::result::Result::Err(
+                            "Unexpected key while parsing AuthorProperties".to_string(),
+                        )
+                    }
                 }
             }
 
@@ -711,13 +727,16 @@ impl std::str::FromStr for AuthorProperties {
 impl std::convert::TryFrom<header::IntoHeaderValue<AuthorProperties>> for HeaderValue {
     type Error = String;
 
-    fn try_from(hdr_value: header::IntoHeaderValue<AuthorProperties>) -> std::result::Result<Self, Self::Error> {
+    fn try_from(
+        hdr_value: header::IntoHeaderValue<AuthorProperties>,
+    ) -> std::result::Result<Self, Self::Error> {
         let hdr_value = hdr_value.to_string();
         match HeaderValue::from_str(&hdr_value) {
-             std::result::Result::Ok(value) => std::result::Result::Ok(value),
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Invalid header value for AuthorProperties - value: {} is invalid {}",
-                     hdr_value, e))
+            std::result::Result::Ok(value) => std::result::Result::Ok(value),
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Invalid header value for AuthorProperties - value: {} is invalid {}",
+                hdr_value, e
+            )),
         }
     }
 }
@@ -728,23 +747,24 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<AuthorProper
 
     fn try_from(hdr_value: HeaderValue) -> std::result::Result<Self, Self::Error> {
         match hdr_value.to_str() {
-             std::result::Result::Ok(value) => {
-                    match <AuthorProperties as std::str::FromStr>::from_str(value) {
-                        std::result::Result::Ok(value) => std::result::Result::Ok(header::IntoHeaderValue(value)),
-                        std::result::Result::Err(err) => std::result::Result::Err(
-                            format!("Unable to convert header value '{}' into AuthorProperties - {}",
-                                value, err))
+            std::result::Result::Ok(value) => {
+                match <AuthorProperties as std::str::FromStr>::from_str(value) {
+                    std::result::Result::Ok(value) => {
+                        std::result::Result::Ok(header::IntoHeaderValue(value))
                     }
-             },
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Unable to convert header: {:?} to string: {}",
-                     hdr_value, e))
+                    std::result::Result::Err(err) => std::result::Result::Err(format!(
+                        "Unable to convert header value '{}' into AuthorProperties - {}",
+                        value, err
+                    )),
+                }
+            }
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Unable to convert header: {:?} to string: {}",
+                hdr_value, e
+            )),
         }
     }
 }
-
-
-
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
@@ -755,53 +775,60 @@ pub struct Book {
     #[serde(rename = "title")]
     pub title: String,
 
-/// the date when this edition of the book was released
+    /// the date when this edition of the book was released
     #[serde(rename = "release")]
     pub release: chrono::naive::NaiveDate,
 
-/// the date when the first edition of the book was release
+    /// the date when the first edition of the book was release
     #[serde(rename = "first_release")]
     pub first_release: chrono::naive::NaiveDate,
 
     #[serde(rename = "authors")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub authors: Option<Vec<models::Author>>,
 
     #[serde(rename = "generes")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub generes: Option<models::Genre>,
 
     #[serde(rename = "series")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub series: Option<String>,
 
-/// the edition of this book
+    /// the edition of this book
     #[serde(rename = "edition")]
     pub edition: i32,
 
-/// the price of this book in Dollar
+    /// the price of this book in Dollar
     #[serde(rename = "price")]
     pub price: f64,
 
     #[serde(rename = "discounts")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub discounts: Option<Vec<models::DiscountCode>>,
 
-/// The number of available items
+    /// The number of available items
     #[serde(rename = "available")]
     pub available: i32,
 
-/// the inventory state of the book
-/// Note: inline enums are not fully supported by openapi-generator
+    /// the inventory state of the book
+    /// Note: inline enums are not fully supported by openapi-generator
     #[serde(rename = "status")]
     pub status: String,
-
 }
-
 
 impl Book {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
-    pub fn new(id: String, title: String, release: chrono::naive::NaiveDate, first_release: chrono::naive::NaiveDate, edition: i32, price: f64, available: i32, status: String, ) -> Book {
+    pub fn new(
+        id: String,
+        title: String,
+        release: chrono::naive::NaiveDate,
+        first_release: chrono::naive::NaiveDate,
+        edition: i32,
+        price: f64,
+        available: i32,
+        status: String,
+    ) -> Book {
         Book {
             id,
             title,
@@ -825,14 +852,10 @@ impl Book {
 impl std::fmt::Display for Book {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-
             Some("id".to_string()),
             Some(self.id.to_string()),
-
-
             Some("title".to_string()),
             Some(self.title.to_string()),
-
             // Skipping release in query parameter serialization
 
             // Skipping first_release in query parameter serialization
@@ -840,36 +863,25 @@ impl std::fmt::Display for Book {
             // Skipping authors in query parameter serialization
 
             // Skipping generes in query parameter serialization
-
-
-            self.series.as_ref().map(|series| {
-                [
-                    "series".to_string(),
-                    series.to_string(),
-                ].join(",")
-            }),
-
-
+            self.series
+                .as_ref()
+                .map(|series| ["series".to_string(), series.to_string()].join(",")),
             Some("edition".to_string()),
             Some(self.edition.to_string()),
-
-
             Some("price".to_string()),
             Some(self.price.to_string()),
-
             // Skipping discounts in query parameter serialization
-
-
             Some("available".to_string()),
             Some(self.available.to_string()),
-
-
             Some("status".to_string()),
             Some(self.status.to_string()),
-
         ];
 
-        write!(f, "{}", params.into_iter().flatten().collect::<Vec<_>>().join(","))
+        write!(
+            f,
+            "{}",
+            params.into_iter().flatten().collect::<Vec<_>>().join(",")
+        )
     }
 }
 
@@ -907,35 +919,74 @@ impl std::str::FromStr for Book {
         while key_result.is_some() {
             let val = match string_iter.next() {
                 Some(x) => x,
-                None => return std::result::Result::Err("Missing value while parsing Book".to_string())
+                None => {
+                    return std::result::Result::Err("Missing value while parsing Book".to_string())
+                }
             };
 
             if let Some(key) = key_result {
                 #[allow(clippy::match_single_binding)]
                 match key {
                     #[allow(clippy::redundant_clone)]
-                    "id" => intermediate_rep.id.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "id" => intermediate_rep.id.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "title" => intermediate_rep.title.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "title" => intermediate_rep.title.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "release" => intermediate_rep.release.push(<chrono::naive::NaiveDate as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "release" => intermediate_rep.release.push(
+                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "first_release" => intermediate_rep.first_release.push(<chrono::naive::NaiveDate as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
-                    "authors" => return std::result::Result::Err("Parsing a container in this style is not supported in Book".to_string()),
+                    "first_release" => intermediate_rep.first_release.push(
+                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
+                    "authors" => {
+                        return std::result::Result::Err(
+                            "Parsing a container in this style is not supported in Book"
+                                .to_string(),
+                        )
+                    }
                     #[allow(clippy::redundant_clone)]
-                    "generes" => intermediate_rep.generes.push(<models::Genre as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "generes" => intermediate_rep.generes.push(
+                        <models::Genre as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "series" => intermediate_rep.series.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "series" => intermediate_rep.series.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "edition" => intermediate_rep.edition.push(<i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "edition" => intermediate_rep.edition.push(
+                        <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "price" => intermediate_rep.price.push(<f64 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
-                    "discounts" => return std::result::Result::Err("Parsing a container in this style is not supported in Book".to_string()),
+                    "price" => intermediate_rep.price.push(
+                        <f64 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
+                    "discounts" => {
+                        return std::result::Result::Err(
+                            "Parsing a container in this style is not supported in Book"
+                                .to_string(),
+                        )
+                    }
                     #[allow(clippy::redundant_clone)]
-                    "available" => intermediate_rep.available.push(<i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "available" => intermediate_rep.available.push(
+                        <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "status" => intermediate_rep.status.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
-                    _ => return std::result::Result::Err("Unexpected key while parsing Book".to_string())
+                    "status" => intermediate_rep.status.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
+                    _ => {
+                        return std::result::Result::Err(
+                            "Unexpected key while parsing Book".to_string(),
+                        )
+                    }
                 }
             }
 
@@ -945,18 +996,50 @@ impl std::str::FromStr for Book {
 
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(Book {
-            id: intermediate_rep.id.into_iter().next().ok_or_else(|| "id missing in Book".to_string())?,
-            title: intermediate_rep.title.into_iter().next().ok_or_else(|| "title missing in Book".to_string())?,
-            release: intermediate_rep.release.into_iter().next().ok_or_else(|| "release missing in Book".to_string())?,
-            first_release: intermediate_rep.first_release.into_iter().next().ok_or_else(|| "first_release missing in Book".to_string())?,
+            id: intermediate_rep
+                .id
+                .into_iter()
+                .next()
+                .ok_or_else(|| "id missing in Book".to_string())?,
+            title: intermediate_rep
+                .title
+                .into_iter()
+                .next()
+                .ok_or_else(|| "title missing in Book".to_string())?,
+            release: intermediate_rep
+                .release
+                .into_iter()
+                .next()
+                .ok_or_else(|| "release missing in Book".to_string())?,
+            first_release: intermediate_rep
+                .first_release
+                .into_iter()
+                .next()
+                .ok_or_else(|| "first_release missing in Book".to_string())?,
             authors: intermediate_rep.authors.into_iter().next(),
             generes: intermediate_rep.generes.into_iter().next(),
             series: intermediate_rep.series.into_iter().next(),
-            edition: intermediate_rep.edition.into_iter().next().ok_or_else(|| "edition missing in Book".to_string())?,
-            price: intermediate_rep.price.into_iter().next().ok_or_else(|| "price missing in Book".to_string())?,
+            edition: intermediate_rep
+                .edition
+                .into_iter()
+                .next()
+                .ok_or_else(|| "edition missing in Book".to_string())?,
+            price: intermediate_rep
+                .price
+                .into_iter()
+                .next()
+                .ok_or_else(|| "price missing in Book".to_string())?,
             discounts: intermediate_rep.discounts.into_iter().next(),
-            available: intermediate_rep.available.into_iter().next().ok_or_else(|| "available missing in Book".to_string())?,
-            status: intermediate_rep.status.into_iter().next().ok_or_else(|| "status missing in Book".to_string())?,
+            available: intermediate_rep
+                .available
+                .into_iter()
+                .next()
+                .ok_or_else(|| "available missing in Book".to_string())?,
+            status: intermediate_rep
+                .status
+                .into_iter()
+                .next()
+                .ok_or_else(|| "status missing in Book".to_string())?,
         })
     }
 }
@@ -967,13 +1050,16 @@ impl std::str::FromStr for Book {
 impl std::convert::TryFrom<header::IntoHeaderValue<Book>> for HeaderValue {
     type Error = String;
 
-    fn try_from(hdr_value: header::IntoHeaderValue<Book>) -> std::result::Result<Self, Self::Error> {
+    fn try_from(
+        hdr_value: header::IntoHeaderValue<Book>,
+    ) -> std::result::Result<Self, Self::Error> {
         let hdr_value = hdr_value.to_string();
         match HeaderValue::from_str(&hdr_value) {
-             std::result::Result::Ok(value) => std::result::Result::Ok(value),
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Invalid header value for Book - value: {} is invalid {}",
-                     hdr_value, e))
+            std::result::Result::Ok(value) => std::result::Result::Ok(value),
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Invalid header value for Book - value: {} is invalid {}",
+                hdr_value, e
+            )),
         }
     }
 }
@@ -984,69 +1070,66 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<Book> {
 
     fn try_from(hdr_value: HeaderValue) -> std::result::Result<Self, Self::Error> {
         match hdr_value.to_str() {
-             std::result::Result::Ok(value) => {
-                    match <Book as std::str::FromStr>::from_str(value) {
-                        std::result::Result::Ok(value) => std::result::Result::Ok(header::IntoHeaderValue(value)),
-                        std::result::Result::Err(err) => std::result::Result::Err(
-                            format!("Unable to convert header value '{}' into Book - {}",
-                                value, err))
-                    }
-             },
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Unable to convert header: {:?} to string: {}",
-                     hdr_value, e))
+            std::result::Result::Ok(value) => match <Book as std::str::FromStr>::from_str(value) {
+                std::result::Result::Ok(value) => {
+                    std::result::Result::Ok(header::IntoHeaderValue(value))
+                }
+                std::result::Result::Err(err) => std::result::Result::Err(format!(
+                    "Unable to convert header value '{}' into Book - {}",
+                    value, err
+                )),
+            },
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Unable to convert header: {:?} to string: {}",
+                hdr_value, e
+            )),
         }
     }
 }
-
-
-
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
 pub struct BookProperties {
     #[serde(rename = "title")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
 
-/// the date when this edition of the book was released
+    /// the date when this edition of the book was released
     #[serde(rename = "release")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub release: Option<chrono::naive::NaiveDate>,
 
-/// the date when the first edition of the book was release
+    /// the date when the first edition of the book was release
     #[serde(rename = "first_release")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub first_release: Option<chrono::naive::NaiveDate>,
 
     #[serde(rename = "authors")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub authors: Option<Vec<String>>,
 
     #[serde(rename = "generes")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub generes: Option<Vec<String>>,
 
     #[serde(rename = "discount_codes")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub discount_codes: Option<Vec<String>>,
 
     #[serde(rename = "series")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub series: Option<String>,
 
-/// the edition of this book
+    /// the edition of this book
     #[serde(rename = "edition")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub edition: Option<i32>,
 
-/// the price of this book in Dollar
+    /// the price of this book in Dollar
     #[serde(rename = "price")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub price: Option<f64>,
-
 }
-
 
 impl BookProperties {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
@@ -1071,69 +1154,61 @@ impl BookProperties {
 impl std::fmt::Display for BookProperties {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-
-            self.title.as_ref().map(|title| {
-                [
-                    "title".to_string(),
-                    title.to_string(),
-                ].join(",")
-            }),
-
+            self.title
+                .as_ref()
+                .map(|title| ["title".to_string(), title.to_string()].join(",")),
             // Skipping release in query parameter serialization
 
             // Skipping first_release in query parameter serialization
-
-
             self.authors.as_ref().map(|authors| {
                 [
                     "authors".to_string(),
-                    authors.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(","),
-                ].join(",")
+                    authors
+                        .iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<_>>()
+                        .join(","),
+                ]
+                .join(",")
             }),
-
-
             self.generes.as_ref().map(|generes| {
                 [
                     "generes".to_string(),
-                    generes.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(","),
-                ].join(",")
+                    generes
+                        .iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<_>>()
+                        .join(","),
+                ]
+                .join(",")
             }),
-
-
             self.discount_codes.as_ref().map(|discount_codes| {
                 [
                     "discount_codes".to_string(),
-                    discount_codes.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(","),
-                ].join(",")
+                    discount_codes
+                        .iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<_>>()
+                        .join(","),
+                ]
+                .join(",")
             }),
-
-
-            self.series.as_ref().map(|series| {
-                [
-                    "series".to_string(),
-                    series.to_string(),
-                ].join(",")
-            }),
-
-
-            self.edition.as_ref().map(|edition| {
-                [
-                    "edition".to_string(),
-                    edition.to_string(),
-                ].join(",")
-            }),
-
-
-            self.price.as_ref().map(|price| {
-                [
-                    "price".to_string(),
-                    price.to_string(),
-                ].join(",")
-            }),
-
+            self.series
+                .as_ref()
+                .map(|series| ["series".to_string(), series.to_string()].join(",")),
+            self.edition
+                .as_ref()
+                .map(|edition| ["edition".to_string(), edition.to_string()].join(",")),
+            self.price
+                .as_ref()
+                .map(|price| ["price".to_string(), price.to_string()].join(",")),
         ];
 
-        write!(f, "{}", params.into_iter().flatten().collect::<Vec<_>>().join(","))
+        write!(
+            f,
+            "{}",
+            params.into_iter().flatten().collect::<Vec<_>>().join(",")
+        )
     }
 }
 
@@ -1168,28 +1243,65 @@ impl std::str::FromStr for BookProperties {
         while key_result.is_some() {
             let val = match string_iter.next() {
                 Some(x) => x,
-                None => return std::result::Result::Err("Missing value while parsing BookProperties".to_string())
+                None => {
+                    return std::result::Result::Err(
+                        "Missing value while parsing BookProperties".to_string(),
+                    )
+                }
             };
 
             if let Some(key) = key_result {
                 #[allow(clippy::match_single_binding)]
                 match key {
                     #[allow(clippy::redundant_clone)]
-                    "title" => intermediate_rep.title.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "title" => intermediate_rep.title.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "release" => intermediate_rep.release.push(<chrono::naive::NaiveDate as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "release" => intermediate_rep.release.push(
+                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "first_release" => intermediate_rep.first_release.push(<chrono::naive::NaiveDate as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
-                    "authors" => return std::result::Result::Err("Parsing a container in this style is not supported in BookProperties".to_string()),
-                    "generes" => return std::result::Result::Err("Parsing a container in this style is not supported in BookProperties".to_string()),
-                    "discount_codes" => return std::result::Result::Err("Parsing a container in this style is not supported in BookProperties".to_string()),
+                    "first_release" => intermediate_rep.first_release.push(
+                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
+                    "authors" => {
+                        return std::result::Result::Err(
+                            "Parsing a container in this style is not supported in BookProperties"
+                                .to_string(),
+                        )
+                    }
+                    "generes" => {
+                        return std::result::Result::Err(
+                            "Parsing a container in this style is not supported in BookProperties"
+                                .to_string(),
+                        )
+                    }
+                    "discount_codes" => {
+                        return std::result::Result::Err(
+                            "Parsing a container in this style is not supported in BookProperties"
+                                .to_string(),
+                        )
+                    }
                     #[allow(clippy::redundant_clone)]
-                    "series" => intermediate_rep.series.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "series" => intermediate_rep.series.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "edition" => intermediate_rep.edition.push(<i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "edition" => intermediate_rep.edition.push(
+                        <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "price" => intermediate_rep.price.push(<f64 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
-                    _ => return std::result::Result::Err("Unexpected key while parsing BookProperties".to_string())
+                    "price" => intermediate_rep.price.push(
+                        <f64 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
+                    _ => {
+                        return std::result::Result::Err(
+                            "Unexpected key while parsing BookProperties".to_string(),
+                        )
+                    }
                 }
             }
 
@@ -1218,13 +1330,16 @@ impl std::str::FromStr for BookProperties {
 impl std::convert::TryFrom<header::IntoHeaderValue<BookProperties>> for HeaderValue {
     type Error = String;
 
-    fn try_from(hdr_value: header::IntoHeaderValue<BookProperties>) -> std::result::Result<Self, Self::Error> {
+    fn try_from(
+        hdr_value: header::IntoHeaderValue<BookProperties>,
+    ) -> std::result::Result<Self, Self::Error> {
         let hdr_value = hdr_value.to_string();
         match HeaderValue::from_str(&hdr_value) {
-             std::result::Result::Ok(value) => std::result::Result::Ok(value),
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Invalid header value for BookProperties - value: {} is invalid {}",
-                     hdr_value, e))
+            std::result::Result::Ok(value) => std::result::Result::Ok(value),
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Invalid header value for BookProperties - value: {} is invalid {}",
+                hdr_value, e
+            )),
         }
     }
 }
@@ -1235,23 +1350,24 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<BookProperti
 
     fn try_from(hdr_value: HeaderValue) -> std::result::Result<Self, Self::Error> {
         match hdr_value.to_str() {
-             std::result::Result::Ok(value) => {
-                    match <BookProperties as std::str::FromStr>::from_str(value) {
-                        std::result::Result::Ok(value) => std::result::Result::Ok(header::IntoHeaderValue(value)),
-                        std::result::Result::Err(err) => std::result::Result::Err(
-                            format!("Unable to convert header value '{}' into BookProperties - {}",
-                                value, err))
+            std::result::Result::Ok(value) => {
+                match <BookProperties as std::str::FromStr>::from_str(value) {
+                    std::result::Result::Ok(value) => {
+                        std::result::Result::Ok(header::IntoHeaderValue(value))
                     }
-             },
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Unable to convert header: {:?} to string: {}",
-                     hdr_value, e))
+                    std::result::Result::Err(err) => std::result::Result::Err(format!(
+                        "Unable to convert header value '{}' into BookProperties - {}",
+                        value, err
+                    )),
+                }
+            }
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Unable to convert header: {:?} to string: {}",
+                hdr_value, e
+            )),
         }
     }
 }
-
-
-
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
@@ -1260,7 +1376,7 @@ pub struct DiscountCode {
     pub id: String,
 
     #[serde(rename = "percentage_discount")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub percentage_discount: Option<i32>,
 
     #[serde(rename = "valid_from")]
@@ -1271,13 +1387,16 @@ pub struct DiscountCode {
 
     #[serde(rename = "code")]
     pub code: String,
-
 }
-
 
 impl DiscountCode {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
-    pub fn new(id: String, valid_from: chrono::naive::NaiveDate, valid_to: chrono::naive::NaiveDate, code: String, ) -> DiscountCode {
+    pub fn new(
+        id: String,
+        valid_from: chrono::naive::NaiveDate,
+        valid_to: chrono::naive::NaiveDate,
+        code: String,
+    ) -> DiscountCode {
         DiscountCode {
             id,
             percentage_discount: None,
@@ -1294,29 +1413,29 @@ impl DiscountCode {
 impl std::fmt::Display for DiscountCode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-
             Some("id".to_string()),
             Some(self.id.to_string()),
-
-
-            self.percentage_discount.as_ref().map(|percentage_discount| {
-                [
-                    "percentage_discount".to_string(),
-                    percentage_discount.to_string(),
-                ].join(",")
-            }),
-
+            self.percentage_discount
+                .as_ref()
+                .map(|percentage_discount| {
+                    [
+                        "percentage_discount".to_string(),
+                        percentage_discount.to_string(),
+                    ]
+                    .join(",")
+                }),
             // Skipping valid_from in query parameter serialization
 
             // Skipping valid_to in query parameter serialization
-
-
             Some("code".to_string()),
             Some(self.code.to_string()),
-
         ];
 
-        write!(f, "{}", params.into_iter().flatten().collect::<Vec<_>>().join(","))
+        write!(
+            f,
+            "{}",
+            params.into_iter().flatten().collect::<Vec<_>>().join(",")
+        )
     }
 }
 
@@ -1347,23 +1466,43 @@ impl std::str::FromStr for DiscountCode {
         while key_result.is_some() {
             let val = match string_iter.next() {
                 Some(x) => x,
-                None => return std::result::Result::Err("Missing value while parsing DiscountCode".to_string())
+                None => {
+                    return std::result::Result::Err(
+                        "Missing value while parsing DiscountCode".to_string(),
+                    )
+                }
             };
 
             if let Some(key) = key_result {
                 #[allow(clippy::match_single_binding)]
                 match key {
                     #[allow(clippy::redundant_clone)]
-                    "id" => intermediate_rep.id.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "id" => intermediate_rep.id.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "percentage_discount" => intermediate_rep.percentage_discount.push(<i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "percentage_discount" => intermediate_rep.percentage_discount.push(
+                        <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "valid_from" => intermediate_rep.valid_from.push(<chrono::naive::NaiveDate as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "valid_from" => intermediate_rep.valid_from.push(
+                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "valid_to" => intermediate_rep.valid_to.push(<chrono::naive::NaiveDate as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "valid_to" => intermediate_rep.valid_to.push(
+                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "code" => intermediate_rep.code.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
-                    _ => return std::result::Result::Err("Unexpected key while parsing DiscountCode".to_string())
+                    "code" => intermediate_rep.code.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
+                    _ => {
+                        return std::result::Result::Err(
+                            "Unexpected key while parsing DiscountCode".to_string(),
+                        )
+                    }
                 }
             }
 
@@ -1373,11 +1512,27 @@ impl std::str::FromStr for DiscountCode {
 
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(DiscountCode {
-            id: intermediate_rep.id.into_iter().next().ok_or_else(|| "id missing in DiscountCode".to_string())?,
+            id: intermediate_rep
+                .id
+                .into_iter()
+                .next()
+                .ok_or_else(|| "id missing in DiscountCode".to_string())?,
             percentage_discount: intermediate_rep.percentage_discount.into_iter().next(),
-            valid_from: intermediate_rep.valid_from.into_iter().next().ok_or_else(|| "valid_from missing in DiscountCode".to_string())?,
-            valid_to: intermediate_rep.valid_to.into_iter().next().ok_or_else(|| "valid_to missing in DiscountCode".to_string())?,
-            code: intermediate_rep.code.into_iter().next().ok_or_else(|| "code missing in DiscountCode".to_string())?,
+            valid_from: intermediate_rep
+                .valid_from
+                .into_iter()
+                .next()
+                .ok_or_else(|| "valid_from missing in DiscountCode".to_string())?,
+            valid_to: intermediate_rep
+                .valid_to
+                .into_iter()
+                .next()
+                .ok_or_else(|| "valid_to missing in DiscountCode".to_string())?,
+            code: intermediate_rep
+                .code
+                .into_iter()
+                .next()
+                .ok_or_else(|| "code missing in DiscountCode".to_string())?,
         })
     }
 }
@@ -1388,13 +1543,16 @@ impl std::str::FromStr for DiscountCode {
 impl std::convert::TryFrom<header::IntoHeaderValue<DiscountCode>> for HeaderValue {
     type Error = String;
 
-    fn try_from(hdr_value: header::IntoHeaderValue<DiscountCode>) -> std::result::Result<Self, Self::Error> {
+    fn try_from(
+        hdr_value: header::IntoHeaderValue<DiscountCode>,
+    ) -> std::result::Result<Self, Self::Error> {
         let hdr_value = hdr_value.to_string();
         match HeaderValue::from_str(&hdr_value) {
-             std::result::Result::Ok(value) => std::result::Result::Ok(value),
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Invalid header value for DiscountCode - value: {} is invalid {}",
-                     hdr_value, e))
+            std::result::Result::Ok(value) => std::result::Result::Ok(value),
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Invalid header value for DiscountCode - value: {} is invalid {}",
+                hdr_value, e
+            )),
         }
     }
 }
@@ -1405,41 +1563,40 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<DiscountCode
 
     fn try_from(hdr_value: HeaderValue) -> std::result::Result<Self, Self::Error> {
         match hdr_value.to_str() {
-             std::result::Result::Ok(value) => {
-                    match <DiscountCode as std::str::FromStr>::from_str(value) {
-                        std::result::Result::Ok(value) => std::result::Result::Ok(header::IntoHeaderValue(value)),
-                        std::result::Result::Err(err) => std::result::Result::Err(
-                            format!("Unable to convert header value '{}' into DiscountCode - {}",
-                                value, err))
+            std::result::Result::Ok(value) => {
+                match <DiscountCode as std::str::FromStr>::from_str(value) {
+                    std::result::Result::Ok(value) => {
+                        std::result::Result::Ok(header::IntoHeaderValue(value))
                     }
-             },
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Unable to convert header: {:?} to string: {}",
-                     hdr_value, e))
+                    std::result::Result::Err(err) => std::result::Result::Err(format!(
+                        "Unable to convert header value '{}' into DiscountCode - {}",
+                        value, err
+                    )),
+                }
+            }
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Unable to convert header: {:?} to string: {}",
+                hdr_value, e
+            )),
         }
     }
 }
-
-
-
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
 pub struct DiscountCodeProperties {
     #[serde(rename = "percentage_discount")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub percentage_discount: Option<i32>,
 
     #[serde(rename = "valid_from")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub valid_from: Option<chrono::naive::NaiveDate>,
 
     #[serde(rename = "valid_to")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub valid_to: Option<chrono::naive::NaiveDate>,
-
 }
-
 
 impl DiscountCodeProperties {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
@@ -1458,21 +1615,25 @@ impl DiscountCodeProperties {
 impl std::fmt::Display for DiscountCodeProperties {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-
-            self.percentage_discount.as_ref().map(|percentage_discount| {
-                [
-                    "percentage_discount".to_string(),
-                    percentage_discount.to_string(),
-                ].join(",")
-            }),
-
+            self.percentage_discount
+                .as_ref()
+                .map(|percentage_discount| {
+                    [
+                        "percentage_discount".to_string(),
+                        percentage_discount.to_string(),
+                    ]
+                    .join(",")
+                }),
             // Skipping valid_from in query parameter serialization
 
             // Skipping valid_to in query parameter serialization
-
         ];
 
-        write!(f, "{}", params.into_iter().flatten().collect::<Vec<_>>().join(","))
+        write!(
+            f,
+            "{}",
+            params.into_iter().flatten().collect::<Vec<_>>().join(",")
+        )
     }
 }
 
@@ -1501,19 +1662,35 @@ impl std::str::FromStr for DiscountCodeProperties {
         while key_result.is_some() {
             let val = match string_iter.next() {
                 Some(x) => x,
-                None => return std::result::Result::Err("Missing value while parsing DiscountCodeProperties".to_string())
+                None => {
+                    return std::result::Result::Err(
+                        "Missing value while parsing DiscountCodeProperties".to_string(),
+                    )
+                }
             };
 
             if let Some(key) = key_result {
                 #[allow(clippy::match_single_binding)]
                 match key {
                     #[allow(clippy::redundant_clone)]
-                    "percentage_discount" => intermediate_rep.percentage_discount.push(<i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "percentage_discount" => intermediate_rep.percentage_discount.push(
+                        <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "valid_from" => intermediate_rep.valid_from.push(<chrono::naive::NaiveDate as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "valid_from" => intermediate_rep.valid_from.push(
+                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "valid_to" => intermediate_rep.valid_to.push(<chrono::naive::NaiveDate as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
-                    _ => return std::result::Result::Err("Unexpected key while parsing DiscountCodeProperties".to_string())
+                    "valid_to" => intermediate_rep.valid_to.push(
+                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
+                    _ => {
+                        return std::result::Result::Err(
+                            "Unexpected key while parsing DiscountCodeProperties".to_string(),
+                        )
+                    }
                 }
             }
 
@@ -1536,13 +1713,16 @@ impl std::str::FromStr for DiscountCodeProperties {
 impl std::convert::TryFrom<header::IntoHeaderValue<DiscountCodeProperties>> for HeaderValue {
     type Error = String;
 
-    fn try_from(hdr_value: header::IntoHeaderValue<DiscountCodeProperties>) -> std::result::Result<Self, Self::Error> {
+    fn try_from(
+        hdr_value: header::IntoHeaderValue<DiscountCodeProperties>,
+    ) -> std::result::Result<Self, Self::Error> {
         let hdr_value = hdr_value.to_string();
         match HeaderValue::from_str(&hdr_value) {
-             std::result::Result::Ok(value) => std::result::Result::Ok(value),
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Invalid header value for DiscountCodeProperties - value: {} is invalid {}",
-                     hdr_value, e))
+            std::result::Result::Ok(value) => std::result::Result::Ok(value),
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Invalid header value for DiscountCodeProperties - value: {} is invalid {}",
+                hdr_value, e
+            )),
         }
     }
 }
@@ -1553,23 +1733,24 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<DiscountCode
 
     fn try_from(hdr_value: HeaderValue) -> std::result::Result<Self, Self::Error> {
         match hdr_value.to_str() {
-             std::result::Result::Ok(value) => {
-                    match <DiscountCodeProperties as std::str::FromStr>::from_str(value) {
-                        std::result::Result::Ok(value) => std::result::Result::Ok(header::IntoHeaderValue(value)),
-                        std::result::Result::Err(err) => std::result::Result::Err(
-                            format!("Unable to convert header value '{}' into DiscountCodeProperties - {}",
-                                value, err))
+            std::result::Result::Ok(value) => {
+                match <DiscountCodeProperties as std::str::FromStr>::from_str(value) {
+                    std::result::Result::Ok(value) => {
+                        std::result::Result::Ok(header::IntoHeaderValue(value))
                     }
-             },
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Unable to convert header: {:?} to string: {}",
-                     hdr_value, e))
+                    std::result::Result::Err(err) => std::result::Result::Err(format!(
+                        "Unable to convert header value '{}' into DiscountCodeProperties - {}",
+                        value, err
+                    )),
+                }
+            }
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Unable to convert header: {:?} to string: {}",
+                hdr_value, e
+            )),
         }
     }
 }
-
-
-
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
@@ -1579,17 +1760,12 @@ pub struct Genre {
 
     #[serde(rename = "name")]
     pub name: String,
-
 }
-
 
 impl Genre {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
-    pub fn new(id: String, name: String, ) -> Genre {
-        Genre {
-            id,
-            name,
-        }
+    pub fn new(id: String, name: String) -> Genre {
+        Genre { id, name }
     }
 }
 
@@ -1599,17 +1775,17 @@ impl Genre {
 impl std::fmt::Display for Genre {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-
             Some("id".to_string()),
             Some(self.id.to_string()),
-
-
             Some("name".to_string()),
             Some(self.name.to_string()),
-
         ];
 
-        write!(f, "{}", params.into_iter().flatten().collect::<Vec<_>>().join(","))
+        write!(
+            f,
+            "{}",
+            params.into_iter().flatten().collect::<Vec<_>>().join(",")
+        )
     }
 }
 
@@ -1637,17 +1813,29 @@ impl std::str::FromStr for Genre {
         while key_result.is_some() {
             let val = match string_iter.next() {
                 Some(x) => x,
-                None => return std::result::Result::Err("Missing value while parsing Genre".to_string())
+                None => {
+                    return std::result::Result::Err(
+                        "Missing value while parsing Genre".to_string(),
+                    )
+                }
             };
 
             if let Some(key) = key_result {
                 #[allow(clippy::match_single_binding)]
                 match key {
                     #[allow(clippy::redundant_clone)]
-                    "id" => intermediate_rep.id.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "id" => intermediate_rep.id.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "name" => intermediate_rep.name.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
-                    _ => return std::result::Result::Err("Unexpected key while parsing Genre".to_string())
+                    "name" => intermediate_rep.name.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
+                    _ => {
+                        return std::result::Result::Err(
+                            "Unexpected key while parsing Genre".to_string(),
+                        )
+                    }
                 }
             }
 
@@ -1657,8 +1845,16 @@ impl std::str::FromStr for Genre {
 
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(Genre {
-            id: intermediate_rep.id.into_iter().next().ok_or_else(|| "id missing in Genre".to_string())?,
-            name: intermediate_rep.name.into_iter().next().ok_or_else(|| "name missing in Genre".to_string())?,
+            id: intermediate_rep
+                .id
+                .into_iter()
+                .next()
+                .ok_or_else(|| "id missing in Genre".to_string())?,
+            name: intermediate_rep
+                .name
+                .into_iter()
+                .next()
+                .ok_or_else(|| "name missing in Genre".to_string())?,
         })
     }
 }
@@ -1669,13 +1865,16 @@ impl std::str::FromStr for Genre {
 impl std::convert::TryFrom<header::IntoHeaderValue<Genre>> for HeaderValue {
     type Error = String;
 
-    fn try_from(hdr_value: header::IntoHeaderValue<Genre>) -> std::result::Result<Self, Self::Error> {
+    fn try_from(
+        hdr_value: header::IntoHeaderValue<Genre>,
+    ) -> std::result::Result<Self, Self::Error> {
         let hdr_value = hdr_value.to_string();
         match HeaderValue::from_str(&hdr_value) {
-             std::result::Result::Ok(value) => std::result::Result::Ok(value),
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Invalid header value for Genre - value: {} is invalid {}",
-                     hdr_value, e))
+            std::result::Result::Ok(value) => std::result::Result::Ok(value),
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Invalid header value for Genre - value: {} is invalid {}",
+                hdr_value, e
+            )),
         }
     }
 }
@@ -1686,41 +1885,38 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<Genre> {
 
     fn try_from(hdr_value: HeaderValue) -> std::result::Result<Self, Self::Error> {
         match hdr_value.to_str() {
-             std::result::Result::Ok(value) => {
-                    match <Genre as std::str::FromStr>::from_str(value) {
-                        std::result::Result::Ok(value) => std::result::Result::Ok(header::IntoHeaderValue(value)),
-                        std::result::Result::Err(err) => std::result::Result::Err(
-                            format!("Unable to convert header value '{}' into Genre - {}",
-                                value, err))
-                    }
-             },
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Unable to convert header: {:?} to string: {}",
-                     hdr_value, e))
+            std::result::Result::Ok(value) => match <Genre as std::str::FromStr>::from_str(value) {
+                std::result::Result::Ok(value) => {
+                    std::result::Result::Ok(header::IntoHeaderValue(value))
+                }
+                std::result::Result::Err(err) => std::result::Result::Err(format!(
+                    "Unable to convert header value '{}' into Genre - {}",
+                    value, err
+                )),
+            },
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Unable to convert header: {:?} to string: {}",
+                hdr_value, e
+            )),
         }
     }
 }
-
-
-
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
 pub struct Inventory {
     #[serde(rename = "books_available")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub books_available: Option<i32>,
 
     #[serde(rename = "books_reordered")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub books_reordered: Option<i32>,
 
     #[serde(rename = "books_out_of_stock")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub books_out_of_stock: Option<i32>,
-
 }
-
 
 impl Inventory {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
@@ -1739,33 +1935,26 @@ impl Inventory {
 impl std::fmt::Display for Inventory {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-
             self.books_available.as_ref().map(|books_available| {
-                [
-                    "books_available".to_string(),
-                    books_available.to_string(),
-                ].join(",")
+                ["books_available".to_string(), books_available.to_string()].join(",")
             }),
-
-
             self.books_reordered.as_ref().map(|books_reordered| {
-                [
-                    "books_reordered".to_string(),
-                    books_reordered.to_string(),
-                ].join(",")
+                ["books_reordered".to_string(), books_reordered.to_string()].join(",")
             }),
-
-
             self.books_out_of_stock.as_ref().map(|books_out_of_stock| {
                 [
                     "books_out_of_stock".to_string(),
                     books_out_of_stock.to_string(),
-                ].join(",")
+                ]
+                .join(",")
             }),
-
         ];
 
-        write!(f, "{}", params.into_iter().flatten().collect::<Vec<_>>().join(","))
+        write!(
+            f,
+            "{}",
+            params.into_iter().flatten().collect::<Vec<_>>().join(",")
+        )
     }
 }
 
@@ -1794,19 +1983,33 @@ impl std::str::FromStr for Inventory {
         while key_result.is_some() {
             let val = match string_iter.next() {
                 Some(x) => x,
-                None => return std::result::Result::Err("Missing value while parsing Inventory".to_string())
+                None => {
+                    return std::result::Result::Err(
+                        "Missing value while parsing Inventory".to_string(),
+                    )
+                }
             };
 
             if let Some(key) = key_result {
                 #[allow(clippy::match_single_binding)]
                 match key {
                     #[allow(clippy::redundant_clone)]
-                    "books_available" => intermediate_rep.books_available.push(<i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "books_available" => intermediate_rep.books_available.push(
+                        <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "books_reordered" => intermediate_rep.books_reordered.push(<i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "books_reordered" => intermediate_rep.books_reordered.push(
+                        <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "books_out_of_stock" => intermediate_rep.books_out_of_stock.push(<i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
-                    _ => return std::result::Result::Err("Unexpected key while parsing Inventory".to_string())
+                    "books_out_of_stock" => intermediate_rep.books_out_of_stock.push(
+                        <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
+                    _ => {
+                        return std::result::Result::Err(
+                            "Unexpected key while parsing Inventory".to_string(),
+                        )
+                    }
                 }
             }
 
@@ -1829,13 +2032,16 @@ impl std::str::FromStr for Inventory {
 impl std::convert::TryFrom<header::IntoHeaderValue<Inventory>> for HeaderValue {
     type Error = String;
 
-    fn try_from(hdr_value: header::IntoHeaderValue<Inventory>) -> std::result::Result<Self, Self::Error> {
+    fn try_from(
+        hdr_value: header::IntoHeaderValue<Inventory>,
+    ) -> std::result::Result<Self, Self::Error> {
         let hdr_value = hdr_value.to_string();
         match HeaderValue::from_str(&hdr_value) {
-             std::result::Result::Ok(value) => std::result::Result::Ok(value),
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Invalid header value for Inventory - value: {} is invalid {}",
-                     hdr_value, e))
+            std::result::Result::Ok(value) => std::result::Result::Ok(value),
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Invalid header value for Inventory - value: {} is invalid {}",
+                hdr_value, e
+            )),
         }
     }
 }
@@ -1846,36 +2052,37 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<Inventory> {
 
     fn try_from(hdr_value: HeaderValue) -> std::result::Result<Self, Self::Error> {
         match hdr_value.to_str() {
-             std::result::Result::Ok(value) => {
-                    match <Inventory as std::str::FromStr>::from_str(value) {
-                        std::result::Result::Ok(value) => std::result::Result::Ok(header::IntoHeaderValue(value)),
-                        std::result::Result::Err(err) => std::result::Result::Err(
-                            format!("Unable to convert header value '{}' into Inventory - {}",
-                                value, err))
+            std::result::Result::Ok(value) => {
+                match <Inventory as std::str::FromStr>::from_str(value) {
+                    std::result::Result::Ok(value) => {
+                        std::result::Result::Ok(header::IntoHeaderValue(value))
                     }
-             },
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Unable to convert header: {:?} to string: {}",
-                     hdr_value, e))
+                    std::result::Result::Err(err) => std::result::Result::Err(format!(
+                        "Unable to convert header value '{}' into Inventory - {}",
+                        value, err
+                    )),
+                }
+            }
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Unable to convert header: {:?} to string: {}",
+                hdr_value, e
+            )),
         }
     }
 }
-
-
-
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
 pub struct NewAuthor {
     #[serde(rename = "title")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
 
     #[serde(rename = "first_name")]
     pub first_name: String,
 
     #[serde(rename = "second_names")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub second_names: Option<Vec<String>>,
 
     #[serde(rename = "last_name")]
@@ -1885,15 +2092,17 @@ pub struct NewAuthor {
     pub date_of_birth: chrono::naive::NaiveDate,
 
     #[serde(rename = "date_of_death")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub date_of_death: Option<chrono::naive::NaiveDate>,
-
 }
-
 
 impl NewAuthor {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
-    pub fn new(first_name: String, last_name: String, date_of_birth: chrono::naive::NaiveDate, ) -> NewAuthor {
+    pub fn new(
+        first_name: String,
+        last_name: String,
+        date_of_birth: chrono::naive::NaiveDate,
+    ) -> NewAuthor {
         NewAuthor {
             title: None,
             first_name,
@@ -1911,37 +2120,34 @@ impl NewAuthor {
 impl std::fmt::Display for NewAuthor {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-
-            self.title.as_ref().map(|title| {
-                [
-                    "title".to_string(),
-                    title.to_string(),
-                ].join(",")
-            }),
-
-
+            self.title
+                .as_ref()
+                .map(|title| ["title".to_string(), title.to_string()].join(",")),
             Some("first_name".to_string()),
             Some(self.first_name.to_string()),
-
-
             self.second_names.as_ref().map(|second_names| {
                 [
                     "second_names".to_string(),
-                    second_names.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(","),
-                ].join(",")
+                    second_names
+                        .iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<_>>()
+                        .join(","),
+                ]
+                .join(",")
             }),
-
-
             Some("last_name".to_string()),
             Some(self.last_name.to_string()),
-
             // Skipping date_of_birth in query parameter serialization
 
             // Skipping date_of_death in query parameter serialization
-
         ];
 
-        write!(f, "{}", params.into_iter().flatten().collect::<Vec<_>>().join(","))
+        write!(
+            f,
+            "{}",
+            params.into_iter().flatten().collect::<Vec<_>>().join(",")
+        )
     }
 }
 
@@ -1973,24 +2179,49 @@ impl std::str::FromStr for NewAuthor {
         while key_result.is_some() {
             let val = match string_iter.next() {
                 Some(x) => x,
-                None => return std::result::Result::Err("Missing value while parsing NewAuthor".to_string())
+                None => {
+                    return std::result::Result::Err(
+                        "Missing value while parsing NewAuthor".to_string(),
+                    )
+                }
             };
 
             if let Some(key) = key_result {
                 #[allow(clippy::match_single_binding)]
                 match key {
                     #[allow(clippy::redundant_clone)]
-                    "title" => intermediate_rep.title.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "title" => intermediate_rep.title.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "first_name" => intermediate_rep.first_name.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
-                    "second_names" => return std::result::Result::Err("Parsing a container in this style is not supported in NewAuthor".to_string()),
+                    "first_name" => intermediate_rep.first_name.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
+                    "second_names" => {
+                        return std::result::Result::Err(
+                            "Parsing a container in this style is not supported in NewAuthor"
+                                .to_string(),
+                        )
+                    }
                     #[allow(clippy::redundant_clone)]
-                    "last_name" => intermediate_rep.last_name.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "last_name" => intermediate_rep.last_name.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "date_of_birth" => intermediate_rep.date_of_birth.push(<chrono::naive::NaiveDate as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "date_of_birth" => intermediate_rep.date_of_birth.push(
+                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "date_of_death" => intermediate_rep.date_of_death.push(<chrono::naive::NaiveDate as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
-                    _ => return std::result::Result::Err("Unexpected key while parsing NewAuthor".to_string())
+                    "date_of_death" => intermediate_rep.date_of_death.push(
+                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
+                    _ => {
+                        return std::result::Result::Err(
+                            "Unexpected key while parsing NewAuthor".to_string(),
+                        )
+                    }
                 }
             }
 
@@ -2001,10 +2232,22 @@ impl std::str::FromStr for NewAuthor {
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(NewAuthor {
             title: intermediate_rep.title.into_iter().next(),
-            first_name: intermediate_rep.first_name.into_iter().next().ok_or_else(|| "first_name missing in NewAuthor".to_string())?,
+            first_name: intermediate_rep
+                .first_name
+                .into_iter()
+                .next()
+                .ok_or_else(|| "first_name missing in NewAuthor".to_string())?,
             second_names: intermediate_rep.second_names.into_iter().next(),
-            last_name: intermediate_rep.last_name.into_iter().next().ok_or_else(|| "last_name missing in NewAuthor".to_string())?,
-            date_of_birth: intermediate_rep.date_of_birth.into_iter().next().ok_or_else(|| "date_of_birth missing in NewAuthor".to_string())?,
+            last_name: intermediate_rep
+                .last_name
+                .into_iter()
+                .next()
+                .ok_or_else(|| "last_name missing in NewAuthor".to_string())?,
+            date_of_birth: intermediate_rep
+                .date_of_birth
+                .into_iter()
+                .next()
+                .ok_or_else(|| "date_of_birth missing in NewAuthor".to_string())?,
             date_of_death: intermediate_rep.date_of_death.into_iter().next(),
         })
     }
@@ -2016,13 +2259,16 @@ impl std::str::FromStr for NewAuthor {
 impl std::convert::TryFrom<header::IntoHeaderValue<NewAuthor>> for HeaderValue {
     type Error = String;
 
-    fn try_from(hdr_value: header::IntoHeaderValue<NewAuthor>) -> std::result::Result<Self, Self::Error> {
+    fn try_from(
+        hdr_value: header::IntoHeaderValue<NewAuthor>,
+    ) -> std::result::Result<Self, Self::Error> {
         let hdr_value = hdr_value.to_string();
         match HeaderValue::from_str(&hdr_value) {
-             std::result::Result::Ok(value) => std::result::Result::Ok(value),
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Invalid header value for NewAuthor - value: {} is invalid {}",
-                     hdr_value, e))
+            std::result::Result::Ok(value) => std::result::Result::Ok(value),
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Invalid header value for NewAuthor - value: {} is invalid {}",
+                hdr_value, e
+            )),
         }
     }
 }
@@ -2033,23 +2279,24 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<NewAuthor> {
 
     fn try_from(hdr_value: HeaderValue) -> std::result::Result<Self, Self::Error> {
         match hdr_value.to_str() {
-             std::result::Result::Ok(value) => {
-                    match <NewAuthor as std::str::FromStr>::from_str(value) {
-                        std::result::Result::Ok(value) => std::result::Result::Ok(header::IntoHeaderValue(value)),
-                        std::result::Result::Err(err) => std::result::Result::Err(
-                            format!("Unable to convert header value '{}' into NewAuthor - {}",
-                                value, err))
+            std::result::Result::Ok(value) => {
+                match <NewAuthor as std::str::FromStr>::from_str(value) {
+                    std::result::Result::Ok(value) => {
+                        std::result::Result::Ok(header::IntoHeaderValue(value))
                     }
-             },
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Unable to convert header: {:?} to string: {}",
-                     hdr_value, e))
+                    std::result::Result::Err(err) => std::result::Result::Err(format!(
+                        "Unable to convert header value '{}' into NewAuthor - {}",
+                        value, err
+                    )),
+                }
+            }
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Unable to convert header: {:?} to string: {}",
+                hdr_value, e
+            )),
         }
     }
 }
-
-
-
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
@@ -2057,45 +2304,48 @@ pub struct NewBook {
     #[serde(rename = "title")]
     pub title: String,
 
-/// the date when this edition of the book was released
+    /// the date when this edition of the book was released
     #[serde(rename = "release")]
     pub release: chrono::naive::NaiveDate,
 
-/// the date when the first edition of the book was release
+    /// the date when the first edition of the book was release
     #[serde(rename = "first_release")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub first_release: Option<chrono::naive::NaiveDate>,
 
     #[serde(rename = "authors")]
     pub authors: Vec<String>,
 
     #[serde(rename = "generes")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub generes: Option<Vec<String>>,
 
     #[serde(rename = "discount_codes")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub discount_codes: Option<Vec<String>>,
 
     #[serde(rename = "series")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub series: Option<String>,
 
-/// the edition of this book
+    /// the edition of this book
     #[serde(rename = "edition")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub edition: Option<i32>,
 
-/// the price of this book in Dollar
+    /// the price of this book in Dollar
     #[serde(rename = "price")]
     pub price: f64,
-
 }
-
 
 impl NewBook {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
-    pub fn new(title: String, release: chrono::naive::NaiveDate, authors: Vec<String>, price: f64, ) -> NewBook {
+    pub fn new(
+        title: String,
+        release: chrono::naive::NaiveDate,
+        authors: Vec<String>,
+        price: f64,
+    ) -> NewBook {
         NewBook {
             title,
             release,
@@ -2116,57 +2366,56 @@ impl NewBook {
 impl std::fmt::Display for NewBook {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-
             Some("title".to_string()),
             Some(self.title.to_string()),
-
             // Skipping release in query parameter serialization
 
             // Skipping first_release in query parameter serialization
-
-
             Some("authors".to_string()),
-            Some(self.authors.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(",")),
-
-
+            Some(
+                self.authors
+                    .iter()
+                    .map(|x| x.to_string())
+                    .collect::<Vec<_>>()
+                    .join(","),
+            ),
             self.generes.as_ref().map(|generes| {
                 [
                     "generes".to_string(),
-                    generes.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(","),
-                ].join(",")
+                    generes
+                        .iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<_>>()
+                        .join(","),
+                ]
+                .join(",")
             }),
-
-
             self.discount_codes.as_ref().map(|discount_codes| {
                 [
                     "discount_codes".to_string(),
-                    discount_codes.iter().map(|x| x.to_string()).collect::<Vec<_>>().join(","),
-                ].join(",")
+                    discount_codes
+                        .iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<_>>()
+                        .join(","),
+                ]
+                .join(",")
             }),
-
-
-            self.series.as_ref().map(|series| {
-                [
-                    "series".to_string(),
-                    series.to_string(),
-                ].join(",")
-            }),
-
-
-            self.edition.as_ref().map(|edition| {
-                [
-                    "edition".to_string(),
-                    edition.to_string(),
-                ].join(",")
-            }),
-
-
+            self.series
+                .as_ref()
+                .map(|series| ["series".to_string(), series.to_string()].join(",")),
+            self.edition
+                .as_ref()
+                .map(|edition| ["edition".to_string(), edition.to_string()].join(",")),
             Some("price".to_string()),
             Some(self.price.to_string()),
-
         ];
 
-        write!(f, "{}", params.into_iter().flatten().collect::<Vec<_>>().join(","))
+        write!(
+            f,
+            "{}",
+            params.into_iter().flatten().collect::<Vec<_>>().join(",")
+        )
     }
 }
 
@@ -2201,28 +2450,65 @@ impl std::str::FromStr for NewBook {
         while key_result.is_some() {
             let val = match string_iter.next() {
                 Some(x) => x,
-                None => return std::result::Result::Err("Missing value while parsing NewBook".to_string())
+                None => {
+                    return std::result::Result::Err(
+                        "Missing value while parsing NewBook".to_string(),
+                    )
+                }
             };
 
             if let Some(key) = key_result {
                 #[allow(clippy::match_single_binding)]
                 match key {
                     #[allow(clippy::redundant_clone)]
-                    "title" => intermediate_rep.title.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "title" => intermediate_rep.title.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "release" => intermediate_rep.release.push(<chrono::naive::NaiveDate as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "release" => intermediate_rep.release.push(
+                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "first_release" => intermediate_rep.first_release.push(<chrono::naive::NaiveDate as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
-                    "authors" => return std::result::Result::Err("Parsing a container in this style is not supported in NewBook".to_string()),
-                    "generes" => return std::result::Result::Err("Parsing a container in this style is not supported in NewBook".to_string()),
-                    "discount_codes" => return std::result::Result::Err("Parsing a container in this style is not supported in NewBook".to_string()),
+                    "first_release" => intermediate_rep.first_release.push(
+                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
+                    "authors" => {
+                        return std::result::Result::Err(
+                            "Parsing a container in this style is not supported in NewBook"
+                                .to_string(),
+                        )
+                    }
+                    "generes" => {
+                        return std::result::Result::Err(
+                            "Parsing a container in this style is not supported in NewBook"
+                                .to_string(),
+                        )
+                    }
+                    "discount_codes" => {
+                        return std::result::Result::Err(
+                            "Parsing a container in this style is not supported in NewBook"
+                                .to_string(),
+                        )
+                    }
                     #[allow(clippy::redundant_clone)]
-                    "series" => intermediate_rep.series.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "series" => intermediate_rep.series.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "edition" => intermediate_rep.edition.push(<i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "edition" => intermediate_rep.edition.push(
+                        <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "price" => intermediate_rep.price.push(<f64 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
-                    _ => return std::result::Result::Err("Unexpected key while parsing NewBook".to_string())
+                    "price" => intermediate_rep.price.push(
+                        <f64 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
+                    _ => {
+                        return std::result::Result::Err(
+                            "Unexpected key while parsing NewBook".to_string(),
+                        )
+                    }
                 }
             }
 
@@ -2232,15 +2518,31 @@ impl std::str::FromStr for NewBook {
 
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(NewBook {
-            title: intermediate_rep.title.into_iter().next().ok_or_else(|| "title missing in NewBook".to_string())?,
-            release: intermediate_rep.release.into_iter().next().ok_or_else(|| "release missing in NewBook".to_string())?,
+            title: intermediate_rep
+                .title
+                .into_iter()
+                .next()
+                .ok_or_else(|| "title missing in NewBook".to_string())?,
+            release: intermediate_rep
+                .release
+                .into_iter()
+                .next()
+                .ok_or_else(|| "release missing in NewBook".to_string())?,
             first_release: intermediate_rep.first_release.into_iter().next(),
-            authors: intermediate_rep.authors.into_iter().next().ok_or_else(|| "authors missing in NewBook".to_string())?,
+            authors: intermediate_rep
+                .authors
+                .into_iter()
+                .next()
+                .ok_or_else(|| "authors missing in NewBook".to_string())?,
             generes: intermediate_rep.generes.into_iter().next(),
             discount_codes: intermediate_rep.discount_codes.into_iter().next(),
             series: intermediate_rep.series.into_iter().next(),
             edition: intermediate_rep.edition.into_iter().next(),
-            price: intermediate_rep.price.into_iter().next().ok_or_else(|| "price missing in NewBook".to_string())?,
+            price: intermediate_rep
+                .price
+                .into_iter()
+                .next()
+                .ok_or_else(|| "price missing in NewBook".to_string())?,
         })
     }
 }
@@ -2251,13 +2553,16 @@ impl std::str::FromStr for NewBook {
 impl std::convert::TryFrom<header::IntoHeaderValue<NewBook>> for HeaderValue {
     type Error = String;
 
-    fn try_from(hdr_value: header::IntoHeaderValue<NewBook>) -> std::result::Result<Self, Self::Error> {
+    fn try_from(
+        hdr_value: header::IntoHeaderValue<NewBook>,
+    ) -> std::result::Result<Self, Self::Error> {
         let hdr_value = hdr_value.to_string();
         match HeaderValue::from_str(&hdr_value) {
-             std::result::Result::Ok(value) => std::result::Result::Ok(value),
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Invalid header value for NewBook - value: {} is invalid {}",
-                     hdr_value, e))
+            std::result::Result::Ok(value) => std::result::Result::Ok(value),
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Invalid header value for NewBook - value: {} is invalid {}",
+                hdr_value, e
+            )),
         }
     }
 }
@@ -2268,29 +2573,30 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<NewBook> {
 
     fn try_from(hdr_value: HeaderValue) -> std::result::Result<Self, Self::Error> {
         match hdr_value.to_str() {
-             std::result::Result::Ok(value) => {
-                    match <NewBook as std::str::FromStr>::from_str(value) {
-                        std::result::Result::Ok(value) => std::result::Result::Ok(header::IntoHeaderValue(value)),
-                        std::result::Result::Err(err) => std::result::Result::Err(
-                            format!("Unable to convert header value '{}' into NewBook - {}",
-                                value, err))
+            std::result::Result::Ok(value) => {
+                match <NewBook as std::str::FromStr>::from_str(value) {
+                    std::result::Result::Ok(value) => {
+                        std::result::Result::Ok(header::IntoHeaderValue(value))
                     }
-             },
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Unable to convert header: {:?} to string: {}",
-                     hdr_value, e))
+                    std::result::Result::Err(err) => std::result::Result::Err(format!(
+                        "Unable to convert header value '{}' into NewBook - {}",
+                        value, err
+                    )),
+                }
+            }
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Unable to convert header: {:?} to string: {}",
+                hdr_value, e
+            )),
         }
     }
 }
-
-
-
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
 pub struct NewDiscountCode {
     #[serde(rename = "percentage_discount")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub percentage_discount: Option<i32>,
 
     #[serde(rename = "valid_from")]
@@ -2301,13 +2607,15 @@ pub struct NewDiscountCode {
 
     #[serde(rename = "code")]
     pub code: String,
-
 }
-
 
 impl NewDiscountCode {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
-    pub fn new(valid_from: chrono::naive::NaiveDate, valid_to: chrono::naive::NaiveDate, code: String, ) -> NewDiscountCode {
+    pub fn new(
+        valid_from: chrono::naive::NaiveDate,
+        valid_to: chrono::naive::NaiveDate,
+        code: String,
+    ) -> NewDiscountCode {
         NewDiscountCode {
             percentage_discount: None,
             valid_from,
@@ -2323,25 +2631,27 @@ impl NewDiscountCode {
 impl std::fmt::Display for NewDiscountCode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-
-            self.percentage_discount.as_ref().map(|percentage_discount| {
-                [
-                    "percentage_discount".to_string(),
-                    percentage_discount.to_string(),
-                ].join(",")
-            }),
-
+            self.percentage_discount
+                .as_ref()
+                .map(|percentage_discount| {
+                    [
+                        "percentage_discount".to_string(),
+                        percentage_discount.to_string(),
+                    ]
+                    .join(",")
+                }),
             // Skipping valid_from in query parameter serialization
 
             // Skipping valid_to in query parameter serialization
-
-
             Some("code".to_string()),
             Some(self.code.to_string()),
-
         ];
 
-        write!(f, "{}", params.into_iter().flatten().collect::<Vec<_>>().join(","))
+        write!(
+            f,
+            "{}",
+            params.into_iter().flatten().collect::<Vec<_>>().join(",")
+        )
     }
 }
 
@@ -2371,21 +2681,39 @@ impl std::str::FromStr for NewDiscountCode {
         while key_result.is_some() {
             let val = match string_iter.next() {
                 Some(x) => x,
-                None => return std::result::Result::Err("Missing value while parsing NewDiscountCode".to_string())
+                None => {
+                    return std::result::Result::Err(
+                        "Missing value while parsing NewDiscountCode".to_string(),
+                    )
+                }
             };
 
             if let Some(key) = key_result {
                 #[allow(clippy::match_single_binding)]
                 match key {
                     #[allow(clippy::redundant_clone)]
-                    "percentage_discount" => intermediate_rep.percentage_discount.push(<i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "percentage_discount" => intermediate_rep.percentage_discount.push(
+                        <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "valid_from" => intermediate_rep.valid_from.push(<chrono::naive::NaiveDate as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "valid_from" => intermediate_rep.valid_from.push(
+                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "valid_to" => intermediate_rep.valid_to.push(<chrono::naive::NaiveDate as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "valid_to" => intermediate_rep.valid_to.push(
+                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "code" => intermediate_rep.code.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
-                    _ => return std::result::Result::Err("Unexpected key while parsing NewDiscountCode".to_string())
+                    "code" => intermediate_rep.code.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
+                    _ => {
+                        return std::result::Result::Err(
+                            "Unexpected key while parsing NewDiscountCode".to_string(),
+                        )
+                    }
                 }
             }
 
@@ -2396,9 +2724,21 @@ impl std::str::FromStr for NewDiscountCode {
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(NewDiscountCode {
             percentage_discount: intermediate_rep.percentage_discount.into_iter().next(),
-            valid_from: intermediate_rep.valid_from.into_iter().next().ok_or_else(|| "valid_from missing in NewDiscountCode".to_string())?,
-            valid_to: intermediate_rep.valid_to.into_iter().next().ok_or_else(|| "valid_to missing in NewDiscountCode".to_string())?,
-            code: intermediate_rep.code.into_iter().next().ok_or_else(|| "code missing in NewDiscountCode".to_string())?,
+            valid_from: intermediate_rep
+                .valid_from
+                .into_iter()
+                .next()
+                .ok_or_else(|| "valid_from missing in NewDiscountCode".to_string())?,
+            valid_to: intermediate_rep
+                .valid_to
+                .into_iter()
+                .next()
+                .ok_or_else(|| "valid_to missing in NewDiscountCode".to_string())?,
+            code: intermediate_rep
+                .code
+                .into_iter()
+                .next()
+                .ok_or_else(|| "code missing in NewDiscountCode".to_string())?,
         })
     }
 }
@@ -2409,13 +2749,16 @@ impl std::str::FromStr for NewDiscountCode {
 impl std::convert::TryFrom<header::IntoHeaderValue<NewDiscountCode>> for HeaderValue {
     type Error = String;
 
-    fn try_from(hdr_value: header::IntoHeaderValue<NewDiscountCode>) -> std::result::Result<Self, Self::Error> {
+    fn try_from(
+        hdr_value: header::IntoHeaderValue<NewDiscountCode>,
+    ) -> std::result::Result<Self, Self::Error> {
         let hdr_value = hdr_value.to_string();
         match HeaderValue::from_str(&hdr_value) {
-             std::result::Result::Ok(value) => std::result::Result::Ok(value),
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Invalid header value for NewDiscountCode - value: {} is invalid {}",
-                     hdr_value, e))
+            std::result::Result::Ok(value) => std::result::Result::Ok(value),
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Invalid header value for NewDiscountCode - value: {} is invalid {}",
+                hdr_value, e
+            )),
         }
     }
 }
@@ -2426,23 +2769,24 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<NewDiscountC
 
     fn try_from(hdr_value: HeaderValue) -> std::result::Result<Self, Self::Error> {
         match hdr_value.to_str() {
-             std::result::Result::Ok(value) => {
-                    match <NewDiscountCode as std::str::FromStr>::from_str(value) {
-                        std::result::Result::Ok(value) => std::result::Result::Ok(header::IntoHeaderValue(value)),
-                        std::result::Result::Err(err) => std::result::Result::Err(
-                            format!("Unable to convert header value '{}' into NewDiscountCode - {}",
-                                value, err))
+            std::result::Result::Ok(value) => {
+                match <NewDiscountCode as std::str::FromStr>::from_str(value) {
+                    std::result::Result::Ok(value) => {
+                        std::result::Result::Ok(header::IntoHeaderValue(value))
                     }
-             },
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Unable to convert header: {:?} to string: {}",
-                     hdr_value, e))
+                    std::result::Result::Err(err) => std::result::Result::Err(format!(
+                        "Unable to convert header value '{}' into NewDiscountCode - {}",
+                        value, err
+                    )),
+                }
+            }
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Unable to convert header: {:?} to string: {}",
+                hdr_value, e
+            )),
         }
     }
 }
-
-
-
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
@@ -2457,27 +2801,31 @@ pub struct NewOrder {
     pub quantity: i32,
 
     #[serde(rename = "shipping_date")]
-    pub shipping_date: chrono::DateTime::<chrono::Utc>,
+    pub shipping_date: chrono::DateTime<chrono::Utc>,
 
     #[serde(rename = "shipping_address_override")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub shipping_address_override: Option<models::Address>,
 
-/// Order Status
-/// Note: inline enums are not fully supported by openapi-generator
+    /// Order Status
+    /// Note: inline enums are not fully supported by openapi-generator
     #[serde(rename = "status")]
     pub status: String,
 
     #[serde(rename = "complete")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub complete: Option<bool>,
-
 }
-
 
 impl NewOrder {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
-    pub fn new(book_id: String, customer_id: String, quantity: i32, shipping_date: chrono::DateTime::<chrono::Utc>, status: String, ) -> NewOrder {
+    pub fn new(
+        book_id: String,
+        customer_id: String,
+        quantity: i32,
+        shipping_date: chrono::DateTime<chrono::Utc>,
+        status: String,
+    ) -> NewOrder {
         NewOrder {
             book_id,
             customer_id,
@@ -2496,37 +2844,27 @@ impl NewOrder {
 impl std::fmt::Display for NewOrder {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-
             Some("bookId".to_string()),
             Some(self.book_id.to_string()),
-
-
             Some("customerId".to_string()),
             Some(self.customer_id.to_string()),
-
-
             Some("quantity".to_string()),
             Some(self.quantity.to_string()),
-
             // Skipping shipping_date in query parameter serialization
 
             // Skipping shipping_address_override in query parameter serialization
-
-
             Some("status".to_string()),
             Some(self.status.to_string()),
-
-
-            self.complete.as_ref().map(|complete| {
-                [
-                    "complete".to_string(),
-                    complete.to_string(),
-                ].join(",")
-            }),
-
+            self.complete
+                .as_ref()
+                .map(|complete| ["complete".to_string(), complete.to_string()].join(",")),
         ];
 
-        write!(f, "{}", params.into_iter().flatten().collect::<Vec<_>>().join(","))
+        write!(
+            f,
+            "{}",
+            params.into_iter().flatten().collect::<Vec<_>>().join(",")
+        )
     }
 }
 
@@ -2544,7 +2882,7 @@ impl std::str::FromStr for NewOrder {
             pub book_id: Vec<String>,
             pub customer_id: Vec<String>,
             pub quantity: Vec<i32>,
-            pub shipping_date: Vec<chrono::DateTime::<chrono::Utc>>,
+            pub shipping_date: Vec<chrono::DateTime<chrono::Utc>>,
             pub shipping_address_override: Vec<models::Address>,
             pub status: Vec<String>,
             pub complete: Vec<bool>,
@@ -2559,27 +2897,51 @@ impl std::str::FromStr for NewOrder {
         while key_result.is_some() {
             let val = match string_iter.next() {
                 Some(x) => x,
-                None => return std::result::Result::Err("Missing value while parsing NewOrder".to_string())
+                None => {
+                    return std::result::Result::Err(
+                        "Missing value while parsing NewOrder".to_string(),
+                    )
+                }
             };
 
             if let Some(key) = key_result {
                 #[allow(clippy::match_single_binding)]
                 match key {
                     #[allow(clippy::redundant_clone)]
-                    "bookId" => intermediate_rep.book_id.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "bookId" => intermediate_rep.book_id.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "customerId" => intermediate_rep.customer_id.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "customerId" => intermediate_rep.customer_id.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "quantity" => intermediate_rep.quantity.push(<i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "quantity" => intermediate_rep.quantity.push(
+                        <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "shipping_date" => intermediate_rep.shipping_date.push(<chrono::DateTime::<chrono::Utc> as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "shipping_date" => intermediate_rep.shipping_date.push(
+                        <chrono::DateTime<chrono::Utc> as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "shipping_address_override" => intermediate_rep.shipping_address_override.push(<models::Address as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "shipping_address_override" => intermediate_rep.shipping_address_override.push(
+                        <models::Address as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "status" => intermediate_rep.status.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "status" => intermediate_rep.status.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "complete" => intermediate_rep.complete.push(<bool as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
-                    _ => return std::result::Result::Err("Unexpected key while parsing NewOrder".to_string())
+                    "complete" => intermediate_rep.complete.push(
+                        <bool as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
+                    _ => {
+                        return std::result::Result::Err(
+                            "Unexpected key while parsing NewOrder".to_string(),
+                        )
+                    }
                 }
             }
 
@@ -2589,12 +2951,35 @@ impl std::str::FromStr for NewOrder {
 
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(NewOrder {
-            book_id: intermediate_rep.book_id.into_iter().next().ok_or_else(|| "bookId missing in NewOrder".to_string())?,
-            customer_id: intermediate_rep.customer_id.into_iter().next().ok_or_else(|| "customerId missing in NewOrder".to_string())?,
-            quantity: intermediate_rep.quantity.into_iter().next().ok_or_else(|| "quantity missing in NewOrder".to_string())?,
-            shipping_date: intermediate_rep.shipping_date.into_iter().next().ok_or_else(|| "shipping_date missing in NewOrder".to_string())?,
-            shipping_address_override: intermediate_rep.shipping_address_override.into_iter().next(),
-            status: intermediate_rep.status.into_iter().next().ok_or_else(|| "status missing in NewOrder".to_string())?,
+            book_id: intermediate_rep
+                .book_id
+                .into_iter()
+                .next()
+                .ok_or_else(|| "bookId missing in NewOrder".to_string())?,
+            customer_id: intermediate_rep
+                .customer_id
+                .into_iter()
+                .next()
+                .ok_or_else(|| "customerId missing in NewOrder".to_string())?,
+            quantity: intermediate_rep
+                .quantity
+                .into_iter()
+                .next()
+                .ok_or_else(|| "quantity missing in NewOrder".to_string())?,
+            shipping_date: intermediate_rep
+                .shipping_date
+                .into_iter()
+                .next()
+                .ok_or_else(|| "shipping_date missing in NewOrder".to_string())?,
+            shipping_address_override: intermediate_rep
+                .shipping_address_override
+                .into_iter()
+                .next(),
+            status: intermediate_rep
+                .status
+                .into_iter()
+                .next()
+                .ok_or_else(|| "status missing in NewOrder".to_string())?,
             complete: intermediate_rep.complete.into_iter().next(),
         })
     }
@@ -2606,13 +2991,16 @@ impl std::str::FromStr for NewOrder {
 impl std::convert::TryFrom<header::IntoHeaderValue<NewOrder>> for HeaderValue {
     type Error = String;
 
-    fn try_from(hdr_value: header::IntoHeaderValue<NewOrder>) -> std::result::Result<Self, Self::Error> {
+    fn try_from(
+        hdr_value: header::IntoHeaderValue<NewOrder>,
+    ) -> std::result::Result<Self, Self::Error> {
         let hdr_value = hdr_value.to_string();
         match HeaderValue::from_str(&hdr_value) {
-             std::result::Result::Ok(value) => std::result::Result::Ok(value),
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Invalid header value for NewOrder - value: {} is invalid {}",
-                     hdr_value, e))
+            std::result::Result::Ok(value) => std::result::Result::Ok(value),
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Invalid header value for NewOrder - value: {} is invalid {}",
+                hdr_value, e
+            )),
         }
     }
 }
@@ -2623,23 +3011,24 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<NewOrder> {
 
     fn try_from(hdr_value: HeaderValue) -> std::result::Result<Self, Self::Error> {
         match hdr_value.to_str() {
-             std::result::Result::Ok(value) => {
-                    match <NewOrder as std::str::FromStr>::from_str(value) {
-                        std::result::Result::Ok(value) => std::result::Result::Ok(header::IntoHeaderValue(value)),
-                        std::result::Result::Err(err) => std::result::Result::Err(
-                            format!("Unable to convert header value '{}' into NewOrder - {}",
-                                value, err))
+            std::result::Result::Ok(value) => {
+                match <NewOrder as std::str::FromStr>::from_str(value) {
+                    std::result::Result::Ok(value) => {
+                        std::result::Result::Ok(header::IntoHeaderValue(value))
                     }
-             },
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Unable to convert header: {:?} to string: {}",
-                     hdr_value, e))
+                    std::result::Result::Err(err) => std::result::Result::Err(format!(
+                        "Unable to convert header value '{}' into NewOrder - {}",
+                        value, err
+                    )),
+                }
+            }
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Unable to convert header: {:?} to string: {}",
+                hdr_value, e
+            )),
         }
     }
 }
-
-
-
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
@@ -2657,27 +3046,32 @@ pub struct Order {
     pub quantity: i32,
 
     #[serde(rename = "shipping_date")]
-    pub shipping_date: chrono::DateTime::<chrono::Utc>,
+    pub shipping_date: chrono::DateTime<chrono::Utc>,
 
     #[serde(rename = "shipping_address_override")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub shipping_address_override: Option<models::Address>,
 
-/// Order Status
-/// Note: inline enums are not fully supported by openapi-generator
+    /// Order Status
+    /// Note: inline enums are not fully supported by openapi-generator
     #[serde(rename = "status")]
     pub status: String,
 
     #[serde(rename = "complete")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub complete: Option<bool>,
-
 }
-
 
 impl Order {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
-    pub fn new(id: String, book_id: String, customer_id: String, quantity: i32, shipping_date: chrono::DateTime::<chrono::Utc>, status: String, ) -> Order {
+    pub fn new(
+        id: String,
+        book_id: String,
+        customer_id: String,
+        quantity: i32,
+        shipping_date: chrono::DateTime<chrono::Utc>,
+        status: String,
+    ) -> Order {
         Order {
             id,
             book_id,
@@ -2697,41 +3091,29 @@ impl Order {
 impl std::fmt::Display for Order {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-
             Some("id".to_string()),
             Some(self.id.to_string()),
-
-
             Some("bookId".to_string()),
             Some(self.book_id.to_string()),
-
-
             Some("customerId".to_string()),
             Some(self.customer_id.to_string()),
-
-
             Some("quantity".to_string()),
             Some(self.quantity.to_string()),
-
             // Skipping shipping_date in query parameter serialization
 
             // Skipping shipping_address_override in query parameter serialization
-
-
             Some("status".to_string()),
             Some(self.status.to_string()),
-
-
-            self.complete.as_ref().map(|complete| {
-                [
-                    "complete".to_string(),
-                    complete.to_string(),
-                ].join(",")
-            }),
-
+            self.complete
+                .as_ref()
+                .map(|complete| ["complete".to_string(), complete.to_string()].join(",")),
         ];
 
-        write!(f, "{}", params.into_iter().flatten().collect::<Vec<_>>().join(","))
+        write!(
+            f,
+            "{}",
+            params.into_iter().flatten().collect::<Vec<_>>().join(",")
+        )
     }
 }
 
@@ -2750,7 +3132,7 @@ impl std::str::FromStr for Order {
             pub book_id: Vec<String>,
             pub customer_id: Vec<String>,
             pub quantity: Vec<i32>,
-            pub shipping_date: Vec<chrono::DateTime::<chrono::Utc>>,
+            pub shipping_date: Vec<chrono::DateTime<chrono::Utc>>,
             pub shipping_address_override: Vec<models::Address>,
             pub status: Vec<String>,
             pub complete: Vec<bool>,
@@ -2765,29 +3147,55 @@ impl std::str::FromStr for Order {
         while key_result.is_some() {
             let val = match string_iter.next() {
                 Some(x) => x,
-                None => return std::result::Result::Err("Missing value while parsing Order".to_string())
+                None => {
+                    return std::result::Result::Err(
+                        "Missing value while parsing Order".to_string(),
+                    )
+                }
             };
 
             if let Some(key) = key_result {
                 #[allow(clippy::match_single_binding)]
                 match key {
                     #[allow(clippy::redundant_clone)]
-                    "id" => intermediate_rep.id.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "id" => intermediate_rep.id.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "bookId" => intermediate_rep.book_id.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "bookId" => intermediate_rep.book_id.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "customerId" => intermediate_rep.customer_id.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "customerId" => intermediate_rep.customer_id.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "quantity" => intermediate_rep.quantity.push(<i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "quantity" => intermediate_rep.quantity.push(
+                        <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "shipping_date" => intermediate_rep.shipping_date.push(<chrono::DateTime::<chrono::Utc> as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "shipping_date" => intermediate_rep.shipping_date.push(
+                        <chrono::DateTime<chrono::Utc> as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "shipping_address_override" => intermediate_rep.shipping_address_override.push(<models::Address as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "shipping_address_override" => intermediate_rep.shipping_address_override.push(
+                        <models::Address as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "status" => intermediate_rep.status.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "status" => intermediate_rep.status.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "complete" => intermediate_rep.complete.push(<bool as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
-                    _ => return std::result::Result::Err("Unexpected key while parsing Order".to_string())
+                    "complete" => intermediate_rep.complete.push(
+                        <bool as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
+                    _ => {
+                        return std::result::Result::Err(
+                            "Unexpected key while parsing Order".to_string(),
+                        )
+                    }
                 }
             }
 
@@ -2797,13 +3205,40 @@ impl std::str::FromStr for Order {
 
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(Order {
-            id: intermediate_rep.id.into_iter().next().ok_or_else(|| "id missing in Order".to_string())?,
-            book_id: intermediate_rep.book_id.into_iter().next().ok_or_else(|| "bookId missing in Order".to_string())?,
-            customer_id: intermediate_rep.customer_id.into_iter().next().ok_or_else(|| "customerId missing in Order".to_string())?,
-            quantity: intermediate_rep.quantity.into_iter().next().ok_or_else(|| "quantity missing in Order".to_string())?,
-            shipping_date: intermediate_rep.shipping_date.into_iter().next().ok_or_else(|| "shipping_date missing in Order".to_string())?,
-            shipping_address_override: intermediate_rep.shipping_address_override.into_iter().next(),
-            status: intermediate_rep.status.into_iter().next().ok_or_else(|| "status missing in Order".to_string())?,
+            id: intermediate_rep
+                .id
+                .into_iter()
+                .next()
+                .ok_or_else(|| "id missing in Order".to_string())?,
+            book_id: intermediate_rep
+                .book_id
+                .into_iter()
+                .next()
+                .ok_or_else(|| "bookId missing in Order".to_string())?,
+            customer_id: intermediate_rep
+                .customer_id
+                .into_iter()
+                .next()
+                .ok_or_else(|| "customerId missing in Order".to_string())?,
+            quantity: intermediate_rep
+                .quantity
+                .into_iter()
+                .next()
+                .ok_or_else(|| "quantity missing in Order".to_string())?,
+            shipping_date: intermediate_rep
+                .shipping_date
+                .into_iter()
+                .next()
+                .ok_or_else(|| "shipping_date missing in Order".to_string())?,
+            shipping_address_override: intermediate_rep
+                .shipping_address_override
+                .into_iter()
+                .next(),
+            status: intermediate_rep
+                .status
+                .into_iter()
+                .next()
+                .ok_or_else(|| "status missing in Order".to_string())?,
             complete: intermediate_rep.complete.into_iter().next(),
         })
     }
@@ -2815,13 +3250,16 @@ impl std::str::FromStr for Order {
 impl std::convert::TryFrom<header::IntoHeaderValue<Order>> for HeaderValue {
     type Error = String;
 
-    fn try_from(hdr_value: header::IntoHeaderValue<Order>) -> std::result::Result<Self, Self::Error> {
+    fn try_from(
+        hdr_value: header::IntoHeaderValue<Order>,
+    ) -> std::result::Result<Self, Self::Error> {
         let hdr_value = hdr_value.to_string();
         match HeaderValue::from_str(&hdr_value) {
-             std::result::Result::Ok(value) => std::result::Result::Ok(value),
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Invalid header value for Order - value: {} is invalid {}",
-                     hdr_value, e))
+            std::result::Result::Ok(value) => std::result::Result::Ok(value),
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Invalid header value for Order - value: {} is invalid {}",
+                hdr_value, e
+            )),
         }
     }
 }
@@ -2832,23 +3270,22 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<Order> {
 
     fn try_from(hdr_value: HeaderValue) -> std::result::Result<Self, Self::Error> {
         match hdr_value.to_str() {
-             std::result::Result::Ok(value) => {
-                    match <Order as std::str::FromStr>::from_str(value) {
-                        std::result::Result::Ok(value) => std::result::Result::Ok(header::IntoHeaderValue(value)),
-                        std::result::Result::Err(err) => std::result::Result::Err(
-                            format!("Unable to convert header value '{}' into Order - {}",
-                                value, err))
-                    }
-             },
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Unable to convert header: {:?} to string: {}",
-                     hdr_value, e))
+            std::result::Result::Ok(value) => match <Order as std::str::FromStr>::from_str(value) {
+                std::result::Result::Ok(value) => {
+                    std::result::Result::Ok(header::IntoHeaderValue(value))
+                }
+                std::result::Result::Err(err) => std::result::Result::Err(format!(
+                    "Unable to convert header value '{}' into Order - {}",
+                    value, err
+                )),
+            },
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Unable to convert header: {:?} to string: {}",
+                hdr_value, e
+            )),
         }
     }
 }
-
-
-
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
@@ -2857,23 +3294,25 @@ pub struct OrderProperties {
     pub quantity: i32,
 
     #[serde(rename = "shipping_date")]
-    pub shipping_date: chrono::DateTime::<chrono::Utc>,
+    pub shipping_date: chrono::DateTime<chrono::Utc>,
 
-/// Order Status
-/// Note: inline enums are not fully supported by openapi-generator
+    /// Order Status
+    /// Note: inline enums are not fully supported by openapi-generator
     #[serde(rename = "status")]
     pub status: String,
 
     #[serde(rename = "complete")]
-    #[serde(skip_serializing_if="Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub complete: Option<bool>,
-
 }
-
 
 impl OrderProperties {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
-    pub fn new(quantity: i32, shipping_date: chrono::DateTime::<chrono::Utc>, status: String, ) -> OrderProperties {
+    pub fn new(
+        quantity: i32,
+        shipping_date: chrono::DateTime<chrono::Utc>,
+        status: String,
+    ) -> OrderProperties {
         OrderProperties {
             quantity,
             shipping_date,
@@ -2889,27 +3328,21 @@ impl OrderProperties {
 impl std::fmt::Display for OrderProperties {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-
             Some("quantity".to_string()),
             Some(self.quantity.to_string()),
-
             // Skipping shipping_date in query parameter serialization
-
-
             Some("status".to_string()),
             Some(self.status.to_string()),
-
-
-            self.complete.as_ref().map(|complete| {
-                [
-                    "complete".to_string(),
-                    complete.to_string(),
-                ].join(",")
-            }),
-
+            self.complete
+                .as_ref()
+                .map(|complete| ["complete".to_string(), complete.to_string()].join(",")),
         ];
 
-        write!(f, "{}", params.into_iter().flatten().collect::<Vec<_>>().join(","))
+        write!(
+            f,
+            "{}",
+            params.into_iter().flatten().collect::<Vec<_>>().join(",")
+        )
     }
 }
 
@@ -2925,7 +3358,7 @@ impl std::str::FromStr for OrderProperties {
         #[allow(dead_code)]
         struct IntermediateRep {
             pub quantity: Vec<i32>,
-            pub shipping_date: Vec<chrono::DateTime::<chrono::Utc>>,
+            pub shipping_date: Vec<chrono::DateTime<chrono::Utc>>,
             pub status: Vec<String>,
             pub complete: Vec<bool>,
         }
@@ -2939,21 +3372,38 @@ impl std::str::FromStr for OrderProperties {
         while key_result.is_some() {
             let val = match string_iter.next() {
                 Some(x) => x,
-                None => return std::result::Result::Err("Missing value while parsing OrderProperties".to_string())
+                None => {
+                    return std::result::Result::Err(
+                        "Missing value while parsing OrderProperties".to_string(),
+                    )
+                }
             };
 
             if let Some(key) = key_result {
                 #[allow(clippy::match_single_binding)]
                 match key {
                     #[allow(clippy::redundant_clone)]
-                    "quantity" => intermediate_rep.quantity.push(<i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "quantity" => intermediate_rep.quantity.push(
+                        <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "shipping_date" => intermediate_rep.shipping_date.push(<chrono::DateTime::<chrono::Utc> as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "shipping_date" => intermediate_rep.shipping_date.push(
+                        <chrono::DateTime<chrono::Utc> as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "status" => intermediate_rep.status.push(<String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
+                    "status" => intermediate_rep.status.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
-                    "complete" => intermediate_rep.complete.push(<bool as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
-                    _ => return std::result::Result::Err("Unexpected key while parsing OrderProperties".to_string())
+                    "complete" => intermediate_rep.complete.push(
+                        <bool as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
+                    _ => {
+                        return std::result::Result::Err(
+                            "Unexpected key while parsing OrderProperties".to_string(),
+                        )
+                    }
                 }
             }
 
@@ -2963,9 +3413,21 @@ impl std::str::FromStr for OrderProperties {
 
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(OrderProperties {
-            quantity: intermediate_rep.quantity.into_iter().next().ok_or_else(|| "quantity missing in OrderProperties".to_string())?,
-            shipping_date: intermediate_rep.shipping_date.into_iter().next().ok_or_else(|| "shipping_date missing in OrderProperties".to_string())?,
-            status: intermediate_rep.status.into_iter().next().ok_or_else(|| "status missing in OrderProperties".to_string())?,
+            quantity: intermediate_rep
+                .quantity
+                .into_iter()
+                .next()
+                .ok_or_else(|| "quantity missing in OrderProperties".to_string())?,
+            shipping_date: intermediate_rep
+                .shipping_date
+                .into_iter()
+                .next()
+                .ok_or_else(|| "shipping_date missing in OrderProperties".to_string())?,
+            status: intermediate_rep
+                .status
+                .into_iter()
+                .next()
+                .ok_or_else(|| "status missing in OrderProperties".to_string())?,
             complete: intermediate_rep.complete.into_iter().next(),
         })
     }
@@ -2977,13 +3439,16 @@ impl std::str::FromStr for OrderProperties {
 impl std::convert::TryFrom<header::IntoHeaderValue<OrderProperties>> for HeaderValue {
     type Error = String;
 
-    fn try_from(hdr_value: header::IntoHeaderValue<OrderProperties>) -> std::result::Result<Self, Self::Error> {
+    fn try_from(
+        hdr_value: header::IntoHeaderValue<OrderProperties>,
+    ) -> std::result::Result<Self, Self::Error> {
         let hdr_value = hdr_value.to_string();
         match HeaderValue::from_str(&hdr_value) {
-             std::result::Result::Ok(value) => std::result::Result::Ok(value),
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Invalid header value for OrderProperties - value: {} is invalid {}",
-                     hdr_value, e))
+            std::result::Result::Ok(value) => std::result::Result::Ok(value),
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Invalid header value for OrderProperties - value: {} is invalid {}",
+                hdr_value, e
+            )),
         }
     }
 }
@@ -2994,20 +3459,21 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<OrderPropert
 
     fn try_from(hdr_value: HeaderValue) -> std::result::Result<Self, Self::Error> {
         match hdr_value.to_str() {
-             std::result::Result::Ok(value) => {
-                    match <OrderProperties as std::str::FromStr>::from_str(value) {
-                        std::result::Result::Ok(value) => std::result::Result::Ok(header::IntoHeaderValue(value)),
-                        std::result::Result::Err(err) => std::result::Result::Err(
-                            format!("Unable to convert header value '{}' into OrderProperties - {}",
-                                value, err))
+            std::result::Result::Ok(value) => {
+                match <OrderProperties as std::str::FromStr>::from_str(value) {
+                    std::result::Result::Ok(value) => {
+                        std::result::Result::Ok(header::IntoHeaderValue(value))
                     }
-             },
-             std::result::Result::Err(e) => std::result::Result::Err(
-                 format!("Unable to convert header: {:?} to string: {}",
-                     hdr_value, e))
+                    std::result::Result::Err(err) => std::result::Result::Err(format!(
+                        "Unable to convert header value '{}' into OrderProperties - {}",
+                        value, err
+                    )),
+                }
+            }
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Unable to convert header: {:?} to string: {}",
+                hdr_value, e
+            )),
         }
     }
 }
-
-
-

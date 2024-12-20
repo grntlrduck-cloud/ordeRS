@@ -12,14 +12,11 @@ use crate::{models, types::*};
 #[allow(clippy::large_enum_variant)]
 pub enum AddBookResponse {
     /// Successful operation
-    Status201_SuccessfulOperation
-    (models::Book)
-    ,
+    Status201_SuccessfulOperation(models::Book),
     /// Invalid input
-    Status400_InvalidInput
-    ,
+    Status400_InvalidInput,
     /// Validation exception
-    Status422_ValidationException
+    Status422_ValidationException,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -27,7 +24,7 @@ pub enum AddBookResponse {
 #[allow(clippy::large_enum_variant)]
 pub enum DeleteBookResponse {
     /// Invalid bookId value
-    Status400_InvalidBookIdValue
+    Status400_InvalidBookIdValue,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -35,11 +32,9 @@ pub enum DeleteBookResponse {
 #[allow(clippy::large_enum_variant)]
 pub enum GetBookByIdResponse {
     /// successful operation
-    Status200_SuccessfulOperation
-    (Vec<models::Book>)
-    ,
+    Status200_SuccessfulOperation(Vec<models::Book>),
     /// Book not found
-    Status400_BookNotFound
+    Status400_BookNotFound,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -47,11 +42,9 @@ pub enum GetBookByIdResponse {
 #[allow(clippy::large_enum_variant)]
 pub enum GetBooksByAuthorsResponse {
     /// successful operation
-    Status200_SuccessfulOperation
-    (Vec<models::Book>)
-    ,
+    Status200_SuccessfulOperation(Vec<models::Book>),
     /// Invalid author values
-    Status400_InvalidAuthorValues
+    Status400_InvalidAuthorValues,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -59,11 +52,9 @@ pub enum GetBooksByAuthorsResponse {
 #[allow(clippy::large_enum_variant)]
 pub enum GetBooksByGeneresResponse {
     /// successful operation
-    Status200_SuccessfulOperation
-    (Vec<models::Book>)
-    ,
+    Status200_SuccessfulOperation(Vec<models::Book>),
     /// Invalid genre values
-    Status400_InvalidGenreValues
+    Status400_InvalidGenreValues,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -71,11 +62,9 @@ pub enum GetBooksByGeneresResponse {
 #[allow(clippy::large_enum_variant)]
 pub enum GetBooksByStatusResponse {
     /// successful operation
-    Status200_SuccessfulOperation
-    (Vec<models::Book>)
-    ,
+    Status200_SuccessfulOperation(Vec<models::Book>),
     /// Invalid status value
-    Status400_InvalidStatusValue
+    Status400_InvalidStatusValue,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -83,19 +72,14 @@ pub enum GetBooksByStatusResponse {
 #[allow(clippy::large_enum_variant)]
 pub enum UpdateBookResponse {
     /// Successful operation
-    Status200_SuccessfulOperation
-    (models::Book)
-    ,
+    Status200_SuccessfulOperation(models::Book),
     /// Invalid ID supplied
-    Status400_InvalidIDSupplied
-    ,
+    Status400_InvalidIDSupplied,
     /// Book not found
-    Status404_BookNotFound
-    ,
+    Status404_BookNotFound,
     /// Validation exception
-    Status422_ValidationException
+    Status422_ValidationException,
 }
-
 
 /// Book
 #[async_trait]
@@ -105,77 +89,77 @@ pub trait Book {
     ///
     /// AddBook - POST /api/v1/book
     async fn add_book(
-    &self,
-    method: Method,
-    host: Host,
-    cookies: CookieJar,
-            body: models::NewBook,
+        &self,
+        method: Method,
+        host: Host,
+        cookies: CookieJar,
+        body: models::NewBook,
     ) -> Result<AddBookResponse, ()>;
 
     /// Deletes a book.
     ///
     /// DeleteBook - DELETE /api/v1/book/{bookId}
     async fn delete_book(
-    &self,
-    method: Method,
-    host: Host,
-    cookies: CookieJar,
-      path_params: models::DeleteBookPathParams,
+        &self,
+        method: Method,
+        host: Host,
+        cookies: CookieJar,
+        path_params: models::DeleteBookPathParams,
     ) -> Result<DeleteBookResponse, ()>;
 
     /// Finds book by Id.
     ///
     /// GetBookById - GET /api/v1/book/{bookId}
     async fn get_book_by_id(
-    &self,
-    method: Method,
-    host: Host,
-    cookies: CookieJar,
-      path_params: models::GetBookByIdPathParams,
+        &self,
+        method: Method,
+        host: Host,
+        cookies: CookieJar,
+        path_params: models::GetBookByIdPathParams,
     ) -> Result<GetBookByIdResponse, ()>;
 
     /// Finds Books by AuthorId.
     ///
     /// GetBooksByAuthors - GET /api/v1/book/findByAuthorId
     async fn get_books_by_authors(
-    &self,
-    method: Method,
-    host: Host,
-    cookies: CookieJar,
-      query_params: models::GetBooksByAuthorsQueryParams,
+        &self,
+        method: Method,
+        host: Host,
+        cookies: CookieJar,
+        query_params: models::GetBooksByAuthorsQueryParams,
     ) -> Result<GetBooksByAuthorsResponse, ()>;
 
     /// Finds Books by GenereId.
     ///
     /// GetBooksByGeneres - GET /api/v1/book/findbyGenereId
     async fn get_books_by_generes(
-    &self,
-    method: Method,
-    host: Host,
-    cookies: CookieJar,
-      query_params: models::GetBooksByGeneresQueryParams,
+        &self,
+        method: Method,
+        host: Host,
+        cookies: CookieJar,
+        query_params: models::GetBooksByGeneresQueryParams,
     ) -> Result<GetBooksByGeneresResponse, ()>;
 
     /// Finds Books by status.
     ///
     /// GetBooksByStatus - GET /api/v1/book/findbyStatus
     async fn get_books_by_status(
-    &self,
-    method: Method,
-    host: Host,
-    cookies: CookieJar,
-      query_params: models::GetBooksByStatusQueryParams,
+        &self,
+        method: Method,
+        host: Host,
+        cookies: CookieJar,
+        query_params: models::GetBooksByStatusQueryParams,
     ) -> Result<GetBooksByStatusResponse, ()>;
 
     /// Update an existing book.
     ///
     /// UpdateBook - PATCH /api/v1/book/{bookId}
     async fn update_book(
-    &self,
-    method: Method,
-    host: Host,
-    cookies: CookieJar,
-      path_params: models::UpdateBookPathParams,
-            body: models::BookProperties,
+        &self,
+        method: Method,
+        host: Host,
+        cookies: CookieJar,
+        path_params: models::UpdateBookPathParams,
+        body: models::BookProperties,
     ) -> Result<UpdateBookResponse, ()>;
 }

@@ -19,8 +19,6 @@ fn main() {
     );
     println!(
         "{} {} was born on {}, right?",
-        author_model.first_name,
-        author_model.last_name,
-        author_model.date_of_birth.to_string()
+        author_model.first_name, author_model.last_name, author_model.date_of_birth
     );
 }
