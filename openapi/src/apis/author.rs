@@ -17,6 +17,8 @@ pub enum AddAuthorResponse {
     Status400_InvalidInput,
     /// Validation exception
     Status422_ValidationException,
+    /// Server error
+    Status500_ServerError,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -25,6 +27,10 @@ pub enum AddAuthorResponse {
 pub enum DeleteAuthorResponse {
     /// Invalid authorId value
     Status400_InvalidAuthorIdValue,
+    /// Author not found
+    Status404_AuthorNotFound,
+    /// Server error
+    Status500_ServerError,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -33,8 +39,12 @@ pub enum DeleteAuthorResponse {
 pub enum GetAuthorByIdResponse {
     /// successful operation
     Status200_SuccessfulOperation(Vec<models::Author>),
+    /// Invalid parameters
+    Status400_InvalidParameters,
     /// Author not found
-    Status400_AuthorNotFound,
+    Status404_AuthorNotFound,
+    /// Server error
+    Status500_ServerError,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -43,12 +53,14 @@ pub enum GetAuthorByIdResponse {
 pub enum UpdateAuthorResponse {
     /// Successful operation
     Status200_SuccessfulOperation(models::Author),
-    /// Invalid ID supplied
-    Status400_InvalidIDSupplied,
+    /// Invalid parameters
+    Status400_InvalidParameters,
     /// Author not found
     Status404_AuthorNotFound,
     /// Validation exception
     Status422_ValidationException,
+    /// Server error
+    Status500_ServerError,
 }
 
 /// Author

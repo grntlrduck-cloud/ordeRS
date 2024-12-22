@@ -17,6 +17,8 @@ pub enum AddDiscountResponse {
     Status400_InvalidInput,
     /// Validation exception
     Status422_ValidationException,
+    /// server error
+    Status500_ServerError,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -25,6 +27,10 @@ pub enum AddDiscountResponse {
 pub enum DeleteDiscountResponse {
     /// Invalid discountId value
     Status400_InvalidDiscountIdValue,
+    /// Discont not found
+    Status404_DiscontNotFound,
+    /// Server error
+    Status500_ServerError,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -33,8 +39,12 @@ pub enum DeleteDiscountResponse {
 pub enum GetDiscountByIdResponse {
     /// successful operation
     Status200_SuccessfulOperation(Vec<models::DiscountCode>),
+    /// Invalid parameters
+    Status400_InvalidParameters,
     /// DiscountCode not found
-    Status400_DiscountCodeNotFound,
+    Status404_DiscountCodeNotFound,
+    /// Server error
+    Status500_ServerError,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -49,6 +59,8 @@ pub enum UpdateDiscountResponse {
     Status404_DiscountNotFound,
     /// Validation exception
     Status422_ValidationException,
+    /// Server error
+    Status500_ServerError,
 }
 
 /// Discount

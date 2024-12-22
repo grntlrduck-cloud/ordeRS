@@ -17,6 +17,8 @@ pub enum DeleteOrderResponse {
     Status400_InvalidIDSupplied,
     /// Order not found
     Status404_OrderNotFound,
+    /// Server error
+    Status500_ServerError,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -25,6 +27,8 @@ pub enum DeleteOrderResponse {
 pub enum GetInventoryResponse {
     /// successful operation
     Status200_SuccessfulOperation(models::Inventory),
+    /// Server error
+    Status500_ServerError,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -37,6 +41,8 @@ pub enum GetOrderByIdResponse {
     Status400_InvalidIDSupplied,
     /// Order not found
     Status404_OrderNotFound,
+    /// Server error
+    Status500_ServerError,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -49,6 +55,8 @@ pub enum PlaceOrderResponse {
     Status400_InvalidInput,
     /// Validation exception
     Status422_ValidationException,
+    /// Server error
+    Status500_ServerError,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -57,12 +65,14 @@ pub enum PlaceOrderResponse {
 pub enum UpdateOrderResponse {
     /// Successful operation
     Status200_SuccessfulOperation(models::Book),
-    /// Invalid ID supplied
-    Status400_InvalidIDSupplied,
+    /// Invalid parameters
+    Status400_InvalidParameters,
     /// Order not found
     Status404_OrderNotFound,
     /// Validation exception
     Status422_ValidationException,
+    /// Server error
+    Status500_ServerError,
 }
 
 /// Store

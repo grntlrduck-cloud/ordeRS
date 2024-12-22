@@ -19,6 +19,7 @@ where
     A: apis::author::Author
         + apis::book::Book
         + apis::discount::Discount
+        + apis::health::Health
         + apis::store::Store
         + apis::ApiKeyAuthHeader<Claims = C>
         + 'static,
@@ -58,6 +59,7 @@ where
                 .get(get_discount_by_id::<I, A>)
                 .patch(update_discount::<I, A>),
         )
+        .route("/api/v1/health/readiness", get(get_readiness::<I, A>))
         .route("/api/v1/store/inventory", get(get_inventory::<I, A>))
         .route("/api/v1/store/order", post(place_order::<I, A>))
         .route(
@@ -150,6 +152,10 @@ where
                 let mut response = response.status(422);
                 response.body(Body::empty())
             }
+            apis::author::AddAuthorResponse::Status500_ServerError => {
+                let mut response = response.status(500);
+                response.body(Body::empty())
+            }
         },
         Err(_) => {
             // Application code returned an error. This should not happen, as the implementation should
@@ -208,6 +214,14 @@ where
         Ok(rsp) => match rsp {
             apis::author::DeleteAuthorResponse::Status400_InvalidAuthorIdValue => {
                 let mut response = response.status(400);
+                response.body(Body::empty())
+            }
+            apis::author::DeleteAuthorResponse::Status404_AuthorNotFound => {
+                let mut response = response.status(404);
+                response.body(Body::empty())
+            }
+            apis::author::DeleteAuthorResponse::Status500_ServerError => {
+                let mut response = response.status(500);
                 response.body(Body::empty())
             }
         },
@@ -289,8 +303,16 @@ where
                 .unwrap()?;
                 response.body(Body::from(body_content))
             }
-            apis::author::GetAuthorByIdResponse::Status400_AuthorNotFound => {
+            apis::author::GetAuthorByIdResponse::Status400_InvalidParameters => {
                 let mut response = response.status(400);
+                response.body(Body::empty())
+            }
+            apis::author::GetAuthorByIdResponse::Status404_AuthorNotFound => {
+                let mut response = response.status(404);
+                response.body(Body::empty())
+            }
+            apis::author::GetAuthorByIdResponse::Status500_ServerError => {
+                let mut response = response.status(500);
                 response.body(Body::empty())
             }
         },
@@ -385,7 +407,7 @@ where
                 .unwrap()?;
                 response.body(Body::from(body_content))
             }
-            apis::author::UpdateAuthorResponse::Status400_InvalidIDSupplied => {
+            apis::author::UpdateAuthorResponse::Status400_InvalidParameters => {
                 let mut response = response.status(400);
                 response.body(Body::empty())
             }
@@ -395,6 +417,10 @@ where
             }
             apis::author::UpdateAuthorResponse::Status422_ValidationException => {
                 let mut response = response.status(422);
+                response.body(Body::empty())
+            }
+            apis::author::UpdateAuthorResponse::Status500_ServerError => {
+                let mut response = response.status(500);
                 response.body(Body::empty())
             }
         },
@@ -492,6 +518,10 @@ where
                 let mut response = response.status(422);
                 response.body(Body::empty())
             }
+            apis::book::AddBookResponse::Status500_ServerError => {
+                let mut response = response.status(500);
+                response.body(Body::empty())
+            }
         },
         Err(_) => {
             // Application code returned an error. This should not happen, as the implementation should
@@ -550,6 +580,14 @@ where
         Ok(rsp) => match rsp {
             apis::book::DeleteBookResponse::Status400_InvalidBookIdValue => {
                 let mut response = response.status(400);
+                response.body(Body::empty())
+            }
+            apis::book::DeleteBookResponse::Status404_BookIdNotFound => {
+                let mut response = response.status(404);
+                response.body(Body::empty())
+            }
+            apis::book::DeleteBookResponse::Status500_ServerError => {
+                let mut response = response.status(500);
                 response.body(Body::empty())
             }
         },
@@ -631,8 +669,16 @@ where
                 .unwrap()?;
                 response.body(Body::from(body_content))
             }
-            apis::book::GetBookByIdResponse::Status400_BookNotFound => {
+            apis::book::GetBookByIdResponse::Status400_InvalidParameters => {
                 let mut response = response.status(400);
+                response.body(Body::empty())
+            }
+            apis::book::GetBookByIdResponse::Status404_BookNotFound => {
+                let mut response = response.status(404);
+                response.body(Body::empty())
+            }
+            apis::book::GetBookByIdResponse::Status500_ServerError => {
+                let mut response = response.status(500);
                 response.body(Body::empty())
             }
         },
@@ -719,6 +765,14 @@ where
                 let mut response = response.status(400);
                 response.body(Body::empty())
             }
+            apis::book::GetBooksByAuthorsResponse::Status404_AuthorNotFound => {
+                let mut response = response.status(404);
+                response.body(Body::empty())
+            }
+            apis::book::GetBooksByAuthorsResponse::Status500_ServerError => {
+                let mut response = response.status(500);
+                response.body(Body::empty())
+            }
         },
         Err(_) => {
             // Application code returned an error. This should not happen, as the implementation should
@@ -803,6 +857,14 @@ where
                 let mut response = response.status(400);
                 response.body(Body::empty())
             }
+            apis::book::GetBooksByGeneresResponse::Status404_GenereNotFound => {
+                let mut response = response.status(404);
+                response.body(Body::empty())
+            }
+            apis::book::GetBooksByGeneresResponse::Status500_ServerError => {
+                let mut response = response.status(500);
+                response.body(Body::empty())
+            }
         },
         Err(_) => {
             // Application code returned an error. This should not happen, as the implementation should
@@ -885,6 +947,10 @@ where
             }
             apis::book::GetBooksByStatusResponse::Status400_InvalidStatusValue => {
                 let mut response = response.status(400);
+                response.body(Body::empty())
+            }
+            apis::book::GetBooksByStatusResponse::Status500_ServerError => {
+                let mut response = response.status(500);
                 response.body(Body::empty())
             }
         },
@@ -977,7 +1043,7 @@ where
                 .unwrap()?;
                 response.body(Body::from(body_content))
             }
-            apis::book::UpdateBookResponse::Status400_InvalidIDSupplied => {
+            apis::book::UpdateBookResponse::Status400_InvalidParameters => {
                 let mut response = response.status(400);
                 response.body(Body::empty())
             }
@@ -987,6 +1053,10 @@ where
             }
             apis::book::UpdateBookResponse::Status422_ValidationException => {
                 let mut response = response.status(422);
+                response.body(Body::empty())
+            }
+            apis::book::UpdateBookResponse::Status500_ServerError => {
+                let mut response = response.status(500);
                 response.body(Body::empty())
             }
         },
@@ -1084,6 +1154,10 @@ where
                 let mut response = response.status(422);
                 response.body(Body::empty())
             }
+            apis::discount::AddDiscountResponse::Status500_ServerError => {
+                let mut response = response.status(500);
+                response.body(Body::empty())
+            }
         },
         Err(_) => {
             // Application code returned an error. This should not happen, as the implementation should
@@ -1142,6 +1216,14 @@ where
         Ok(rsp) => match rsp {
             apis::discount::DeleteDiscountResponse::Status400_InvalidDiscountIdValue => {
                 let mut response = response.status(400);
+                response.body(Body::empty())
+            }
+            apis::discount::DeleteDiscountResponse::Status404_DiscontNotFound => {
+                let mut response = response.status(404);
+                response.body(Body::empty())
+            }
+            apis::discount::DeleteDiscountResponse::Status500_ServerError => {
+                let mut response = response.status(500);
                 response.body(Body::empty())
             }
         },
@@ -1224,8 +1306,16 @@ where
                 .unwrap()?;
                 response.body(Body::from(body_content))
             }
-            apis::discount::GetDiscountByIdResponse::Status400_DiscountCodeNotFound => {
+            apis::discount::GetDiscountByIdResponse::Status400_InvalidParameters => {
                 let mut response = response.status(400);
+                response.body(Body::empty())
+            }
+            apis::discount::GetDiscountByIdResponse::Status404_DiscountCodeNotFound => {
+                let mut response = response.status(404);
+                response.body(Body::empty())
+            }
+            apis::discount::GetDiscountByIdResponse::Status500_ServerError => {
+                let mut response = response.status(500);
                 response.body(Body::empty())
             }
         },
@@ -1337,6 +1427,91 @@ where
                 let mut response = response.status(422);
                 response.body(Body::empty())
             }
+            apis::discount::UpdateDiscountResponse::Status500_ServerError => {
+                let mut response = response.status(500);
+                response.body(Body::empty())
+            }
+        },
+        Err(_) => {
+            // Application code returned an error. This should not happen, as the implementation should
+            // return a valid response.
+            response.status(500).body(Body::empty())
+        }
+    };
+
+    resp.map_err(|e| {
+        error!(error = ?e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })
+}
+
+#[tracing::instrument(skip_all)]
+fn get_readiness_validation() -> std::result::Result<(), ValidationErrors> {
+    Ok(())
+}
+/// GetReadiness - GET /api/v1/health/readiness
+#[tracing::instrument(skip_all)]
+async fn get_readiness<I, A>(
+    method: Method,
+    host: Host,
+    cookies: CookieJar,
+    State(api_impl): State<I>,
+) -> Result<Response, StatusCode>
+where
+    I: AsRef<A> + Send + Sync,
+    A: apis::health::Health,
+{
+    #[allow(clippy::redundant_closure)]
+    let validation = tokio::task::spawn_blocking(move || get_readiness_validation())
+        .await
+        .unwrap();
+
+    let Ok(()) = validation else {
+        return Response::builder()
+            .status(StatusCode::BAD_REQUEST)
+            .body(Body::from(validation.unwrap_err().to_string()))
+            .map_err(|_| StatusCode::BAD_REQUEST);
+    };
+
+    let result = api_impl.as_ref().get_readiness(method, host, cookies).await;
+
+    let mut response = Response::builder();
+
+    let resp = match result {
+        Ok(rsp) => match rsp {
+            apis::health::GetReadinessResponse::Status200_TheHealthCheckReadinessResponses(
+                body,
+            ) => {
+                let mut response = response.status(200);
+                {
+                    let mut response_headers = response.headers_mut().unwrap();
+                    response_headers.insert(
+                        CONTENT_TYPE,
+                        HeaderValue::from_str("application/json").map_err(|e| {
+                            error!(error = ?e);
+                            StatusCode::INTERNAL_SERVER_ERROR
+                        })?,
+                    );
+                }
+
+                let body_content = tokio::task::spawn_blocking(move || {
+                    serde_json::to_vec(&body).map_err(|e| {
+                        error!(error = ?e);
+                        StatusCode::INTERNAL_SERVER_ERROR
+                    })
+                })
+                .await
+                .unwrap()?;
+                response.body(Body::from(body_content))
+            }
+            apis::health::GetReadinessResponse::Status500_ServerError => {
+                let mut response = response.status(500);
+                response.body(Body::empty())
+            }
+            apis::health::GetReadinessResponse::Status503_ServiceUnavailable => {
+                let mut response = response.status(503);
+                response.body(Body::empty())
+            }
         },
         Err(_) => {
             // Application code returned an error. This should not happen, as the implementation should
@@ -1403,6 +1578,10 @@ where
             }
             apis::store::DeleteOrderResponse::Status404_OrderNotFound => {
                 let mut response = response.status(404);
+                response.body(Body::empty())
+            }
+            apis::store::DeleteOrderResponse::Status500_ServerError => {
+                let mut response = response.status(500);
                 response.body(Body::empty())
             }
         },
@@ -1475,6 +1654,10 @@ where
                 .await
                 .unwrap()?;
                 response.body(Body::from(body_content))
+            }
+            apis::store::GetInventoryResponse::Status500_ServerError => {
+                let mut response = response.status(500);
+                response.body(Body::empty())
             }
         },
         Err(_) => {
@@ -1561,6 +1744,10 @@ where
             }
             apis::store::GetOrderByIdResponse::Status404_OrderNotFound => {
                 let mut response = response.status(404);
+                response.body(Body::empty())
+            }
+            apis::store::GetOrderByIdResponse::Status500_ServerError => {
+                let mut response = response.status(500);
                 response.body(Body::empty())
             }
         },
@@ -1660,6 +1847,10 @@ where
                 let mut response = response.status(422);
                 response.body(Body::empty())
             }
+            apis::store::PlaceOrderResponse::Status500_ServerError => {
+                let mut response = response.status(500);
+                response.body(Body::empty())
+            }
         },
         Err(_) => {
             // Application code returned an error. This should not happen, as the implementation should
@@ -1752,7 +1943,7 @@ where
                 .unwrap()?;
                 response.body(Body::from(body_content))
             }
-            apis::store::UpdateOrderResponse::Status400_InvalidIDSupplied => {
+            apis::store::UpdateOrderResponse::Status400_InvalidParameters => {
                 let mut response = response.status(400);
                 response.body(Body::empty())
             }
@@ -1762,6 +1953,10 @@ where
             }
             apis::store::UpdateOrderResponse::Status422_ValidationException => {
                 let mut response = response.status(422);
+                response.body(Body::empty())
+            }
+            apis::store::UpdateOrderResponse::Status500_ServerError => {
+                let mut response = response.status(500);
                 response.body(Body::empty())
             }
         },

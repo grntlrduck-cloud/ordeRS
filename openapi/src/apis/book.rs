@@ -17,6 +17,8 @@ pub enum AddBookResponse {
     Status400_InvalidInput,
     /// Validation exception
     Status422_ValidationException,
+    /// Server error
+    Status500_ServerError,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -25,6 +27,10 @@ pub enum AddBookResponse {
 pub enum DeleteBookResponse {
     /// Invalid bookId value
     Status400_InvalidBookIdValue,
+    /// BookId not found
+    Status404_BookIdNotFound,
+    /// Server error
+    Status500_ServerError,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -33,8 +39,12 @@ pub enum DeleteBookResponse {
 pub enum GetBookByIdResponse {
     /// successful operation
     Status200_SuccessfulOperation(Vec<models::Book>),
+    /// Invalid parameters
+    Status400_InvalidParameters,
     /// Book not found
-    Status400_BookNotFound,
+    Status404_BookNotFound,
+    /// Server error
+    Status500_ServerError,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -45,6 +55,10 @@ pub enum GetBooksByAuthorsResponse {
     Status200_SuccessfulOperation(Vec<models::Book>),
     /// Invalid author values
     Status400_InvalidAuthorValues,
+    /// Author not found
+    Status404_AuthorNotFound,
+    /// Server error
+    Status500_ServerError,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -55,6 +69,10 @@ pub enum GetBooksByGeneresResponse {
     Status200_SuccessfulOperation(Vec<models::Book>),
     /// Invalid genre values
     Status400_InvalidGenreValues,
+    /// Genere not found
+    Status404_GenereNotFound,
+    /// Server error
+    Status500_ServerError,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -65,6 +83,8 @@ pub enum GetBooksByStatusResponse {
     Status200_SuccessfulOperation(Vec<models::Book>),
     /// Invalid status value
     Status400_InvalidStatusValue,
+    /// Server error
+    Status500_ServerError,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
@@ -73,12 +93,14 @@ pub enum GetBooksByStatusResponse {
 pub enum UpdateBookResponse {
     /// Successful operation
     Status200_SuccessfulOperation(models::Book),
-    /// Invalid ID supplied
-    Status400_InvalidIDSupplied,
+    /// Invalid parameters
+    Status400_InvalidParameters,
     /// Book not found
     Status404_BookNotFound,
     /// Validation exception
     Status422_ValidationException,
+    /// Server error
+    Status500_ServerError,
 }
 
 /// Book
