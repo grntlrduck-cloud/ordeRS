@@ -55,28 +55,26 @@ pub enum BookStatus {
     OutOfStock,
 }
 
-impl BookStatus {
-    pub fn as_str(&self) -> &'static str {
+impl std::fmt::Display for BookStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            BookStatus::Available => "available",
-            BookStatus::ReOrdered => "re-ordered",
-            BookStatus::OutOfStock => "out-of-stock",
+            BookStatus::Available => write!(f, "available"),
+            BookStatus::ReOrdered => write!(f, "re-ordered"),
+            BookStatus::OutOfStock => write!(f, "out-of-stock"),
         }
     }
+}
 
-    pub fn from_str(s: &str) -> Result<Self, String> {
+impl std::str::FromStr for BookStatus {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
             "available" => Ok(BookStatus::Available),
             "re-ordered" => Ok(BookStatus::ReOrdered),
             "out-of-stock" => Ok(BookStatus::OutOfStock),
             _ => Err(format!("Invalid book status: {}", s)),
         }
-    }
-}
-
-impl ToString for BookStatus {
-    fn to_string(&self) -> String {
-        self.as_str().to_string()
     }
 }
 
@@ -143,17 +141,21 @@ pub enum OrderStatus {
     Canceled,
 }
 
-impl OrderStatus {
-    pub fn as_str(&self) -> &'static str {
+impl std::fmt::Display for OrderStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            OrderStatus::Placed => "placed",
-            OrderStatus::Shipped => "shipped",
-            OrderStatus::Delivered => "delivered",
-            OrderStatus::Canceled => "canceled",
+            OrderStatus::Placed => write!(f, "placed"),
+            OrderStatus::Shipped => write!(f, "shipped"),
+            OrderStatus::Delivered => write!(f, "delivered"),
+            OrderStatus::Canceled => write!(f, "canceled"),
         }
     }
+}
 
-    pub fn from_str(s: &str) -> Result<Self, String> {
+impl std::str::FromStr for OrderStatus {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
             "placed" => Ok(OrderStatus::Placed),
             "shipped" => Ok(OrderStatus::Shipped),
@@ -161,11 +163,5 @@ impl OrderStatus {
             "canceled" => Ok(OrderStatus::Canceled),
             _ => Err(format!("Invalid order status: {}", s)),
         }
-    }
-}
-
-impl ToString for OrderStatus {
-    fn to_string(&self) -> String {
-        self.as_str().to_string()
     }
 }
