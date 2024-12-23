@@ -81,7 +81,7 @@ pub enum UpdateOrderResponse {
 pub trait Store {
     /// Delete purchase order by Id.
     ///
-    /// DeleteOrder - DELETE /api/v1/store/order/{orderId}
+    /// DeleteOrder - DELETE /api/v1/store/orders/{orderId}
     async fn delete_order(
         &self,
         method: Method,
@@ -102,7 +102,7 @@ pub trait Store {
 
     /// Find purchase order by Id..
     ///
-    /// GetOrderById - GET /api/v1/store/order/{orderId}
+    /// GetOrderById - GET /api/v1/store/orders/{orderId}
     async fn get_order_by_id(
         &self,
         method: Method,
@@ -113,7 +113,7 @@ pub trait Store {
 
     /// Place an order for a book.
     ///
-    /// PlaceOrder - POST /api/v1/store/order
+    /// PlaceOrder - POST /api/v1/store/orders
     async fn place_order(
         &self,
         method: Method,
@@ -124,7 +124,7 @@ pub trait Store {
 
     /// Update an existing book.
     ///
-    /// UpdateOrder - PATCH /api/v1/store/order/{orderId}
+    /// UpdateOrder - PATCH /api/v1/store/orders/{orderId}
     async fn update_order(
         &self,
         method: Method,

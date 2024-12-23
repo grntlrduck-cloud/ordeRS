@@ -120,7 +120,7 @@ pub trait Book {
 
     /// Deletes a book.
     ///
-    /// DeleteBook - DELETE /api/v1/book/{bookId}
+    /// DeleteBook - DELETE /api/v1/books/{bookId}
     async fn delete_book(
         &self,
         method: Method,
@@ -131,7 +131,7 @@ pub trait Book {
 
     /// Finds book by Id.
     ///
-    /// GetBookById - GET /api/v1/book/{bookId}
+    /// GetBookById - GET /api/v1/books/{bookId}
     async fn get_book_by_id(
         &self,
         method: Method,
@@ -153,7 +153,7 @@ pub trait Book {
 
     /// Finds Books by GenereId.
     ///
-    /// GetBooksByGeneres - GET /api/v1/book/findbyGenereId
+    /// GetBooksByGeneres - GET /api/v1/books/findbyGenereId
     async fn get_books_by_generes(
         &self,
         method: Method,
@@ -164,7 +164,7 @@ pub trait Book {
 
     /// Finds Books by status.
     ///
-    /// GetBooksByStatus - GET /api/v1/book/findbyStatus
+    /// GetBooksByStatus - GET /api/v1/books/findbyStatus
     async fn get_books_by_status(
         &self,
         method: Method,
@@ -175,7 +175,7 @@ pub trait Book {
 
     /// Update an existing book.
     ///
-    /// UpdateBook - PATCH /api/v1/book/{bookId}
+    /// UpdateBook - PATCH /api/v1/books/{bookId}
     async fn update_book(
         &self,
         method: Method,

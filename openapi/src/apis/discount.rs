@@ -69,7 +69,7 @@ pub enum UpdateDiscountResponse {
 pub trait Discount {
     /// Add a new discount to the store.
     ///
-    /// AddDiscount - POST /api/v1/discount
+    /// AddDiscount - POST /api/v1/discounts
     async fn add_discount(
         &self,
         method: Method,
@@ -80,7 +80,7 @@ pub trait Discount {
 
     /// Deletes a discount.
     ///
-    /// DeleteDiscount - DELETE /api/v1/discount/{discountId}
+    /// DeleteDiscount - DELETE /api/v1/discounts/{discountId}
     async fn delete_discount(
         &self,
         method: Method,
@@ -91,7 +91,7 @@ pub trait Discount {
 
     /// Finds discount by Id.
     ///
-    /// GetDiscountById - GET /api/v1/discount/{discountId}
+    /// GetDiscountById - GET /api/v1/discounts/{discountId}
     async fn get_discount_by_id(
         &self,
         method: Method,
@@ -102,7 +102,7 @@ pub trait Discount {
 
     /// Update an existing discount.
     ///
-    /// UpdateDiscount - PATCH /api/v1/discount/{discountId}
+    /// UpdateDiscount - PATCH /api/v1/discounts/{discountId}
     async fn update_discount(
         &self,
         method: Method,

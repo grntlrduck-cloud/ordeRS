@@ -69,7 +69,7 @@ pub enum UpdateAuthorResponse {
 pub trait Author {
     /// Add a new author to the store.
     ///
-    /// AddAuthor - POST /api/v1/author
+    /// AddAuthor - POST /api/v1/authors
     async fn add_author(
         &self,
         method: Method,
@@ -80,7 +80,7 @@ pub trait Author {
 
     /// Deletes a author.
     ///
-    /// DeleteAuthor - DELETE /api/v1/author/{authorId}
+    /// DeleteAuthor - DELETE /api/v1/authors/{authorId}
     async fn delete_author(
         &self,
         method: Method,
@@ -91,7 +91,7 @@ pub trait Author {
 
     /// Finds book by Id.
     ///
-    /// GetAuthorById - GET /api/v1/author/{authorId}
+    /// GetAuthorById - GET /api/v1/authors/{authorId}
     async fn get_author_by_id(
         &self,
         method: Method,
@@ -102,7 +102,7 @@ pub trait Author {
 
     /// Update an existing author.
     ///
-    /// UpdateAuthor - PATCH /api/v1/author/{authorId}
+    /// UpdateAuthor - PATCH /api/v1/authors/{authorId}
     async fn update_author(
         &self,
         method: Method,

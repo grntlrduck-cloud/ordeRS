@@ -37,7 +37,7 @@ paths:
         "503":
           description: Service unavailable
 
-  /discount:
+  /discounts:
     post:
       tags:
         - discount
@@ -65,7 +65,7 @@ paths:
         "500":
           description: server error
 
-  /discount/{discountId}:
+  /discounts/{discountId}:
     get:
       tags:
         - discount
@@ -152,7 +152,7 @@ paths:
         "500":
           description: Server error
 
-  /author:
+  /authors:
     post:
       tags:
         - author
@@ -180,7 +180,7 @@ paths:
         "500":
           description: Server error
 
-  /author/{authorId}:
+  /authors/{authorId}:
     get:
       tags:
         - author
@@ -295,7 +295,7 @@ paths:
         "500":
           description: Server error
 
-  /book/{bookId}:
+  /books/{bookId}:
     get:
       tags:
         - book
@@ -415,7 +415,7 @@ paths:
         "500":
           description: Server error
 
-  /book/findbyGenereId:
+  /books/findbyGenereId:
     get:
       tags:
         - book
@@ -448,7 +448,7 @@ paths:
         "500":
           description: Server error
 
-  /book/findbyStatus:
+  /books/findbyStatus:
     get:
       tags:
         - book
@@ -496,7 +496,7 @@ paths:
         "500":
           description: Server error
 
-  /store/order:
+  /store/orders:
     post:
       tags:
         - store
@@ -522,7 +522,7 @@ paths:
         "500":
           description: Server error
 
-  /store/order/{orderId}:
+  /store/orders/{orderId}:
     get:
       tags:
         - store
@@ -925,10 +925,10 @@ components:
     NewOrder:
       type: object
       properties:
-        bookId:
+        book_id:
           type: string
           example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
-        customerId:
+        customer_id:
           type: string
           example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
         quantity:
@@ -959,10 +959,10 @@ components:
         id:
           type: string
           example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
-        bookId:
+        book_id:
           type: string
           example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
-        customerId:
+        customer_id:
           type: string
           example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
         quantity:

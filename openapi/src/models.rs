@@ -2926,11 +2926,13 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<NewDiscountC
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
 pub struct NewOrder {
-    #[serde(rename = "bookId")]
-    pub book_id: String,
+    #[serde(rename = "book_id")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub book_id: Option<String>,
 
-    #[serde(rename = "customerId")]
-    pub customer_id: String,
+    #[serde(rename = "customer_id")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub customer_id: Option<String>,
 
     #[serde(rename = "quantity")]
     pub quantity: i32,
@@ -2955,15 +2957,13 @@ pub struct NewOrder {
 impl NewOrder {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
     pub fn new(
-        book_id: String,
-        customer_id: String,
         quantity: i32,
         shipping_date: chrono::DateTime<chrono::Utc>,
         status: String,
     ) -> NewOrder {
         NewOrder {
-            book_id,
-            customer_id,
+            book_id: None,
+            customer_id: None,
             quantity,
             shipping_date,
             shipping_address_override: None,
@@ -2979,10 +2979,12 @@ impl NewOrder {
 impl std::fmt::Display for NewOrder {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-            Some("bookId".to_string()),
-            Some(self.book_id.to_string()),
-            Some("customerId".to_string()),
-            Some(self.customer_id.to_string()),
+            self.book_id
+                .as_ref()
+                .map(|book_id| ["book_id".to_string(), book_id.to_string()].join(",")),
+            self.customer_id
+                .as_ref()
+                .map(|customer_id| ["customer_id".to_string(), customer_id.to_string()].join(",")),
             Some("quantity".to_string()),
             Some(self.quantity.to_string()),
             // Skipping shipping_date in query parameter serialization
@@ -3043,11 +3045,11 @@ impl std::str::FromStr for NewOrder {
                 #[allow(clippy::match_single_binding)]
                 match key {
                     #[allow(clippy::redundant_clone)]
-                    "bookId" => intermediate_rep.book_id.push(
+                    "book_id" => intermediate_rep.book_id.push(
                         <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
                     ),
                     #[allow(clippy::redundant_clone)]
-                    "customerId" => intermediate_rep.customer_id.push(
+                    "customer_id" => intermediate_rep.customer_id.push(
                         <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
                     ),
                     #[allow(clippy::redundant_clone)]
@@ -3086,16 +3088,8 @@ impl std::str::FromStr for NewOrder {
 
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(NewOrder {
-            book_id: intermediate_rep
-                .book_id
-                .into_iter()
-                .next()
-                .ok_or_else(|| "bookId missing in NewOrder".to_string())?,
-            customer_id: intermediate_rep
-                .customer_id
-                .into_iter()
-                .next()
-                .ok_or_else(|| "customerId missing in NewOrder".to_string())?,
+            book_id: intermediate_rep.book_id.into_iter().next(),
+            customer_id: intermediate_rep.customer_id.into_iter().next(),
             quantity: intermediate_rep
                 .quantity
                 .into_iter()
@@ -3171,11 +3165,13 @@ pub struct Order {
     #[serde(rename = "id")]
     pub id: String,
 
-    #[serde(rename = "bookId")]
-    pub book_id: String,
+    #[serde(rename = "book_id")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub book_id: Option<String>,
 
-    #[serde(rename = "customerId")]
-    pub customer_id: String,
+    #[serde(rename = "customer_id")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub customer_id: Option<String>,
 
     #[serde(rename = "quantity")]
     pub quantity: i32,
@@ -3201,16 +3197,14 @@ impl Order {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
     pub fn new(
         id: String,
-        book_id: String,
-        customer_id: String,
         quantity: i32,
         shipping_date: chrono::DateTime<chrono::Utc>,
         status: String,
     ) -> Order {
         Order {
             id,
-            book_id,
-            customer_id,
+            book_id: None,
+            customer_id: None,
             quantity,
             shipping_date,
             shipping_address_override: None,
@@ -3228,10 +3222,12 @@ impl std::fmt::Display for Order {
         let params: Vec<Option<String>> = vec![
             Some("id".to_string()),
             Some(self.id.to_string()),
-            Some("bookId".to_string()),
-            Some(self.book_id.to_string()),
-            Some("customerId".to_string()),
-            Some(self.customer_id.to_string()),
+            self.book_id
+                .as_ref()
+                .map(|book_id| ["book_id".to_string(), book_id.to_string()].join(",")),
+            self.customer_id
+                .as_ref()
+                .map(|customer_id| ["customer_id".to_string(), customer_id.to_string()].join(",")),
             Some("quantity".to_string()),
             Some(self.quantity.to_string()),
             // Skipping shipping_date in query parameter serialization
@@ -3297,11 +3293,11 @@ impl std::str::FromStr for Order {
                         <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
                     ),
                     #[allow(clippy::redundant_clone)]
-                    "bookId" => intermediate_rep.book_id.push(
+                    "book_id" => intermediate_rep.book_id.push(
                         <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
                     ),
                     #[allow(clippy::redundant_clone)]
-                    "customerId" => intermediate_rep.customer_id.push(
+                    "customer_id" => intermediate_rep.customer_id.push(
                         <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
                     ),
                     #[allow(clippy::redundant_clone)]
@@ -3345,16 +3341,8 @@ impl std::str::FromStr for Order {
                 .into_iter()
                 .next()
                 .ok_or_else(|| "id missing in Order".to_string())?,
-            book_id: intermediate_rep
-                .book_id
-                .into_iter()
-                .next()
-                .ok_or_else(|| "bookId missing in Order".to_string())?,
-            customer_id: intermediate_rep
-                .customer_id
-                .into_iter()
-                .next()
-                .ok_or_else(|| "customerId missing in Order".to_string())?,
+            book_id: intermediate_rep.book_id.into_iter().next(),
+            customer_id: intermediate_rep.customer_id.into_iter().next(),
             quantity: intermediate_rep
                 .quantity
                 .into_iter()

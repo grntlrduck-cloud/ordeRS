@@ -26,44 +26,44 @@ where
 {
     // build our application with a route
     Router::new()
-        .route("/api/v1/author", post(add_author::<I, A>))
+        .route("/api/v1/authors", post(add_author::<I, A>))
         .route(
-            "/api/v1/author/:author_id",
+            "/api/v1/authors/:author_id",
             delete(delete_author::<I, A>)
                 .get(get_author_by_id::<I, A>)
                 .patch(update_author::<I, A>),
         )
         .route("/api/v1/book", post(add_book::<I, A>))
         .route(
-            "/api/v1/book/:book_id",
+            "/api/v1/book/findByAuthorId",
+            get(get_books_by_authors::<I, A>),
+        )
+        .route(
+            "/api/v1/books/:book_id",
             delete(delete_book::<I, A>)
                 .get(get_book_by_id::<I, A>)
                 .patch(update_book::<I, A>),
         )
         .route(
-            "/api/v1/book/findByAuthorId",
-            get(get_books_by_authors::<I, A>),
-        )
-        .route(
-            "/api/v1/book/findbyGenereId",
+            "/api/v1/books/findbyGenereId",
             get(get_books_by_generes::<I, A>),
         )
         .route(
-            "/api/v1/book/findbyStatus",
+            "/api/v1/books/findbyStatus",
             get(get_books_by_status::<I, A>),
         )
-        .route("/api/v1/discount", post(add_discount::<I, A>))
+        .route("/api/v1/discounts", post(add_discount::<I, A>))
         .route(
-            "/api/v1/discount/:discount_id",
+            "/api/v1/discounts/:discount_id",
             delete(delete_discount::<I, A>)
                 .get(get_discount_by_id::<I, A>)
                 .patch(update_discount::<I, A>),
         )
         .route("/api/v1/health/readiness", get(get_readiness::<I, A>))
         .route("/api/v1/store/inventory", get(get_inventory::<I, A>))
-        .route("/api/v1/store/order", post(place_order::<I, A>))
+        .route("/api/v1/store/orders", post(place_order::<I, A>))
         .route(
-            "/api/v1/store/order/:order_id",
+            "/api/v1/store/orders/:order_id",
             delete(delete_order::<I, A>)
                 .get(get_order_by_id::<I, A>)
                 .patch(update_order::<I, A>),
@@ -87,7 +87,7 @@ fn add_author_validation(
 
     Ok((body,))
 }
-/// AddAuthor - POST /api/v1/author
+/// AddAuthor - POST /api/v1/authors
 #[tracing::instrument(skip_all)]
 async fn add_author<I, A>(
     method: Method,
@@ -178,7 +178,7 @@ fn delete_author_validation(
 
     Ok((path_params,))
 }
-/// DeleteAuthor - DELETE /api/v1/author/{authorId}
+/// DeleteAuthor - DELETE /api/v1/authors/{authorId}
 #[tracing::instrument(skip_all)]
 async fn delete_author<I, A>(
     method: Method,
@@ -246,7 +246,7 @@ fn get_author_by_id_validation(
 
     Ok((path_params,))
 }
-/// GetAuthorById - GET /api/v1/author/{authorId}
+/// GetAuthorById - GET /api/v1/authors/{authorId}
 #[tracing::instrument(skip_all)]
 async fn get_author_by_id<I, A>(
     method: Method,
@@ -348,7 +348,7 @@ fn update_author_validation(
 
     Ok((path_params, body))
 }
-/// UpdateAuthor - PATCH /api/v1/author/{authorId}
+/// UpdateAuthor - PATCH /api/v1/authors/{authorId}
 #[tracing::instrument(skip_all)]
 async fn update_author<I, A>(
     method: Method,
@@ -544,7 +544,7 @@ fn delete_book_validation(
 
     Ok((path_params,))
 }
-/// DeleteBook - DELETE /api/v1/book/{bookId}
+/// DeleteBook - DELETE /api/v1/books/{bookId}
 #[tracing::instrument(skip_all)]
 async fn delete_book<I, A>(
     method: Method,
@@ -612,7 +612,7 @@ fn get_book_by_id_validation(
 
     Ok((path_params,))
 }
-/// GetBookById - GET /api/v1/book/{bookId}
+/// GetBookById - GET /api/v1/books/{bookId}
 #[tracing::instrument(skip_all)]
 async fn get_book_by_id<I, A>(
     method: Method,
@@ -795,7 +795,7 @@ fn get_books_by_generes_validation(
 
     Ok((query_params,))
 }
-/// GetBooksByGeneres - GET /api/v1/book/findbyGenereId
+/// GetBooksByGeneres - GET /api/v1/books/findbyGenereId
 #[tracing::instrument(skip_all)]
 async fn get_books_by_generes<I, A>(
     method: Method,
@@ -887,7 +887,7 @@ fn get_books_by_status_validation(
 
     Ok((query_params,))
 }
-/// GetBooksByStatus - GET /api/v1/book/findbyStatus
+/// GetBooksByStatus - GET /api/v1/books/findbyStatus
 #[tracing::instrument(skip_all)]
 async fn get_books_by_status<I, A>(
     method: Method,
@@ -985,7 +985,7 @@ fn update_book_validation(
 
     Ok((path_params, body))
 }
-/// UpdateBook - PATCH /api/v1/book/{bookId}
+/// UpdateBook - PATCH /api/v1/books/{bookId}
 #[tracing::instrument(skip_all)]
 async fn update_book<I, A>(
     method: Method,
@@ -1089,7 +1089,7 @@ fn add_discount_validation(
 
     Ok((body,))
 }
-/// AddDiscount - POST /api/v1/discount
+/// AddDiscount - POST /api/v1/discounts
 #[tracing::instrument(skip_all)]
 async fn add_discount<I, A>(
     method: Method,
@@ -1180,7 +1180,7 @@ fn delete_discount_validation(
 
     Ok((path_params,))
 }
-/// DeleteDiscount - DELETE /api/v1/discount/{discountId}
+/// DeleteDiscount - DELETE /api/v1/discounts/{discountId}
 #[tracing::instrument(skip_all)]
 async fn delete_discount<I, A>(
     method: Method,
@@ -1248,7 +1248,7 @@ fn get_discount_by_id_validation(
 
     Ok((path_params,))
 }
-/// GetDiscountById - GET /api/v1/discount/{discountId}
+/// GetDiscountById - GET /api/v1/discounts/{discountId}
 #[tracing::instrument(skip_all)]
 async fn get_discount_by_id<I, A>(
     method: Method,
@@ -1356,7 +1356,7 @@ fn update_discount_validation(
 
     Ok((path_params, body))
 }
-/// UpdateDiscount - PATCH /api/v1/discount/{discountId}
+/// UpdateDiscount - PATCH /api/v1/discounts/{discountId}
 #[tracing::instrument(skip_all)]
 async fn update_discount<I, A>(
     method: Method,
@@ -1534,7 +1534,7 @@ fn delete_order_validation(
 
     Ok((path_params,))
 }
-/// DeleteOrder - DELETE /api/v1/store/order/{orderId}
+/// DeleteOrder - DELETE /api/v1/store/orders/{orderId}
 #[tracing::instrument(skip_all)]
 async fn delete_order<I, A>(
     method: Method,
@@ -1681,7 +1681,7 @@ fn get_order_by_id_validation(
 
     Ok((path_params,))
 }
-/// GetOrderById - GET /api/v1/store/order/{orderId}
+/// GetOrderById - GET /api/v1/store/orders/{orderId}
 #[tracing::instrument(skip_all)]
 async fn get_order_by_id<I, A>(
     method: Method,
@@ -1782,7 +1782,7 @@ fn place_order_validation(
 
     Ok((body,))
 }
-/// PlaceOrder - POST /api/v1/store/order
+/// PlaceOrder - POST /api/v1/store/orders
 #[tracing::instrument(skip_all)]
 async fn place_order<I, A>(
     method: Method,
@@ -1884,7 +1884,7 @@ fn update_order_validation(
 
     Ok((path_params, body))
 }
-/// UpdateOrder - PATCH /api/v1/store/order/{orderId}
+/// UpdateOrder - PATCH /api/v1/store/orders/{orderId}
 #[tracing::instrument(skip_all)]
 async fn update_order<I, A>(
     method: Method,
