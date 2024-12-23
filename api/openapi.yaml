@@ -918,8 +918,6 @@ components:
             - shipped
             - delivered
             - canceled
-        complete:
-          type: boolean
       required: [shipping_date, quantity, status]
 
     NewOrder:
@@ -938,6 +936,9 @@ components:
         shipping_date:
           type: string
           format: date-time
+        billing_address:
+          description: if no alternative shipping address provided, billing address will be used for shipping
+          $ref: "#/components/schemas/Address"
         shipping_address_override:
           $ref: "#/components/schemas/Address"
         status:
@@ -949,9 +950,7 @@ components:
             - shipped
             - delivered
             - canceled
-        complete:
-          type: boolean
-      required: [bookId, customerId, shipping_date, quantity, status]
+      required: [book_id, customer_id, shipping_date, quantity, status]
 
     Order:
       type: object
@@ -972,6 +971,9 @@ components:
         shipping_date:
           type: string
           format: date-time
+        billing_address:
+          description: if no alternative shipping address provided, billing address will be used for shipping
+          $ref: "#/components/schemas/Address"
         shipping_address_override:
           $ref: "#/components/schemas/Address"
         status:
@@ -983,9 +985,16 @@ components:
             - shipped
             - delivered
             - canceled
-        complete:
-          type: boolean
-      required: [id, bookId, customerId, shipping_date, quantity, status]
+      required:
+        [
+          id,
+          book_id,
+          customer_id,
+          billing_address,
+          shipping_date,
+          quantity,
+          status,
+        ]
 
     Address:
       type: object
@@ -1008,6 +1017,7 @@ components:
         country:
           type: string
           example: Germany
+      required: [street, street_number, zip_code, city, country]
 
     Inventory:
       type: object
@@ -1021,6 +1031,7 @@ components:
         books_out_of_stock:
           type: integer
           format: int32
+      required: [books_available, books_reordered, books_out_of_stock]
 
     HealthCheckResponse:
       type: object

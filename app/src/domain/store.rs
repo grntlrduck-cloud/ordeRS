@@ -1,0 +1,3 @@
+struct StoreService {
+    todo: String,
+}

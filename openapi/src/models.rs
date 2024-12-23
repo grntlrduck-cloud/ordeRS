@@ -119,40 +119,41 @@ pub struct UpdateOrderPathParams {
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
 pub struct Address {
     #[serde(rename = "street")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub street: Option<String>,
+    pub street: String,
 
     #[serde(rename = "street_number")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub street_number: Option<String>,
+    pub street_number: String,
 
     #[serde(rename = "zip_code")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub zip_code: Option<String>,
+    pub zip_code: String,
 
     #[serde(rename = "city")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub city: Option<String>,
+    pub city: String,
 
     #[serde(rename = "province")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub province: Option<String>,
 
     #[serde(rename = "country")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub country: Option<String>,
+    pub country: String,
 }
 
 impl Address {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
-    pub fn new() -> Address {
+    pub fn new(
+        street: String,
+        street_number: String,
+        zip_code: String,
+        city: String,
+        country: String,
+    ) -> Address {
         Address {
-            street: None,
-            street_number: None,
-            zip_code: None,
-            city: None,
+            street,
+            street_number,
+            zip_code,
+            city,
             province: None,
-            country: None,
+            country,
         }
     }
 }
@@ -163,24 +164,19 @@ impl Address {
 impl std::fmt::Display for Address {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-            self.street
-                .as_ref()
-                .map(|street| ["street".to_string(), street.to_string()].join(",")),
-            self.street_number.as_ref().map(|street_number| {
-                ["street_number".to_string(), street_number.to_string()].join(",")
-            }),
-            self.zip_code
-                .as_ref()
-                .map(|zip_code| ["zip_code".to_string(), zip_code.to_string()].join(",")),
-            self.city
-                .as_ref()
-                .map(|city| ["city".to_string(), city.to_string()].join(",")),
+            Some("street".to_string()),
+            Some(self.street.to_string()),
+            Some("street_number".to_string()),
+            Some(self.street_number.to_string()),
+            Some("zip_code".to_string()),
+            Some(self.zip_code.to_string()),
+            Some("city".to_string()),
+            Some(self.city.to_string()),
             self.province
                 .as_ref()
                 .map(|province| ["province".to_string(), province.to_string()].join(",")),
-            self.country
-                .as_ref()
-                .map(|country| ["country".to_string(), country.to_string()].join(",")),
+            Some("country".to_string()),
+            Some(self.country.to_string()),
         ];
 
         write!(
@@ -267,12 +263,32 @@ impl std::str::FromStr for Address {
 
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(Address {
-            street: intermediate_rep.street.into_iter().next(),
-            street_number: intermediate_rep.street_number.into_iter().next(),
-            zip_code: intermediate_rep.zip_code.into_iter().next(),
-            city: intermediate_rep.city.into_iter().next(),
+            street: intermediate_rep
+                .street
+                .into_iter()
+                .next()
+                .ok_or_else(|| "street missing in Address".to_string())?,
+            street_number: intermediate_rep
+                .street_number
+                .into_iter()
+                .next()
+                .ok_or_else(|| "street_number missing in Address".to_string())?,
+            zip_code: intermediate_rep
+                .zip_code
+                .into_iter()
+                .next()
+                .ok_or_else(|| "zip_code missing in Address".to_string())?,
+            city: intermediate_rep
+                .city
+                .into_iter()
+                .next()
+                .ok_or_else(|| "city missing in Address".to_string())?,
             province: intermediate_rep.province.into_iter().next(),
-            country: intermediate_rep.country.into_iter().next(),
+            country: intermediate_rep
+                .country
+                .into_iter()
+                .next()
+                .ok_or_else(|| "country missing in Address".to_string())?,
         })
     }
 }
@@ -2041,25 +2057,22 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<HealthCheckR
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
 pub struct Inventory {
     #[serde(rename = "books_available")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub books_available: Option<i32>,
+    pub books_available: i32,
 
     #[serde(rename = "books_reordered")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub books_reordered: Option<i32>,
+    pub books_reordered: i32,
 
     #[serde(rename = "books_out_of_stock")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub books_out_of_stock: Option<i32>,
+    pub books_out_of_stock: i32,
 }
 
 impl Inventory {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
-    pub fn new() -> Inventory {
+    pub fn new(books_available: i32, books_reordered: i32, books_out_of_stock: i32) -> Inventory {
         Inventory {
-            books_available: None,
-            books_reordered: None,
-            books_out_of_stock: None,
+            books_available,
+            books_reordered,
+            books_out_of_stock,
         }
     }
 }
@@ -2070,19 +2083,12 @@ impl Inventory {
 impl std::fmt::Display for Inventory {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-            self.books_available.as_ref().map(|books_available| {
-                ["books_available".to_string(), books_available.to_string()].join(",")
-            }),
-            self.books_reordered.as_ref().map(|books_reordered| {
-                ["books_reordered".to_string(), books_reordered.to_string()].join(",")
-            }),
-            self.books_out_of_stock.as_ref().map(|books_out_of_stock| {
-                [
-                    "books_out_of_stock".to_string(),
-                    books_out_of_stock.to_string(),
-                ]
-                .join(",")
-            }),
+            Some("books_available".to_string()),
+            Some(self.books_available.to_string()),
+            Some("books_reordered".to_string()),
+            Some(self.books_reordered.to_string()),
+            Some("books_out_of_stock".to_string()),
+            Some(self.books_out_of_stock.to_string()),
         ];
 
         write!(
@@ -2154,9 +2160,21 @@ impl std::str::FromStr for Inventory {
 
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(Inventory {
-            books_available: intermediate_rep.books_available.into_iter().next(),
-            books_reordered: intermediate_rep.books_reordered.into_iter().next(),
-            books_out_of_stock: intermediate_rep.books_out_of_stock.into_iter().next(),
+            books_available: intermediate_rep
+                .books_available
+                .into_iter()
+                .next()
+                .ok_or_else(|| "books_available missing in Inventory".to_string())?,
+            books_reordered: intermediate_rep
+                .books_reordered
+                .into_iter()
+                .next()
+                .ok_or_else(|| "books_reordered missing in Inventory".to_string())?,
+            books_out_of_stock: intermediate_rep
+                .books_out_of_stock
+                .into_iter()
+                .next()
+                .ok_or_else(|| "books_out_of_stock missing in Inventory".to_string())?,
         })
     }
 }
@@ -2927,18 +2945,20 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<NewDiscountC
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
 pub struct NewOrder {
     #[serde(rename = "book_id")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub book_id: Option<String>,
+    pub book_id: String,
 
     #[serde(rename = "customer_id")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub customer_id: Option<String>,
+    pub customer_id: String,
 
     #[serde(rename = "quantity")]
     pub quantity: i32,
 
     #[serde(rename = "shipping_date")]
     pub shipping_date: chrono::DateTime<chrono::Utc>,
+
+    #[serde(rename = "billing_address")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub billing_address: Option<models::Address>,
 
     #[serde(rename = "shipping_address_override")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -2948,27 +2968,25 @@ pub struct NewOrder {
     /// Note: inline enums are not fully supported by openapi-generator
     #[serde(rename = "status")]
     pub status: String,
-
-    #[serde(rename = "complete")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub complete: Option<bool>,
 }
 
 impl NewOrder {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
     pub fn new(
+        book_id: String,
+        customer_id: String,
         quantity: i32,
         shipping_date: chrono::DateTime<chrono::Utc>,
         status: String,
     ) -> NewOrder {
         NewOrder {
-            book_id: None,
-            customer_id: None,
+            book_id,
+            customer_id,
             quantity,
             shipping_date,
+            billing_address: None,
             shipping_address_override: None,
             status,
-            complete: None,
         }
     }
 }
@@ -2979,22 +2997,19 @@ impl NewOrder {
 impl std::fmt::Display for NewOrder {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-            self.book_id
-                .as_ref()
-                .map(|book_id| ["book_id".to_string(), book_id.to_string()].join(",")),
-            self.customer_id
-                .as_ref()
-                .map(|customer_id| ["customer_id".to_string(), customer_id.to_string()].join(",")),
+            Some("book_id".to_string()),
+            Some(self.book_id.to_string()),
+            Some("customer_id".to_string()),
+            Some(self.customer_id.to_string()),
             Some("quantity".to_string()),
             Some(self.quantity.to_string()),
             // Skipping shipping_date in query parameter serialization
 
+            // Skipping billing_address in query parameter serialization
+
             // Skipping shipping_address_override in query parameter serialization
             Some("status".to_string()),
             Some(self.status.to_string()),
-            self.complete
-                .as_ref()
-                .map(|complete| ["complete".to_string(), complete.to_string()].join(",")),
         ];
 
         write!(
@@ -3020,9 +3035,9 @@ impl std::str::FromStr for NewOrder {
             pub customer_id: Vec<String>,
             pub quantity: Vec<i32>,
             pub shipping_date: Vec<chrono::DateTime<chrono::Utc>>,
+            pub billing_address: Vec<models::Address>,
             pub shipping_address_override: Vec<models::Address>,
             pub status: Vec<String>,
-            pub complete: Vec<bool>,
         }
 
         let mut intermediate_rep = IntermediateRep::default();
@@ -3062,6 +3077,11 @@ impl std::str::FromStr for NewOrder {
                             .map_err(|x| x.to_string())?,
                     ),
                     #[allow(clippy::redundant_clone)]
+                    "billing_address" => intermediate_rep.billing_address.push(
+                        <models::Address as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
+                    #[allow(clippy::redundant_clone)]
                     "shipping_address_override" => intermediate_rep.shipping_address_override.push(
                         <models::Address as std::str::FromStr>::from_str(val)
                             .map_err(|x| x.to_string())?,
@@ -3069,10 +3089,6 @@ impl std::str::FromStr for NewOrder {
                     #[allow(clippy::redundant_clone)]
                     "status" => intermediate_rep.status.push(
                         <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
-                    ),
-                    #[allow(clippy::redundant_clone)]
-                    "complete" => intermediate_rep.complete.push(
-                        <bool as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
                     ),
                     _ => {
                         return std::result::Result::Err(
@@ -3088,8 +3104,16 @@ impl std::str::FromStr for NewOrder {
 
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(NewOrder {
-            book_id: intermediate_rep.book_id.into_iter().next(),
-            customer_id: intermediate_rep.customer_id.into_iter().next(),
+            book_id: intermediate_rep
+                .book_id
+                .into_iter()
+                .next()
+                .ok_or_else(|| "book_id missing in NewOrder".to_string())?,
+            customer_id: intermediate_rep
+                .customer_id
+                .into_iter()
+                .next()
+                .ok_or_else(|| "customer_id missing in NewOrder".to_string())?,
             quantity: intermediate_rep
                 .quantity
                 .into_iter()
@@ -3100,6 +3124,7 @@ impl std::str::FromStr for NewOrder {
                 .into_iter()
                 .next()
                 .ok_or_else(|| "shipping_date missing in NewOrder".to_string())?,
+            billing_address: intermediate_rep.billing_address.into_iter().next(),
             shipping_address_override: intermediate_rep
                 .shipping_address_override
                 .into_iter()
@@ -3109,7 +3134,6 @@ impl std::str::FromStr for NewOrder {
                 .into_iter()
                 .next()
                 .ok_or_else(|| "status missing in NewOrder".to_string())?,
-            complete: intermediate_rep.complete.into_iter().next(),
         })
     }
 }
@@ -3166,18 +3190,19 @@ pub struct Order {
     pub id: String,
 
     #[serde(rename = "book_id")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub book_id: Option<String>,
+    pub book_id: String,
 
     #[serde(rename = "customer_id")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub customer_id: Option<String>,
+    pub customer_id: String,
 
     #[serde(rename = "quantity")]
     pub quantity: i32,
 
     #[serde(rename = "shipping_date")]
     pub shipping_date: chrono::DateTime<chrono::Utc>,
+
+    #[serde(rename = "billing_address")]
+    pub billing_address: models::Address,
 
     #[serde(rename = "shipping_address_override")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -3187,29 +3212,28 @@ pub struct Order {
     /// Note: inline enums are not fully supported by openapi-generator
     #[serde(rename = "status")]
     pub status: String,
-
-    #[serde(rename = "complete")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub complete: Option<bool>,
 }
 
 impl Order {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
     pub fn new(
         id: String,
+        book_id: String,
+        customer_id: String,
         quantity: i32,
         shipping_date: chrono::DateTime<chrono::Utc>,
+        billing_address: models::Address,
         status: String,
     ) -> Order {
         Order {
             id,
-            book_id: None,
-            customer_id: None,
+            book_id,
+            customer_id,
             quantity,
             shipping_date,
+            billing_address,
             shipping_address_override: None,
             status,
-            complete: None,
         }
     }
 }
@@ -3222,22 +3246,19 @@ impl std::fmt::Display for Order {
         let params: Vec<Option<String>> = vec![
             Some("id".to_string()),
             Some(self.id.to_string()),
-            self.book_id
-                .as_ref()
-                .map(|book_id| ["book_id".to_string(), book_id.to_string()].join(",")),
-            self.customer_id
-                .as_ref()
-                .map(|customer_id| ["customer_id".to_string(), customer_id.to_string()].join(",")),
+            Some("book_id".to_string()),
+            Some(self.book_id.to_string()),
+            Some("customer_id".to_string()),
+            Some(self.customer_id.to_string()),
             Some("quantity".to_string()),
             Some(self.quantity.to_string()),
             // Skipping shipping_date in query parameter serialization
 
+            // Skipping billing_address in query parameter serialization
+
             // Skipping shipping_address_override in query parameter serialization
             Some("status".to_string()),
             Some(self.status.to_string()),
-            self.complete
-                .as_ref()
-                .map(|complete| ["complete".to_string(), complete.to_string()].join(",")),
         ];
 
         write!(
@@ -3264,9 +3285,9 @@ impl std::str::FromStr for Order {
             pub customer_id: Vec<String>,
             pub quantity: Vec<i32>,
             pub shipping_date: Vec<chrono::DateTime<chrono::Utc>>,
+            pub billing_address: Vec<models::Address>,
             pub shipping_address_override: Vec<models::Address>,
             pub status: Vec<String>,
-            pub complete: Vec<bool>,
         }
 
         let mut intermediate_rep = IntermediateRep::default();
@@ -3310,6 +3331,11 @@ impl std::str::FromStr for Order {
                             .map_err(|x| x.to_string())?,
                     ),
                     #[allow(clippy::redundant_clone)]
+                    "billing_address" => intermediate_rep.billing_address.push(
+                        <models::Address as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
+                    #[allow(clippy::redundant_clone)]
                     "shipping_address_override" => intermediate_rep.shipping_address_override.push(
                         <models::Address as std::str::FromStr>::from_str(val)
                             .map_err(|x| x.to_string())?,
@@ -3317,10 +3343,6 @@ impl std::str::FromStr for Order {
                     #[allow(clippy::redundant_clone)]
                     "status" => intermediate_rep.status.push(
                         <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
-                    ),
-                    #[allow(clippy::redundant_clone)]
-                    "complete" => intermediate_rep.complete.push(
-                        <bool as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
                     ),
                     _ => {
                         return std::result::Result::Err(
@@ -3341,8 +3363,16 @@ impl std::str::FromStr for Order {
                 .into_iter()
                 .next()
                 .ok_or_else(|| "id missing in Order".to_string())?,
-            book_id: intermediate_rep.book_id.into_iter().next(),
-            customer_id: intermediate_rep.customer_id.into_iter().next(),
+            book_id: intermediate_rep
+                .book_id
+                .into_iter()
+                .next()
+                .ok_or_else(|| "book_id missing in Order".to_string())?,
+            customer_id: intermediate_rep
+                .customer_id
+                .into_iter()
+                .next()
+                .ok_or_else(|| "customer_id missing in Order".to_string())?,
             quantity: intermediate_rep
                 .quantity
                 .into_iter()
@@ -3353,6 +3383,11 @@ impl std::str::FromStr for Order {
                 .into_iter()
                 .next()
                 .ok_or_else(|| "shipping_date missing in Order".to_string())?,
+            billing_address: intermediate_rep
+                .billing_address
+                .into_iter()
+                .next()
+                .ok_or_else(|| "billing_address missing in Order".to_string())?,
             shipping_address_override: intermediate_rep
                 .shipping_address_override
                 .into_iter()
@@ -3362,7 +3397,6 @@ impl std::str::FromStr for Order {
                 .into_iter()
                 .next()
                 .ok_or_else(|| "status missing in Order".to_string())?,
-            complete: intermediate_rep.complete.into_iter().next(),
         })
     }
 }
@@ -3423,10 +3457,6 @@ pub struct OrderProperties {
     /// Note: inline enums are not fully supported by openapi-generator
     #[serde(rename = "status")]
     pub status: String,
-
-    #[serde(rename = "complete")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub complete: Option<bool>,
 }
 
 impl OrderProperties {
@@ -3440,7 +3470,6 @@ impl OrderProperties {
             quantity,
             shipping_date,
             status,
-            complete: None,
         }
     }
 }
@@ -3456,9 +3485,6 @@ impl std::fmt::Display for OrderProperties {
             // Skipping shipping_date in query parameter serialization
             Some("status".to_string()),
             Some(self.status.to_string()),
-            self.complete
-                .as_ref()
-                .map(|complete| ["complete".to_string(), complete.to_string()].join(",")),
         ];
 
         write!(
@@ -3483,7 +3509,6 @@ impl std::str::FromStr for OrderProperties {
             pub quantity: Vec<i32>,
             pub shipping_date: Vec<chrono::DateTime<chrono::Utc>>,
             pub status: Vec<String>,
-            pub complete: Vec<bool>,
         }
 
         let mut intermediate_rep = IntermediateRep::default();
@@ -3518,10 +3543,6 @@ impl std::str::FromStr for OrderProperties {
                     "status" => intermediate_rep.status.push(
                         <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
                     ),
-                    #[allow(clippy::redundant_clone)]
-                    "complete" => intermediate_rep.complete.push(
-                        <bool as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
-                    ),
                     _ => {
                         return std::result::Result::Err(
                             "Unexpected key while parsing OrderProperties".to_string(),
@@ -3551,7 +3572,6 @@ impl std::str::FromStr for OrderProperties {
                 .into_iter()
                 .next()
                 .ok_or_else(|| "status missing in OrderProperties".to_string())?,
-            complete: intermediate_rep.complete.into_iter().next(),
         })
     }
 }
