@@ -1,6 +1,6 @@
 use core::f64;
 
-use svix_ksuid::Ksuid;
+use svix_ksuid::{Ksuid, KsuidMs};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct DiscountCodeDomain {
@@ -11,25 +11,34 @@ pub struct DiscountCodeDomain {
     pub code: String,
 }
 
-#[derive(Debug, Clone, PartialEq)]
-pub struct DiscountCodeUpdateProps {
-    pub percentage_discount: Option<i32>,
-    pub valid_from: Option<chrono::naive::NaiveDate>,
-    pub valid_to: Option<chrono::naive::NaiveDate>,
-    pub code: Option<String>,
-}
-
+// The read model for the book domain which will include all discount codes, authors and generes
 #[derive(Debug, Clone, PartialEq)]
 pub struct BookDomain {
     pub id: Ksuid,
     pub title: String,
     pub release: chrono::naive::NaiveDate,
     pub firs_release: chrono::naive::NaiveDate,
-    pub authors: Vec<AuthorDomain>,
+    pub authors: Option<Vec<AuthorDomain>>,
     pub series: Option<String>,
     pub edition: i32,
     pub price: f64,
     pub discounts: Option<Vec<DiscountCodeDomain>>,
+    pub available: i32,
+    pub status: BookStatus,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct NewBookDomain {
+    pub id: Ksuid,
+    pub title: String,
+    pub release: chrono::naive::NaiveDate,
+    pub first_release: chrono::naive::NaiveDate,
+    pub authors: Vec<Ksuid>,
+    pub series: Option<String>,
+    pub generes: Option<Vec<Ksuid>>,
+    pub edition: i32,
+    pub price: f64,
+    pub discounts: Option<Vec<Ksuid>>,
     pub available: i32,
     pub status: BookStatus,
 }
@@ -84,6 +93,7 @@ pub struct AuthorDomain {
     pub title: Option<String>,
     pub first_name: String,
     pub last_name: String,
+    pub second_names: Option<Vec<String>>,
     pub date_of_birth: chrono::naive::NaiveDate,
     pub date_of_death: Option<chrono::naive::NaiveDate>,
 }
@@ -95,6 +105,12 @@ pub struct AuthorUpdateProps {
     pub last_name: Option<String>,
     pub date_of_birth: Option<chrono::naive::NaiveDate>,
     pub date_of_death: Option<chrono::naive::NaiveDate>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct GenereDomain {
+    pub id: Ksuid,
+    pub name: String,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -126,7 +142,7 @@ pub struct OrderUpdateProps {
 #[derive(Debug, Clone, PartialEq)]
 pub struct AddressDomain {
     pub street: String,
-    pub stree_number: String,
+    pub street_number: String,
     pub zip_code: String,
     pub city: String,
     pub province: Option<String>,

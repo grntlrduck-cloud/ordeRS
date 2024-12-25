@@ -3,7 +3,7 @@ use axum::extract::*;
 use axum::http::header::HeaderMap;
 use axum_extra::extract::CookieJar;
 use http::Method;
-use openapi::apis::{author, book, discount, health, store, ApiKeyAuthHeader};
+use openapi::apis::{author, book, discount, genre, health, store, ApiKeyAuthHeader};
 use openapi::models;
 use std::sync::Arc;
 use tokio::net::TcpListener;
@@ -231,17 +231,6 @@ impl discount::Discount for BookStoreServer {
     ) -> Result<discount::GetDiscountByIdResponse, ()> {
         Ok(discount::GetDiscountByIdResponse::Status400_InvalidParameters)
     }
-
-    async fn update_discount(
-        &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        path_params: models::UpdateDiscountPathParams,
-        body: models::DiscountCodeProperties,
-    ) -> Result<discount::UpdateDiscountResponse, ()> {
-        Ok(discount::UpdateDiscountResponse::Status400_InvalidIDSupplied)
-    }
 }
 
 #[allow(unused_variables)]
@@ -295,6 +284,40 @@ impl store::Store for BookStoreServer {
         body: models::OrderProperties,
     ) -> Result<store::UpdateOrderResponse, ()> {
         Ok(store::UpdateOrderResponse::Status400_InvalidParameters)
+    }
+}
+
+#[allow(unused_variables)]
+#[async_trait]
+impl genre::Genre for BookStoreServer {
+    async fn add_genre(
+        &self,
+        method: Method,
+        host: Host,
+        cookies: CookieJar,
+        body: models::NewGenre,
+    ) -> Result<genre::AddGenreResponse, ()> {
+        Ok(genre::AddGenreResponse::Status400_InvalidInput)
+    }
+
+    async fn delete_genre(
+        &self,
+        method: Method,
+        host: Host,
+        cookies: CookieJar,
+        path_params: models::DeleteGenrePathParams,
+    ) -> Result<genre::DeleteGenreResponse, ()> {
+        Ok(genre::DeleteGenreResponse::Status400_InvalidGenereIdValue)
+    }
+
+    async fn get_genre_by_id(
+        &self,
+        method: Method,
+        host: Host,
+        cookies: CookieJar,
+        path_params: models::GetGenreByIdPathParams,
+    ) -> Result<genre::GetGenreByIdResponse, ()> {
+        Ok(genre::GetGenreByIdResponse::Status400_InvalidParameters)
     }
 }
 

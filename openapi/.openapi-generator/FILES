@@ -4,6 +4,7 @@ README.md
 src/apis/author.rs
 src/apis/book.rs
 src/apis/discount.rs
+src/apis/genre.rs
 src/apis/health.rs
 src/apis/mod.rs
 src/apis/store.rs

@@ -18,3 +18,8 @@ http = "1.0"
 async-trait = "0.1"
 tracing = { version = "0.1", features = ["attributes"] }
 tracing-subscriber = "0.3"
+
+[profile.release]
+opt-level = "s"
+panic = "abort"
+lto = "fat"
