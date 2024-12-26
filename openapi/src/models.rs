@@ -2363,11 +2363,6 @@ pub struct NewBook {
     /// The number of available items
     #[serde(rename = "available")]
     pub available: i32,
-
-    /// the inventory state of the book
-    /// Note: inline enums are not fully supported by openapi-generator
-    #[serde(rename = "status")]
-    pub status: String,
 }
 
 impl NewBook {
@@ -2378,7 +2373,6 @@ impl NewBook {
         authors: Vec<String>,
         price: f64,
         available: i32,
-        status: String,
     ) -> NewBook {
         NewBook {
             title,
@@ -2391,7 +2385,6 @@ impl NewBook {
             edition: None,
             price,
             available,
-            status,
         }
     }
 }
@@ -2447,8 +2440,6 @@ impl std::fmt::Display for NewBook {
             Some(self.price.to_string()),
             Some("available".to_string()),
             Some(self.available.to_string()),
-            Some("status".to_string()),
-            Some(self.status.to_string()),
         ];
 
         write!(
@@ -2480,7 +2471,6 @@ impl std::str::FromStr for NewBook {
             pub edition: Vec<i32>,
             pub price: Vec<f64>,
             pub available: Vec<i32>,
-            pub status: Vec<String>,
         }
 
         let mut intermediate_rep = IntermediateRep::default();
@@ -2550,10 +2540,6 @@ impl std::str::FromStr for NewBook {
                     "available" => intermediate_rep.available.push(
                         <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
                     ),
-                    #[allow(clippy::redundant_clone)]
-                    "status" => intermediate_rep.status.push(
-                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
-                    ),
                     _ => {
                         return std::result::Result::Err(
                             "Unexpected key while parsing NewBook".to_string(),
@@ -2598,11 +2584,6 @@ impl std::str::FromStr for NewBook {
                 .into_iter()
                 .next()
                 .ok_or_else(|| "available missing in NewBook".to_string())?,
-            status: intermediate_rep
-                .status
-                .into_iter()
-                .next()
-                .ok_or_else(|| "status missing in NewBook".to_string())?,
         })
     }
 }

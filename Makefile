@@ -33,7 +33,7 @@ lint:
 	cargo clippy
 	@rm -f ./*.profraw ./**/*.profraw
 
-lint-fix:
+lint_fix:
 	cargo fmt
 	cargo clippy --fix --allow-dirty
 	@rm -f ./*.profraw ./**/*.profraw

@@ -716,14 +716,7 @@ components:
           type: integer
           format: int32
           description: The number of available items
-        status:
-          type: string
-          description: the inventory state of the book
-          enum:
-            - available
-            - re-ordered
-            - out-of-stock
-      required: [title, release, authors, price, available, status]
+      required: [title, release, authors, price, available]
 
     BookProperties:
       type: object
