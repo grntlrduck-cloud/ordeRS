@@ -669,109 +669,74 @@ components:
       name: X-API-KEY
       in: header
   schemas:
-    NewBook:
+    Address:
       type: object
       properties:
-        title:
+        street:
           type: string
-        release:
+          example: Berlinerstrasse
+        street_number:
           type: string
-          description: the date when this edition of the book was released
-          format: date
-          example: 2024-12-09
-        first_release:
+          example: 12b
+        zip_code:
           type: string
-          description: the date when the first edition of the book was release
-          format: date
-          example: 2024-12-09
-        authors:
-          type: array
-          items:
-            type: string
-            example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
-            description: the authorIds
-        genres:
-          type: array
-          items:
-            type: string
-            example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
-            description: the genreIds to attach to the book
-        discount_codes:
-          type: array
-          items:
-            type: string
-            example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
-            description: the discountCodeIds to attach to the book
-        series:
+          example: "123456"
+        city:
           type: string
-        edition:
-          type: integer
-          description: the edition of this book
-          format: int32
-        price:
-          type: number
-          description: the price of this book in Dollar
-          format: double
-        available:
-          type: integer
-          format: int32
-          description: The number of available items
-      required: [title, release, authors, price, available]
+          example: Munich
+        province:
+          type: string
+          example: Kingdom Bavaria
+        country:
+          type: string
+          example: Germany
+      required: [street, street_number, zip_code, city, country]
 
-    BookProperties:
+    Author:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
+        title:
+          type: string
+          example: Prof. Dr.
+        first_name:
+          type: string
+        second_names:
+          type: array
+          items:
+            type: string
+        last_name:
+          type: string
+        date_of_birth:
+          type: string
+          format: date
+          example: 2024-12-09
+        date_of_death:
+          type: string
+          format: date
+          example: 2024-12-09
+      required: [id, first_name, last_name, date_of_birth]
+
+    AuthorProperties:
       type: object
       properties:
         title:
           type: string
-        release:
+          example: Prof. Dr.
+        first_name:
           type: string
-          description: the date when this edition of the book was released
+        second_names:
+          type: array
+          items:
+            type: string
+        last_name:
+          type: string
+        date_of_death:
+          type: string
           format: date
           example: 2024-12-09
-        first_release:
-          type: string
-          description: the date when the first edition of the book was release
-          format: date
-          example: 2024-12-09
-        authors:
-          type: array
-          items:
-            type: string
-            example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
-            description: the authorIds
-        genres:
-          type: array
-          items:
-            type: string
-            example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
-            description: the genreIds to attach to the book
-        discount_codes:
-          type: array
-          items:
-            type: string
-            example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
-            description: the discountCodeIds to attach to the book
-        series:
-          type: string
-        edition:
-          type: integer
-          description: the edition of this book
-          format: int32
-        price:
-          type: number
-          description: the price of this book in Dollar
-          format: double
-        available:
-          type: integer
-          format: int32
-          description: The number of available items
-        status:
-          type: string
-          description: the inventory state of the book
-          enum:
-            - available
-            - re-ordered
-            - out-of-stock
 
     Book:
       type: object
@@ -837,22 +802,60 @@ components:
           status,
         ]
 
-    NewDiscountCode:
+    BookProperties:
       type: object
       properties:
-        percentage_discount:
+        title:
+          type: string
+        release:
+          type: string
+          description: the date when this edition of the book was released
+          format: date
+          example: 2024-12-09
+        first_release:
+          type: string
+          description: the date when the first edition of the book was release
+          format: date
+          example: 2024-12-09
+        authors:
+          type: array
+          items:
+            type: string
+            example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
+            description: the authorIds
+        genres:
+          type: array
+          items:
+            type: string
+            example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
+            description: the genreIds to attach to the book
+        discount_codes:
+          type: array
+          items:
+            type: string
+            example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
+            description: the discountCodeIds to attach to the book
+        series:
+          type: string
+        edition:
+          type: integer
+          description: the edition of this book
+          format: int32
+        price:
+          type: number
+          description: the price of this book in Dollar
+          format: double
+        available:
           type: integer
           format: int32
-        valid_from:
+          description: The number of available items
+        status:
           type: string
-          format: date
-        valid_to:
-          type: string
-          format: date
-        code:
-          type: string
-          example: DISCOUNT_20
-      required: [percentage_discount, valid_from, valid_to, code]
+          description: the inventory state of the book
+          enum:
+            - available
+            - re-ordered
+            - out-of-stock
 
     DiscountCode:
       type: object
@@ -873,6 +876,40 @@ components:
           type: string
           example: DISCOUNT_20
       required: [id, percentage_discount, valid_from, valid_to, code]
+
+    Genre:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
+        name:
+          type: string
+          example: horror
+      required: [id, name]
+
+    HealthCheckResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - serving
+            - ready
+
+    Inventory:
+      type: object
+      properties:
+        books_available:
+          type: integer
+          format: int32
+        books_reordered:
+          type: integer
+          format: int32
+        books_out_of_stock:
+          type: integer
+          format: int32
+      required: [books_available, books_reordered, books_out_of_stock]
 
     NewAuthor:
       type: object
@@ -898,51 +935,71 @@ components:
           example: 2024-12-09
       required: [first_name, last_name, date_of_birth]
 
-    Author:
+    NewBook:
       type: object
       properties:
-        id:
-          type: string
-          example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
         title:
           type: string
-          example: Prof. Dr.
-        first_name:
+        release:
           type: string
-        second_names:
+          description: the date when this edition of the book was released
+          format: date
+          example: 2024-12-09
+        first_release:
+          type: string
+          description: the date when the first edition of the book was release
+          format: date
+          example: 2024-12-09
+        authors:
           type: array
           items:
             type: string
-        last_name:
+            example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
+            description: the authorIds
+        genres:
+          type: array
+          items:
+            type: string
+            example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
+            description: the genreIds to attach to the book
+        discount_codes:
+          type: array
+          items:
+            type: string
+            example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
+            description: the discountCodeIds to attach to the book
+        series:
           type: string
-        date_of_birth:
-          type: string
-          format: date
-          example: 2024-12-09
-        date_of_death:
-          type: string
-          format: date
-          example: 2024-12-09
-      required: [id, first_name, last_name, date_of_birth]
+        edition:
+          type: integer
+          description: the edition of this book
+          format: int32
+        price:
+          type: number
+          description: the price of this book in Dollar
+          format: double
+        available:
+          type: integer
+          format: int32
+          description: The number of available items
+      required: [title, release, authors, price, available]
 
-    AuthorProperties:
+    NewDiscountCode:
       type: object
       properties:
-        title:
-          type: string
-          example: Prof. Dr.
-        first_name:
-          type: string
-        second_names:
-          type: array
-          items:
-            type: string
-        last_name:
-          type: string
-        date_of_death:
+        percentage_discount:
+          type: integer
+          format: int32
+        valid_from:
           type: string
           format: date
-          example: 2024-12-09
+        valid_to:
+          type: string
+          format: date
+        code:
+          type: string
+          example: DISCOUNT_20
+      required: [percentage_discount, valid_from, valid_to, code]
 
     NewGenre:
       type: object
@@ -951,38 +1008,6 @@ components:
           type: string
           example: horror
       required: [name]
-
-    Genre:
-      type: object
-      properties:
-        id:
-          type: string
-          example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
-        name:
-          type: string
-          example: horror
-      required: [id, name]
-
-    OrderProperties:
-      type: object
-      properties:
-        quantity:
-          type: integer
-          format: int32
-          example: 7
-        shipping_date:
-          type: string
-          format: date-time
-        status:
-          type: string
-          description: Order Status
-          example: approved
-          enum:
-            - placed
-            - shipped
-            - delivered
-            - canceled
-      required: [shipping_date, quantity, status]
 
     NewOrder:
       type: object
@@ -1051,48 +1076,23 @@ components:
           status,
         ]
 
-    Address:
+    OrderProperties:
       type: object
       properties:
-        street:
-          type: string
-          example: Berlinerstrasse
-        street_number:
-          type: string
-          example: 12b
-        zip_code:
-          type: string
-          example: "123456"
-        city:
-          type: string
-          example: Munich
-        province:
-          type: string
-          example: Kingdom Bavaria
-        country:
-          type: string
-          example: Germany
-      required: [street, street_number, zip_code, city, country]
-
-    Inventory:
-      type: object
-      properties:
-        books_available:
+        quantity:
           type: integer
           format: int32
-        books_reordered:
-          type: integer
-          format: int32
-        books_out_of_stock:
-          type: integer
-          format: int32
-      required: [books_available, books_reordered, books_out_of_stock]
-
-    HealthCheckResponse:
-      type: object
-      properties:
+          example: 7
+        shipping_date:
+          type: string
+          format: date-time
         status:
           type: string
+          description: Order Status
+          example: approved
           enum:
-            - serving
-            - ready
+            - placed
+            - shipped
+            - delivered
+            - canceled
+      required: [shipping_date, quantity, status]

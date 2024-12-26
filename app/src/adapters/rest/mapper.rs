@@ -89,67 +89,6 @@ impl Error for MapperError {
     }
 }
 
-fn map_order_to_rest(order: dmodels::OrderDomain) -> rmodels::Order {
-    let address_override = if order.billing_address == order.shipping_address {
-        None
-    } else {
-        Some(map_address_to_rest(order.shipping_address))
-    };
-    rmodels::Order {
-        id: order.id.to_string(),
-        book_id: order.book_id.to_string(),
-        customer_id: order.customer_id.to_string(),
-        quantity: order.quantity,
-        shipping_date: order.shipping_date,
-        billing_address: map_address_to_rest(order.billing_address.clone()),
-        shipping_address_override: address_override,
-        status: order.status.to_string(),
-    }
-}
-
-fn map_address_to_rest(address: dmodels::AddressDomain) -> rmodels::Address {
-    rmodels::Address {
-        street: address.street,
-        street_number: address.street_number,
-        zip_code: address.zip_code,
-        city: address.city,
-        province: address.province,
-        country: address.country,
-    }
-}
-
-fn map_new_order_to_domain(
-    new_order: rmodels::NewOrder,
-) -> Result<dmodels::OrderDomain, MapperError> {
-    let book_id = Ksuid::from_str(&new_order.book_id).map_err(|e| MapperError::InvalidKsuid {
-        id: new_order.book_id.clone(),
-        source: e,
-    })?;
-
-    let customer_id =
-        Ksuid::from_str(&new_order.customer_id).map_err(|e| MapperError::InvalidKsuid {
-            id: new_order.customer_id.clone(),
-            source: e,
-        })?;
-
-    // Handle shipping address: if override exists use it, otherwise use billing address
-    let shipping_address = match &new_order.shipping_address_override {
-        Some(override_address) => map_address_to_domain(override_address.clone()),
-        None => map_address_to_domain(new_order.billing_address.clone()),
-    };
-
-    Ok(dmodels::OrderDomain {
-        id: Ksuid::new(None, None),
-        book_id,
-        customer_id,
-        quantity: new_order.quantity,
-        shipping_date: new_order.shipping_date,
-        billing_address: map_address_to_domain(new_order.billing_address),
-        shipping_address,
-        status: dmodels::OrderStatus::Placed,
-    })
-}
-
 fn map_address_to_domain(address: rmodels::Address) -> dmodels::AddressDomain {
     dmodels::AddressDomain {
         street: address.street,
@@ -161,11 +100,14 @@ fn map_address_to_domain(address: rmodels::Address) -> dmodels::AddressDomain {
     }
 }
 
-fn map_inventory_to_rest(inventory: dmodels::InventoryDomain) -> rmodels::Inventory {
-    rmodels::Inventory {
-        books_available: inventory.books_available,
-        books_reordered: inventory.books_reordered,
-        books_out_of_stock: inventory.books_out_of_stock,
+fn map_address_to_rest(address: dmodels::AddressDomain) -> rmodels::Address {
+    rmodels::Address {
+        street: address.street,
+        street_number: address.street_number,
+        zip_code: address.zip_code,
+        city: address.city,
+        province: address.province,
+        country: address.country,
     }
 }
 
@@ -181,22 +123,54 @@ fn map_author_to_rest(author: dmodels::AuthorDomain) -> rmodels::Author {
     }
 }
 
-fn map_new_author_to_domain(new_author: rmodels::Author) -> dmodels::AuthorDomain {
-    dmodels::AuthorDomain {
-        id: Ksuid::new(None, None),
-        title: new_author.title,
-        first_name: new_author.first_name,
-        last_name: new_author.last_name,
-        second_names: new_author.second_names,
-        date_of_birth: new_author.date_of_birth,
-        date_of_death: new_author.date_of_death,
+fn map_book_to_rest(book: dmodels::BookDomain) -> rmodels::Book {
+    // map the authors to the rest model
+    let authors = book.authors.into_iter().map(map_author_to_rest).collect();
+
+    // math the genres to the rest model
+    let genres = match book.genres {
+        Some(genres) => {
+            let result = genres.into_iter().map(map_genre_to_rest).collect();
+            Some(result)
+        }
+        None => None,
+    };
+
+    // map the discount codes to the rest model
+    let discounts = match book.discounts {
+        Some(discounts) => {
+            let result = discounts
+                .into_iter()
+                .map(map_discount_code_to_rest)
+                .collect();
+            Some(result)
+        }
+        None => None,
+    };
+
+    rmodels::Book {
+        id: book.id.to_string(),
+        title: book.title,
+        release: book.release,
+        first_release: book.firs_release,
+        series: book.series,
+        authors,
+        edition: book.edition,
+        genres,
+        discounts,
+        price: book.price,
+        available: book.available,
+        status: book.status.to_string(),
     }
 }
 
-fn map_new_genre_to_domain(genre: String) -> dmodels::GenereDomain {
-    dmodels::GenereDomain {
-        id: Ksuid::new(None, None),
-        name: genre,
+fn map_discount_code_to_rest(discount: dmodels::DiscountCodeDomain) -> rmodels::DiscountCode {
+    rmodels::DiscountCode {
+        id: discount.id.to_string(),
+        percentage_discount: discount.percentage_discount,
+        valid_from: discount.valid_from,
+        valid_to: discount.valid_to,
+        code: discount.code,
     }
 }
 
@@ -207,32 +181,23 @@ fn map_genre_to_rest(genre: dmodels::GenereDomain) -> rmodels::Genre {
     }
 }
 
-fn map_new_discount_code_to_domain(
-    new_discount: rmodels::NewDiscountCode,
-) -> Result<dmodels::DiscountCodeDomain, MapperError> {
-    if new_discount.percentage_discount < 1 || new_discount.percentage_discount > 80 {
-        return Err(MapperError::DiscountPercentageOutOfBounds {
-            percentage: new_discount.percentage_discount,
-            source: Box::new(DiscountPercentageError(new_discount.percentage_discount)),
-        });
+fn map_inventory_to_rest(inventory: dmodels::InventoryDomain) -> rmodels::Inventory {
+    rmodels::Inventory {
+        books_available: inventory.books_available,
+        books_reordered: inventory.books_reordered,
+        books_out_of_stock: inventory.books_out_of_stock,
     }
-
-    Ok(dmodels::DiscountCodeDomain {
-        id: Ksuid::new(None, None),
-        percentage_discount: new_discount.percentage_discount,
-        valid_from: new_discount.valid_from,
-        valid_to: new_discount.valid_to,
-        code: new_discount.code,
-    })
 }
 
-fn map_discount_code_to_rest(discount: dmodels::DiscountCodeDomain) -> rmodels::DiscountCode {
-    rmodels::DiscountCode {
-        id: discount.id.to_string(),
-        percentage_discount: discount.percentage_discount,
-        valid_from: discount.valid_from,
-        valid_to: discount.valid_to,
-        code: discount.code,
+fn map_new_author_to_domain(new_author: rmodels::Author) -> dmodels::AuthorDomain {
+    dmodels::AuthorDomain {
+        id: Ksuid::new(None, None),
+        title: new_author.title,
+        first_name: new_author.first_name,
+        last_name: new_author.last_name,
+        second_names: new_author.second_names,
+        date_of_birth: new_author.date_of_birth,
+        date_of_death: new_author.date_of_death,
     }
 }
 
@@ -314,44 +279,79 @@ fn map_new_book_to_domain(
     })
 }
 
-fn map_book_to_rest(book: dmodels::BookDomain) -> rmodels::Book {
-    // map the authors to the rest model
-    let authors = book.authors.into_iter().map(map_author_to_rest).collect();
+fn map_new_discount_code_to_domain(
+    new_discount: rmodels::NewDiscountCode,
+) -> Result<dmodels::DiscountCodeDomain, MapperError> {
+    if new_discount.percentage_discount < 1 || new_discount.percentage_discount > 80 {
+        return Err(MapperError::DiscountPercentageOutOfBounds {
+            percentage: new_discount.percentage_discount,
+            source: Box::new(DiscountPercentageError(new_discount.percentage_discount)),
+        });
+    }
 
-    // math the genres to the rest model
-    let genres = match book.genres {
-        Some(genres) => {
-            let result = genres.into_iter().map(map_genre_to_rest).collect();
-            Some(result)
-        }
-        None => None,
+    Ok(dmodels::DiscountCodeDomain {
+        id: Ksuid::new(None, None),
+        percentage_discount: new_discount.percentage_discount,
+        valid_from: new_discount.valid_from,
+        valid_to: new_discount.valid_to,
+        code: new_discount.code,
+    })
+}
+
+fn map_new_genre_to_domain(genre: String) -> dmodels::GenereDomain {
+    dmodels::GenereDomain {
+        id: Ksuid::new(None, None),
+        name: genre,
+    }
+}
+
+fn map_new_order_to_domain(
+    new_order: rmodels::NewOrder,
+) -> Result<dmodels::OrderDomain, MapperError> {
+    let book_id = Ksuid::from_str(&new_order.book_id).map_err(|e| MapperError::InvalidKsuid {
+        id: new_order.book_id.clone(),
+        source: e,
+    })?;
+
+    let customer_id =
+        Ksuid::from_str(&new_order.customer_id).map_err(|e| MapperError::InvalidKsuid {
+            id: new_order.customer_id.clone(),
+            source: e,
+        })?;
+
+    // Handle shipping address: if override exists use it, otherwise use billing address
+    let shipping_address = match &new_order.shipping_address_override {
+        Some(override_address) => map_address_to_domain(override_address.clone()),
+        None => map_address_to_domain(new_order.billing_address.clone()),
     };
 
-    // map the discount codes to the rest model
-    let discounts = match book.discounts {
-        Some(discounts) => {
-            let result = discounts
-                .into_iter()
-                .map(map_discount_code_to_rest)
-                .collect();
-            Some(result)
-        }
-        None => None,
-    };
+    Ok(dmodels::OrderDomain {
+        id: Ksuid::new(None, None),
+        book_id,
+        customer_id,
+        quantity: new_order.quantity,
+        shipping_date: new_order.shipping_date,
+        billing_address: map_address_to_domain(new_order.billing_address),
+        shipping_address,
+        status: dmodels::OrderStatus::Placed,
+    })
+}
 
-    rmodels::Book {
-        id: book.id.to_string(),
-        title: book.title,
-        release: book.release,
-        first_release: book.firs_release,
-        series: book.series,
-        authors,
-        edition: book.edition,
-        genres,
-        discounts,
-        price: book.price,
-        available: book.available,
-        status: book.status.to_string(),
+fn map_order_to_rest(order: dmodels::OrderDomain) -> rmodels::Order {
+    let address_override = if order.billing_address == order.shipping_address {
+        None
+    } else {
+        Some(map_address_to_rest(order.shipping_address))
+    };
+    rmodels::Order {
+        id: order.id.to_string(),
+        book_id: order.book_id.to_string(),
+        customer_id: order.customer_id.to_string(),
+        quantity: order.quantity,
+        shipping_date: order.shipping_date,
+        billing_address: map_address_to_rest(order.billing_address.clone()),
+        shipping_address_override: address_override,
+        status: order.status.to_string(),
     }
 }
 
