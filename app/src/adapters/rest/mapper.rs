@@ -217,7 +217,7 @@ fn map_new_book_to_domain(
     };
 
     let edition = match new_book.edition {
-        Some(e) => e.clone(),
+        Some(e) => e,
         None => 1,
     };
 
@@ -234,7 +234,7 @@ fn map_new_book_to_domain(
         .collect::<Result<Vec<Ksuid>, MapperError>>()?;
 
     // map genereIds to Ksuid
-    let d_genres = match new_book.generes {
+    let d_genres = match new_book.genres {
         Some(genres) => {
             let result: Result<Vec<Ksuid>, MapperError> = genres
                 .into_iter()
@@ -274,11 +274,166 @@ fn map_new_book_to_domain(
         first_release,
         authors: d_authors,
         series: new_book.series,
-        generes: d_genres,
+        genres: d_genres,
         edition,
         price: new_book.price,
         discounts: d_discounts,
         available: new_book.available,
         status: dmodels::BookStatus::Available,
     })
+}
+
+fn map_book_to_rest(book: dmodels::BookDomain) -> rmodels::Book {
+    // map the authors to the rest model
+    let authors = book
+        .authors
+        .into_iter()
+        .map(|a| map_author_to_rest(a))
+        .collect();
+
+    // math the genres to the rest model
+    let genres = match book.genres {
+        Some(genres) => {
+            let result = genres.into_iter().map(|g| map_genre_to_rest(g)).collect();
+            Some(result)
+        }
+        None => None,
+    };
+
+    // map the discount codes to the rest model
+    let discounts = match book.discounts {
+        Some(discounts) => {
+            let result = discounts
+                .into_iter()
+                .map(|d| map_discount_code_to_rest(d))
+                .collect();
+            Some(result)
+        }
+        None => None,
+    };
+
+    rmodels::Book {
+        id: book.id.to_string(),
+        title: book.title,
+        release: book.release,
+        first_release: book.firs_release,
+        series: book.series,
+        authors,
+        edition: book.edition,
+        genres,
+        discounts,
+        price: book.price,
+        available: book.available,
+        status: book.status.to_string(),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use chrono::NaiveDate;
+
+    #[test]
+    fn test_map_book_to_rest_with_all_fields() {
+        // Arrange
+        let book_id = Ksuid::new(None, None);
+        let author_id = Ksuid::new(None, None);
+        let genre_id = Ksuid::new(None, None);
+        let discount_id = Ksuid::new(None, None);
+
+        let author = dmodels::AuthorDomain {
+            id: author_id,
+            title: Some(String::from("Dr.")),
+            first_name: String::from("John"),
+            second_names: Some(vec![String::from("Middle")]),
+            last_name: String::from("Doe"),
+            date_of_birth: NaiveDate::from_ymd_opt(2024, 12, 24).unwrap(),
+            date_of_death: None,
+        };
+
+        let genre = dmodels::GenereDomain {
+            id: genre_id,
+            name: String::from("Fiction"),
+        };
+
+        let discount = dmodels::DiscountCodeDomain {
+            id: discount_id,
+            percentage_discount: 10,
+            valid_from: NaiveDate::from_ymd_opt(2023, 1, 1).unwrap(),
+            valid_to: NaiveDate::from_ymd_opt(2023, 12, 31).unwrap(),
+            code: String::from("DISCOUNT10"),
+        };
+
+        let book = dmodels::BookDomain {
+            id: book_id,
+            title: String::from("Test Book"),
+            release: NaiveDate::from_ymd_opt(2023, 1, 1).unwrap(),
+            firs_release: NaiveDate::from_ymd_opt(2023, 1, 1).unwrap(),
+            authors: vec![author],
+            series: Some(String::from("Test Series")),
+            genres: Some(vec![genre]),
+            edition: 1,
+            price: 29.99,
+            discounts: Some(vec![discount]),
+            available: 10,
+            status: dmodels::BookStatus::Available,
+        };
+
+        // Act
+        let result = map_book_to_rest(book);
+
+        // Assert
+        assert_eq!(result.title, "Test Book");
+        assert_eq!(result.authors.len(), 1);
+        assert_eq!(result.authors[0].first_name, "John");
+        assert!(result.genres.is_some());
+        assert_eq!(result.genres.unwrap()[0].name, "Fiction");
+        assert!(result.discounts.is_some());
+        assert_eq!(result.available, 10);
+        assert_eq!(result.status, "available");
+    }
+
+    #[test]
+    fn test_map_book_to_rest_without_optional_fields() {
+        // Arrange
+        let book_id = Ksuid::new(None, None);
+        let author_id = Ksuid::new(None, None);
+
+        let author = dmodels::AuthorDomain {
+            id: author_id,
+            title: None,
+            first_name: String::from("John"),
+            second_names: None,
+            last_name: String::from("Doe"),
+            date_of_birth: NaiveDate::from_ymd_opt(2024, 12, 09).unwrap(),
+            date_of_death: None,
+        };
+
+        let book = dmodels::BookDomain {
+            id: book_id,
+            title: String::from("Test Book"),
+            release: NaiveDate::from_ymd_opt(2023, 1, 1).unwrap(),
+            firs_release: NaiveDate::from_ymd_opt(2023, 1, 1).unwrap(),
+            authors: vec![author],
+            series: None,
+            genres: None,
+            edition: 1,
+            price: 29.99,
+            discounts: None,
+            available: 10,
+            status: dmodels::BookStatus::Available,
+        };
+
+        // Act
+        let result = map_book_to_rest(book);
+
+        // Assert
+        assert_eq!(result.title, "Test Book");
+        assert_eq!(result.authors.len(), 1);
+        assert!(result.series.is_none());
+        assert!(result.genres.is_none());
+        assert!(result.discounts.is_none());
+        assert_eq!(result.available, 10);
+        assert_eq!(result.status, "available");
+    }
 }

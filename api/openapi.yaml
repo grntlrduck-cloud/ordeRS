@@ -690,7 +690,7 @@ components:
             type: string
             example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
             description: the authorIds
-        generes:
+        genres:
           type: array
           items:
             type: string
@@ -746,7 +746,7 @@ components:
             type: string
             example: 2ofD9kOPWgHWOpk8xeiCSGEaGC5
             description: the authorIds
-        generes:
+        genres:
           type: array
           items:
             type: string
@@ -802,7 +802,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Author"
-        generes:
+        genres:
           type: array
           items:
             $ref: "#/components/schemas/Genre"
@@ -838,7 +838,7 @@ components:
           release,
           first_release,
           edition,
-          author,
+          authors,
           price,
           available,
           status,

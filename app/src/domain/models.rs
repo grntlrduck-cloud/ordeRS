@@ -1,6 +1,6 @@
 use core::f64;
 
-use svix_ksuid::{Ksuid, KsuidMs};
+use svix_ksuid::Ksuid;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct DiscountCodeDomain {
@@ -18,10 +18,11 @@ pub struct BookDomain {
     pub title: String,
     pub release: chrono::naive::NaiveDate,
     pub firs_release: chrono::naive::NaiveDate,
-    pub authors: Option<Vec<AuthorDomain>>,
+    pub authors: Vec<AuthorDomain>,
     pub series: Option<String>,
     pub edition: i32,
     pub price: f64,
+    pub genres: Option<Vec<GenereDomain>>,
     pub discounts: Option<Vec<DiscountCodeDomain>>,
     pub available: i32,
     pub status: BookStatus,
@@ -35,7 +36,7 @@ pub struct NewBookDomain {
     pub first_release: chrono::naive::NaiveDate,
     pub authors: Vec<Ksuid>,
     pub series: Option<String>,
-    pub generes: Option<Vec<Ksuid>>,
+    pub genres: Option<Vec<Ksuid>>,
     pub edition: i32,
     pub price: f64,
     pub discounts: Option<Vec<Ksuid>>,

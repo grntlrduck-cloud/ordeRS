@@ -807,12 +807,11 @@ pub struct Book {
     pub first_release: chrono::naive::NaiveDate,
 
     #[serde(rename = "authors")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub authors: Option<Vec<models::Author>>,
+    pub authors: Vec<models::Author>,
 
-    #[serde(rename = "generes")]
+    #[serde(rename = "genres")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub generes: Option<Vec<models::Genre>>,
+    pub genres: Option<Vec<models::Genre>>,
 
     #[serde(rename = "series")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -847,6 +846,7 @@ impl Book {
         title: String,
         release: chrono::naive::NaiveDate,
         first_release: chrono::naive::NaiveDate,
+        authors: Vec<models::Author>,
         edition: i32,
         price: f64,
         available: i32,
@@ -857,8 +857,8 @@ impl Book {
             title,
             release,
             first_release,
-            authors: None,
-            generes: None,
+            authors,
+            genres: None,
             series: None,
             edition,
             price,
@@ -885,7 +885,7 @@ impl std::fmt::Display for Book {
 
             // Skipping authors in query parameter serialization
 
-            // Skipping generes in query parameter serialization
+            // Skipping genres in query parameter serialization
             self.series
                 .as_ref()
                 .map(|series| ["series".to_string(), series.to_string()].join(",")),
@@ -924,7 +924,7 @@ impl std::str::FromStr for Book {
             pub release: Vec<chrono::naive::NaiveDate>,
             pub first_release: Vec<chrono::naive::NaiveDate>,
             pub authors: Vec<Vec<models::Author>>,
-            pub generes: Vec<Vec<models::Genre>>,
+            pub genres: Vec<Vec<models::Genre>>,
             pub series: Vec<String>,
             pub edition: Vec<i32>,
             pub price: Vec<f64>,
@@ -974,7 +974,7 @@ impl std::str::FromStr for Book {
                                 .to_string(),
                         )
                     }
-                    "generes" => {
+                    "genres" => {
                         return std::result::Result::Err(
                             "Parsing a container in this style is not supported in Book"
                                 .to_string(),
@@ -1040,8 +1040,12 @@ impl std::str::FromStr for Book {
                 .into_iter()
                 .next()
                 .ok_or_else(|| "first_release missing in Book".to_string())?,
-            authors: intermediate_rep.authors.into_iter().next(),
-            generes: intermediate_rep.generes.into_iter().next(),
+            authors: intermediate_rep
+                .authors
+                .into_iter()
+                .next()
+                .ok_or_else(|| "authors missing in Book".to_string())?,
+            genres: intermediate_rep.genres.into_iter().next(),
             series: intermediate_rep.series.into_iter().next(),
             edition: intermediate_rep
                 .edition
@@ -1132,9 +1136,9 @@ pub struct BookProperties {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub authors: Option<Vec<String>>,
 
-    #[serde(rename = "generes")]
+    #[serde(rename = "genres")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub generes: Option<Vec<String>>,
+    pub genres: Option<Vec<String>>,
 
     #[serde(rename = "discount_codes")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1174,7 +1178,7 @@ impl BookProperties {
             release: None,
             first_release: None,
             authors: None,
-            generes: None,
+            genres: None,
             discount_codes: None,
             series: None,
             edition: None,
@@ -1208,10 +1212,10 @@ impl std::fmt::Display for BookProperties {
                 ]
                 .join(",")
             }),
-            self.generes.as_ref().map(|generes| {
+            self.genres.as_ref().map(|genres| {
                 [
-                    "generes".to_string(),
-                    generes
+                    "genres".to_string(),
+                    genres
                         .iter()
                         .map(|x| x.to_string())
                         .collect::<Vec<_>>()
@@ -1270,7 +1274,7 @@ impl std::str::FromStr for BookProperties {
             pub release: Vec<chrono::naive::NaiveDate>,
             pub first_release: Vec<chrono::naive::NaiveDate>,
             pub authors: Vec<Vec<String>>,
-            pub generes: Vec<Vec<String>>,
+            pub genres: Vec<Vec<String>>,
             pub discount_codes: Vec<Vec<String>>,
             pub series: Vec<String>,
             pub edition: Vec<i32>,
@@ -1318,7 +1322,7 @@ impl std::str::FromStr for BookProperties {
                                 .to_string(),
                         )
                     }
-                    "generes" => {
+                    "genres" => {
                         return std::result::Result::Err(
                             "Parsing a container in this style is not supported in BookProperties"
                                 .to_string(),
@@ -1368,7 +1372,7 @@ impl std::str::FromStr for BookProperties {
             release: intermediate_rep.release.into_iter().next(),
             first_release: intermediate_rep.first_release.into_iter().next(),
             authors: intermediate_rep.authors.into_iter().next(),
-            generes: intermediate_rep.generes.into_iter().next(),
+            genres: intermediate_rep.genres.into_iter().next(),
             discount_codes: intermediate_rep.discount_codes.into_iter().next(),
             series: intermediate_rep.series.into_iter().next(),
             edition: intermediate_rep.edition.into_iter().next(),
@@ -2335,9 +2339,9 @@ pub struct NewBook {
     #[serde(rename = "authors")]
     pub authors: Vec<String>,
 
-    #[serde(rename = "generes")]
+    #[serde(rename = "genres")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub generes: Option<Vec<String>>,
+    pub genres: Option<Vec<String>>,
 
     #[serde(rename = "discount_codes")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -2381,7 +2385,7 @@ impl NewBook {
             release,
             first_release: None,
             authors,
-            generes: None,
+            genres: None,
             discount_codes: None,
             series: None,
             edition: None,
@@ -2411,10 +2415,10 @@ impl std::fmt::Display for NewBook {
                     .collect::<Vec<_>>()
                     .join(","),
             ),
-            self.generes.as_ref().map(|generes| {
+            self.genres.as_ref().map(|genres| {
                 [
-                    "generes".to_string(),
-                    generes
+                    "genres".to_string(),
+                    genres
                         .iter()
                         .map(|x| x.to_string())
                         .collect::<Vec<_>>()
@@ -2470,7 +2474,7 @@ impl std::str::FromStr for NewBook {
             pub release: Vec<chrono::naive::NaiveDate>,
             pub first_release: Vec<chrono::naive::NaiveDate>,
             pub authors: Vec<Vec<String>>,
-            pub generes: Vec<Vec<String>>,
+            pub genres: Vec<Vec<String>>,
             pub discount_codes: Vec<Vec<String>>,
             pub series: Vec<String>,
             pub edition: Vec<i32>,
@@ -2518,7 +2522,7 @@ impl std::str::FromStr for NewBook {
                                 .to_string(),
                         )
                     }
-                    "generes" => {
+                    "genres" => {
                         return std::result::Result::Err(
                             "Parsing a container in this style is not supported in NewBook"
                                 .to_string(),
@@ -2580,7 +2584,7 @@ impl std::str::FromStr for NewBook {
                 .into_iter()
                 .next()
                 .ok_or_else(|| "authors missing in NewBook".to_string())?,
-            generes: intermediate_rep.generes.into_iter().next(),
+            genres: intermediate_rep.genres.into_iter().next(),
             discount_codes: intermediate_rep.discount_codes.into_iter().next(),
             series: intermediate_rep.series.into_iter().next(),
             edition: intermediate_rep.edition.into_iter().next(),
