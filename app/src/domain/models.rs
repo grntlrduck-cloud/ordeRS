@@ -1,68 +1,57 @@
 use core::f64;
-
 use svix_ksuid::Ksuid;
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct DiscountCodeDomain {
-    pub id: Ksuid,
-    pub percentage_discount: i32,
-    pub valid_from: chrono::naive::NaiveDate,
-    pub valid_to: chrono::naive::NaiveDate,
-    pub code: String,
+pub struct AddressDomain {
+    pub city: String,
+    pub country: String,
+    pub province: Option<String>,
+    pub street: String,
+    pub street_number: String,
+    pub zip_code: String,
 }
 
-// The read model for the book domain which will include all discount codes, authors and generes
+#[derive(Debug, Clone, PartialEq)]
+pub struct AuthorDomain {
+    pub date_of_birth: chrono::naive::NaiveDate,
+    pub date_of_death: Option<chrono::naive::NaiveDate>,
+    pub first_name: String,
+    pub id: Ksuid,
+    pub last_name: String,
+    pub second_names: Option<Vec<String>>,
+    pub title: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct AuthorUpdateProps {
+    pub date_of_birth: Option<chrono::naive::NaiveDate>,
+    pub date_of_death: Option<chrono::naive::NaiveDate>,
+    pub first_name: Option<String>,
+    pub last_name: Option<String>,
+    pub title: Option<String>,
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct BookDomain {
-    pub id: Ksuid,
-    pub title: String,
-    pub release: chrono::naive::NaiveDate,
-    pub firs_release: chrono::naive::NaiveDate,
     pub authors: Vec<AuthorDomain>,
-    pub series: Option<String>,
+    pub available: i32,
+    pub discounts: Option<Vec<DiscountCodeDomain>>,
     pub edition: i32,
-    pub price: f64,
+    pub firs_release: chrono::naive::NaiveDate,
     pub genres: Option<Vec<GenereDomain>>,
-    pub discounts: Option<Vec<DiscountCodeDomain>>,
-    pub available: i32,
-    pub status: BookStatus,
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct NewBookDomain {
     pub id: Ksuid,
-    pub title: String,
-    pub release: chrono::naive::NaiveDate,
-    pub first_release: chrono::naive::NaiveDate,
-    pub authors: Vec<Ksuid>,
-    pub series: Option<String>,
-    pub genres: Option<Vec<Ksuid>>,
-    pub edition: i32,
     pub price: f64,
-    pub discounts: Option<Vec<Ksuid>>,
-    pub available: i32,
-    pub status: BookStatus,
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct BookUpdateProps {
-    pub title: Option<String>,
-    pub release: Option<chrono::naive::NaiveDate>,
-    pub firs_release: Option<chrono::naive::NaiveDate>,
-    pub authors: Option<Vec<AuthorDomain>>,
+    pub release: chrono::naive::NaiveDate,
     pub series: Option<String>,
-    pub edition: Option<i32>,
-    pub price: Option<f64>,
-    pub discounts: Option<Vec<DiscountCodeDomain>>,
-    pub available: Option<i32>,
-    pub status: Option<BookStatus>,
+    pub status: BookStatus,
+    pub title: String,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum BookStatus {
     Available,
-    ReOrdered,
     OutOfStock,
+    ReOrdered,
 }
 
 impl std::fmt::Display for BookStatus {
@@ -89,23 +78,26 @@ impl std::str::FromStr for BookStatus {
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct AuthorDomain {
-    pub id: Ksuid,
+pub struct BookUpdateProps {
+    pub authors: Option<Vec<AuthorDomain>>,
+    pub available: Option<i32>,
+    pub discounts: Option<Vec<DiscountCodeDomain>>,
+    pub edition: Option<i32>,
+    pub firs_release: Option<chrono::naive::NaiveDate>,
+    pub price: Option<f64>,
+    pub release: Option<chrono::naive::NaiveDate>,
+    pub series: Option<String>,
+    pub status: Option<BookStatus>,
     pub title: Option<String>,
-    pub first_name: String,
-    pub last_name: String,
-    pub second_names: Option<Vec<String>>,
-    pub date_of_birth: chrono::naive::NaiveDate,
-    pub date_of_death: Option<chrono::naive::NaiveDate>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct AuthorUpdateProps {
-    pub title: Option<String>,
-    pub first_name: Option<String>,
-    pub last_name: Option<String>,
-    pub date_of_birth: Option<chrono::naive::NaiveDate>,
-    pub date_of_death: Option<chrono::naive::NaiveDate>,
+pub struct DiscountCodeDomain {
+    pub code: String,
+    pub id: Ksuid,
+    pub percentage_discount: i32,
+    pub valid_from: chrono::naive::NaiveDate,
+    pub valid_to: chrono::naive::NaiveDate,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -117,54 +109,53 @@ pub struct GenereDomain {
 #[derive(Debug, Clone, PartialEq)]
 pub struct InventoryDomain {
     pub books_available: i32,
-    pub books_reordered: i32,
     pub books_out_of_stock: i32,
+    pub books_reordered: i32,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct NewBookDomain {
+    pub authors: Vec<Ksuid>,
+    pub available: i32,
+    pub discounts: Option<Vec<Ksuid>>,
+    pub edition: i32,
+    pub first_release: chrono::naive::NaiveDate,
+    pub genres: Option<Vec<Ksuid>>,
+    pub id: Ksuid,
+    pub price: f64,
+    pub release: chrono::naive::NaiveDate,
+    pub series: Option<String>,
+    pub status: BookStatus,
+    pub title: String,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct OrderDomain {
-    pub id: Ksuid,
+    pub billing_address: AddressDomain,
     pub book_id: Ksuid,
     pub customer_id: Ksuid,
+    pub id: Ksuid,
     pub quantity: i32,
-    pub shipping_date: chrono::DateTime<chrono::Utc>,
     pub shipping_address: AddressDomain,
-    pub billing_address: AddressDomain,
+    pub shipping_date: chrono::DateTime<chrono::Utc>,
     pub status: OrderStatus,
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct OrderUpdateProps {
-    pub quantity: Option<i32>,
-    pub shipping_date: Option<chrono::DateTime<chrono::Utc>>,
-    pub status: Option<OrderStatus>,
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct AddressDomain {
-    pub street: String,
-    pub street_number: String,
-    pub zip_code: String,
-    pub city: String,
-    pub province: Option<String>,
-    pub country: String,
-}
-
-#[derive(Debug, Clone, PartialEq)]
 pub enum OrderStatus {
+    Canceled,
+    Delivered,
     Placed,
     Shipped,
-    Delivered,
-    Canceled,
 }
 
 impl std::fmt::Display for OrderStatus {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
+            OrderStatus::Canceled => write!(f, "canceled"),
+            OrderStatus::Delivered => write!(f, "delivered"),
             OrderStatus::Placed => write!(f, "placed"),
             OrderStatus::Shipped => write!(f, "shipped"),
-            OrderStatus::Delivered => write!(f, "delivered"),
-            OrderStatus::Canceled => write!(f, "canceled"),
         }
     }
 }
@@ -174,11 +165,18 @@ impl std::str::FromStr for OrderStatus {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_str() {
+            "canceled" => Ok(OrderStatus::Canceled),
+            "delivered" => Ok(OrderStatus::Delivered),
             "placed" => Ok(OrderStatus::Placed),
             "shipped" => Ok(OrderStatus::Shipped),
-            "delivered" => Ok(OrderStatus::Delivered),
-            "canceled" => Ok(OrderStatus::Canceled),
             _ => Err(format!("Invalid order status: {}", s)),
         }
     }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct OrderUpdateProps {
+    pub quantity: Option<i32>,
+    pub shipping_date: Option<chrono::DateTime<chrono::Utc>>,
+    pub status: Option<OrderStatus>,
 }
