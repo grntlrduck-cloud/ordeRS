@@ -207,8 +207,8 @@ fn map_new_book_to_domain(
 ) -> Result<dmodels::NewBookDomain, MapperError> {
     if new_book.available < 0 {
         return Err(MapperError::InvalidBooksAvailable {
-            books_available: new_book.available.clone(),
-            source: Box::new(BookAvailabilityError(new_book.available.clone())),
+            books_available: new_book.available,
+            source: Box::new(BookAvailabilityError(new_book.available)),
         });
     }
     let first_release = match new_book.first_release {
@@ -216,10 +216,7 @@ fn map_new_book_to_domain(
         None => new_book.release,
     };
 
-    let edition = match new_book.edition {
-        Some(e) => e,
-        None => 1,
-    };
+    let edition = new_book.edition.unwrap_or(1);
 
     // map authorIds to Ksuid
     let d_authors = new_book
@@ -285,16 +282,12 @@ fn map_new_book_to_domain(
 
 fn map_book_to_rest(book: dmodels::BookDomain) -> rmodels::Book {
     // map the authors to the rest model
-    let authors = book
-        .authors
-        .into_iter()
-        .map(|a| map_author_to_rest(a))
-        .collect();
+    let authors = book.authors.into_iter().map(map_author_to_rest).collect();
 
     // math the genres to the rest model
     let genres = match book.genres {
         Some(genres) => {
-            let result = genres.into_iter().map(|g| map_genre_to_rest(g)).collect();
+            let result = genres.into_iter().map(map_genre_to_rest).collect();
             Some(result)
         }
         None => None,
@@ -305,7 +298,7 @@ fn map_book_to_rest(book: dmodels::BookDomain) -> rmodels::Book {
         Some(discounts) => {
             let result = discounts
                 .into_iter()
-                .map(|d| map_discount_code_to_rest(d))
+                .map(map_discount_code_to_rest)
                 .collect();
             Some(result)
         }
@@ -405,7 +398,7 @@ mod tests {
             first_name: String::from("John"),
             second_names: None,
             last_name: String::from("Doe"),
-            date_of_birth: NaiveDate::from_ymd_opt(2024, 12, 09).unwrap(),
+            date_of_birth: NaiveDate::from_ymd_opt(2024, 12, 9).unwrap(),
             date_of_death: None,
         };
 

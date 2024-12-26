@@ -31,6 +31,12 @@ fmt:
 lint:
 	cargo fmt --check --verbose
 	cargo clippy
+	@rm -f ./*.profraw ./**/*.profraw
+
+lint-fix:
+	cargo fmt
+	cargo clippy --fix --allow-dirty
+	@rm -f ./*.profraw ./**/*.profraw
 
 clean:
 	cargo clean
@@ -62,6 +68,6 @@ test:
 	mkdir -p coverage
 	@$(MAKE) cov TOOLCHAIN_PATH=$(TOOLCHAIN_PATH) RUST_TARGET=$(RUST_TARGET) COVERAGE_FORMAT=cobertura COVERAGE_OUTPUT=coverage/coverage.xml
 	@$(MAKE) cov TOOLCHAIN_PATH=$(TOOLCHAIN_PATH) RUST_TARGET=$(RUST_TARGET) COVERAGE_FORMAT=html COVERAGE_OUTPUT=coverage/
-	@rm -f *.profraw **/*.profraw
+	@rm -f ../*.profraw ./**/*.profraw
 
 clean_test: clean test
