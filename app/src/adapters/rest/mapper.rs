@@ -49,11 +49,11 @@ pub enum MapperError {
         id: String,
         source: svix_ksuid::Error,
     },
-    InvalidBooksAvailable {
+    BooksAvailableOutOfBound {
         books_available: i32,
         source: Box<dyn Error + Send + Sync>,
     },
-    InvalidDiscountPercentage {
+    DiscountPercentageOutOfBounds {
         percentage: i32,
         source: Box<dyn Error + Send + Sync>,
     },
@@ -63,12 +63,12 @@ impl fmt::Display for MapperError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             MapperError::InvalidKsuid { id, .. } => write!(f, "Invalid KSUID format: {}", id),
-            MapperError::InvalidBooksAvailable {
+            MapperError::BooksAvailableOutOfBound {
                 books_available, ..
             } => {
                 write!(f, "Invalid order status: {}", books_available)
             }
-            MapperError::InvalidDiscountPercentage { percentage, .. } => {
+            MapperError::DiscountPercentageOutOfBounds { percentage, .. } => {
                 write!(
                     f,
                     "Invalid discount percentage: {}. Maximum allowed is 80%",
@@ -83,8 +83,8 @@ impl Error for MapperError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
         match self {
             MapperError::InvalidKsuid { source, .. } => Some(source),
-            MapperError::InvalidBooksAvailable { source, .. } => Some(source.as_ref()),
-            MapperError::InvalidDiscountPercentage { source, .. } => Some(source.as_ref()),
+            MapperError::BooksAvailableOutOfBound { source, .. } => Some(source.as_ref()),
+            MapperError::DiscountPercentageOutOfBounds { source, .. } => Some(source.as_ref()),
         }
     }
 }
@@ -211,7 +211,7 @@ fn map_new_discount_code_to_domain(
     new_discount: rmodels::NewDiscountCode,
 ) -> Result<dmodels::DiscountCodeDomain, MapperError> {
     if new_discount.percentage_discount < 1 || new_discount.percentage_discount > 80 {
-        return Err(MapperError::InvalidDiscountPercentage {
+        return Err(MapperError::DiscountPercentageOutOfBounds {
             percentage: new_discount.percentage_discount,
             source: Box::new(DiscountPercentageError(new_discount.percentage_discount)),
         });
@@ -240,7 +240,7 @@ fn map_new_book_to_domain(
     new_book: rmodels::NewBook,
 ) -> Result<dmodels::NewBookDomain, MapperError> {
     if new_book.available < 0 {
-        return Err(MapperError::InvalidBooksAvailable {
+        return Err(MapperError::BooksAvailableOutOfBound {
             books_available: new_book.available,
             source: Box::new(BookAvailabilityError(new_book.available)),
         });
@@ -635,12 +635,12 @@ mod tests {
         // Assert
         assert!(result.is_err());
         match result {
-            Err(MapperError::InvalidBooksAvailable {
+            Err(MapperError::BooksAvailableOutOfBound {
                 books_available, ..
             }) => {
                 assert_eq!(books_available, -1);
             }
-            _ => panic!("Expected InvalidBooksAvailable error"),
+            _ => panic!("Expected BooksAvailableOutOfBound error"),
         }
     }
 
@@ -958,10 +958,10 @@ mod tests {
         // Assert
         assert!(result.is_err());
         match result {
-            Err(MapperError::InvalidDiscountPercentage { percentage, .. }) => {
+            Err(MapperError::DiscountPercentageOutOfBounds { percentage, .. }) => {
                 assert_eq!(percentage, 90);
             }
-            _ => panic!("Expected InvalidDiscountPercentage error"),
+            _ => panic!("Expected DiscountPercentageOutOfBounds error"),
         }
     }
 
@@ -981,10 +981,10 @@ mod tests {
         // Assert
         assert!(result.is_err());
         match result {
-            Err(MapperError::InvalidDiscountPercentage { percentage, .. }) => {
+            Err(MapperError::DiscountPercentageOutOfBounds { percentage, .. }) => {
                 assert_eq!(percentage, 0);
             }
-            _ => panic!("Expected InvalidDiscountPercentage error"),
+            _ => panic!("Expected DiscountPercentageOutOfBounds error"),
         }
     }
 
