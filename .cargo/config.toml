@@ -1,0 +1,11 @@
+[build]
+rustflags = ["-C", "instrument-coverage"]
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+opt-level = "s"
+panic = "abort"
+lto = "fat"
+strip = "debuginfo"

@@ -1,6 +1,7 @@
 pub mod author;
 pub mod book;
 pub mod discount;
+pub mod genre;
 pub mod health;
 pub mod store;
 

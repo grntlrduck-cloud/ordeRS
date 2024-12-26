@@ -89,9 +89,16 @@ pub struct GetDiscountByIdPathParams {
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
-pub struct UpdateDiscountPathParams {
-    /// Id of discount to return
-    pub discount_id: String,
+pub struct DeleteGenrePathParams {
+    /// GenereId to delete
+    pub genre_id: String,
+}
+
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
+#[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
+pub struct GetGenreByIdPathParams {
+    /// Id of genre to return
+    pub genre_id: String,
 }
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
@@ -119,40 +126,41 @@ pub struct UpdateOrderPathParams {
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
 pub struct Address {
     #[serde(rename = "street")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub street: Option<String>,
+    pub street: String,
 
     #[serde(rename = "street_number")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub street_number: Option<String>,
+    pub street_number: String,
 
     #[serde(rename = "zip_code")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub zip_code: Option<String>,
+    pub zip_code: String,
 
     #[serde(rename = "city")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub city: Option<String>,
+    pub city: String,
 
     #[serde(rename = "province")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub province: Option<String>,
 
     #[serde(rename = "country")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub country: Option<String>,
+    pub country: String,
 }
 
 impl Address {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
-    pub fn new() -> Address {
+    pub fn new(
+        street: String,
+        street_number: String,
+        zip_code: String,
+        city: String,
+        country: String,
+    ) -> Address {
         Address {
-            street: None,
-            street_number: None,
-            zip_code: None,
-            city: None,
+            street,
+            street_number,
+            zip_code,
+            city,
             province: None,
-            country: None,
+            country,
         }
     }
 }
@@ -163,24 +171,19 @@ impl Address {
 impl std::fmt::Display for Address {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-            self.street
-                .as_ref()
-                .map(|street| ["street".to_string(), street.to_string()].join(",")),
-            self.street_number.as_ref().map(|street_number| {
-                ["street_number".to_string(), street_number.to_string()].join(",")
-            }),
-            self.zip_code
-                .as_ref()
-                .map(|zip_code| ["zip_code".to_string(), zip_code.to_string()].join(",")),
-            self.city
-                .as_ref()
-                .map(|city| ["city".to_string(), city.to_string()].join(",")),
+            Some("street".to_string()),
+            Some(self.street.to_string()),
+            Some("street_number".to_string()),
+            Some(self.street_number.to_string()),
+            Some("zip_code".to_string()),
+            Some(self.zip_code.to_string()),
+            Some("city".to_string()),
+            Some(self.city.to_string()),
             self.province
                 .as_ref()
                 .map(|province| ["province".to_string(), province.to_string()].join(",")),
-            self.country
-                .as_ref()
-                .map(|country| ["country".to_string(), country.to_string()].join(",")),
+            Some("country".to_string()),
+            Some(self.country.to_string()),
         ];
 
         write!(
@@ -267,12 +270,32 @@ impl std::str::FromStr for Address {
 
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(Address {
-            street: intermediate_rep.street.into_iter().next(),
-            street_number: intermediate_rep.street_number.into_iter().next(),
-            zip_code: intermediate_rep.zip_code.into_iter().next(),
-            city: intermediate_rep.city.into_iter().next(),
+            street: intermediate_rep
+                .street
+                .into_iter()
+                .next()
+                .ok_or_else(|| "street missing in Address".to_string())?,
+            street_number: intermediate_rep
+                .street_number
+                .into_iter()
+                .next()
+                .ok_or_else(|| "street_number missing in Address".to_string())?,
+            zip_code: intermediate_rep
+                .zip_code
+                .into_iter()
+                .next()
+                .ok_or_else(|| "zip_code missing in Address".to_string())?,
+            city: intermediate_rep
+                .city
+                .into_iter()
+                .next()
+                .ok_or_else(|| "city missing in Address".to_string())?,
             province: intermediate_rep.province.into_iter().next(),
-            country: intermediate_rep.country.into_iter().next(),
+            country: intermediate_rep
+                .country
+                .into_iter()
+                .next()
+                .ok_or_else(|| "country missing in Address".to_string())?,
         })
     }
 }
@@ -573,10 +596,6 @@ pub struct AuthorProperties {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
 
-    #[serde(rename = "first_name")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub first_name: Option<String>,
-
     #[serde(rename = "second_names")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub second_names: Option<Vec<String>>,
@@ -595,7 +614,6 @@ impl AuthorProperties {
     pub fn new() -> AuthorProperties {
         AuthorProperties {
             title: None,
-            first_name: None,
             second_names: None,
             last_name: None,
             date_of_death: None,
@@ -612,9 +630,6 @@ impl std::fmt::Display for AuthorProperties {
             self.title
                 .as_ref()
                 .map(|title| ["title".to_string(), title.to_string()].join(",")),
-            self.first_name
-                .as_ref()
-                .map(|first_name| ["first_name".to_string(), first_name.to_string()].join(",")),
             self.second_names.as_ref().map(|second_names| {
                 [
                     "second_names".to_string(),
@@ -652,7 +667,6 @@ impl std::str::FromStr for AuthorProperties {
         #[allow(dead_code)]
         struct IntermediateRep {
             pub title: Vec<String>,
-            pub first_name: Vec<String>,
             pub second_names: Vec<Vec<String>>,
             pub last_name: Vec<String>,
             pub date_of_death: Vec<chrono::naive::NaiveDate>,
@@ -679,10 +693,6 @@ impl std::str::FromStr for AuthorProperties {
                 match key {
                     #[allow(clippy::redundant_clone)]
                     "title" => intermediate_rep.title.push(
-                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
-                    ),
-                    #[allow(clippy::redundant_clone)]
-                    "first_name" => intermediate_rep.first_name.push(
                         <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
                     ),
                     "second_names" => return std::result::Result::Err(
@@ -713,7 +723,6 @@ impl std::str::FromStr for AuthorProperties {
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(AuthorProperties {
             title: intermediate_rep.title.into_iter().next(),
-            first_name: intermediate_rep.first_name.into_iter().next(),
             second_names: intermediate_rep.second_names.into_iter().next(),
             last_name: intermediate_rep.last_name.into_iter().next(),
             date_of_death: intermediate_rep.date_of_death.into_iter().next(),
@@ -784,12 +793,11 @@ pub struct Book {
     pub first_release: chrono::naive::NaiveDate,
 
     #[serde(rename = "authors")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub authors: Option<Vec<models::Author>>,
+    pub authors: Vec<models::Author>,
 
-    #[serde(rename = "generes")]
+    #[serde(rename = "genres")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub generes: Option<models::Genre>,
+    pub genres: Option<Vec<models::Genre>>,
 
     #[serde(rename = "series")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -824,6 +832,7 @@ impl Book {
         title: String,
         release: chrono::naive::NaiveDate,
         first_release: chrono::naive::NaiveDate,
+        authors: Vec<models::Author>,
         edition: i32,
         price: f64,
         available: i32,
@@ -834,8 +843,8 @@ impl Book {
             title,
             release,
             first_release,
-            authors: None,
-            generes: None,
+            authors,
+            genres: None,
             series: None,
             edition,
             price,
@@ -862,7 +871,7 @@ impl std::fmt::Display for Book {
 
             // Skipping authors in query parameter serialization
 
-            // Skipping generes in query parameter serialization
+            // Skipping genres in query parameter serialization
             self.series
                 .as_ref()
                 .map(|series| ["series".to_string(), series.to_string()].join(",")),
@@ -901,7 +910,7 @@ impl std::str::FromStr for Book {
             pub release: Vec<chrono::naive::NaiveDate>,
             pub first_release: Vec<chrono::naive::NaiveDate>,
             pub authors: Vec<Vec<models::Author>>,
-            pub generes: Vec<models::Genre>,
+            pub genres: Vec<Vec<models::Genre>>,
             pub series: Vec<String>,
             pub edition: Vec<i32>,
             pub price: Vec<f64>,
@@ -951,11 +960,12 @@ impl std::str::FromStr for Book {
                                 .to_string(),
                         )
                     }
-                    #[allow(clippy::redundant_clone)]
-                    "generes" => intermediate_rep.generes.push(
-                        <models::Genre as std::str::FromStr>::from_str(val)
-                            .map_err(|x| x.to_string())?,
-                    ),
+                    "genres" => {
+                        return std::result::Result::Err(
+                            "Parsing a container in this style is not supported in Book"
+                                .to_string(),
+                        )
+                    }
                     #[allow(clippy::redundant_clone)]
                     "series" => intermediate_rep.series.push(
                         <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
@@ -1016,8 +1026,12 @@ impl std::str::FromStr for Book {
                 .into_iter()
                 .next()
                 .ok_or_else(|| "first_release missing in Book".to_string())?,
-            authors: intermediate_rep.authors.into_iter().next(),
-            generes: intermediate_rep.generes.into_iter().next(),
+            authors: intermediate_rep
+                .authors
+                .into_iter()
+                .next()
+                .ok_or_else(|| "authors missing in Book".to_string())?,
+            genres: intermediate_rep.genres.into_iter().next(),
             series: intermediate_rep.series.into_iter().next(),
             edition: intermediate_rep
                 .edition
@@ -1099,18 +1113,13 @@ pub struct BookProperties {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub release: Option<chrono::naive::NaiveDate>,
 
-    /// the date when the first edition of the book was release
-    #[serde(rename = "first_release")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub first_release: Option<chrono::naive::NaiveDate>,
-
     #[serde(rename = "authors")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub authors: Option<Vec<String>>,
 
-    #[serde(rename = "generes")]
+    #[serde(rename = "genres")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub generes: Option<Vec<String>>,
+    pub genres: Option<Vec<String>>,
 
     #[serde(rename = "discount_codes")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -1129,6 +1138,17 @@ pub struct BookProperties {
     #[serde(rename = "price")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub price: Option<f64>,
+
+    /// The number of available items
+    #[serde(rename = "available")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub available: Option<i32>,
+
+    /// the inventory state of the book
+    /// Note: inline enums are not fully supported by openapi-generator
+    #[serde(rename = "status")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status: Option<String>,
 }
 
 impl BookProperties {
@@ -1137,13 +1157,14 @@ impl BookProperties {
         BookProperties {
             title: None,
             release: None,
-            first_release: None,
             authors: None,
-            generes: None,
+            genres: None,
             discount_codes: None,
             series: None,
             edition: None,
             price: None,
+            available: None,
+            status: None,
         }
     }
 }
@@ -1158,8 +1179,6 @@ impl std::fmt::Display for BookProperties {
                 .as_ref()
                 .map(|title| ["title".to_string(), title.to_string()].join(",")),
             // Skipping release in query parameter serialization
-
-            // Skipping first_release in query parameter serialization
             self.authors.as_ref().map(|authors| {
                 [
                     "authors".to_string(),
@@ -1171,10 +1190,10 @@ impl std::fmt::Display for BookProperties {
                 ]
                 .join(",")
             }),
-            self.generes.as_ref().map(|generes| {
+            self.genres.as_ref().map(|genres| {
                 [
-                    "generes".to_string(),
-                    generes
+                    "genres".to_string(),
+                    genres
                         .iter()
                         .map(|x| x.to_string())
                         .collect::<Vec<_>>()
@@ -1202,6 +1221,12 @@ impl std::fmt::Display for BookProperties {
             self.price
                 .as_ref()
                 .map(|price| ["price".to_string(), price.to_string()].join(",")),
+            self.available
+                .as_ref()
+                .map(|available| ["available".to_string(), available.to_string()].join(",")),
+            self.status
+                .as_ref()
+                .map(|status| ["status".to_string(), status.to_string()].join(",")),
         ];
 
         write!(
@@ -1225,13 +1250,14 @@ impl std::str::FromStr for BookProperties {
         struct IntermediateRep {
             pub title: Vec<String>,
             pub release: Vec<chrono::naive::NaiveDate>,
-            pub first_release: Vec<chrono::naive::NaiveDate>,
             pub authors: Vec<Vec<String>>,
-            pub generes: Vec<Vec<String>>,
+            pub genres: Vec<Vec<String>>,
             pub discount_codes: Vec<Vec<String>>,
             pub series: Vec<String>,
             pub edition: Vec<i32>,
             pub price: Vec<f64>,
+            pub available: Vec<i32>,
+            pub status: Vec<String>,
         }
 
         let mut intermediate_rep = IntermediateRep::default();
@@ -1262,18 +1288,13 @@ impl std::str::FromStr for BookProperties {
                         <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
                             .map_err(|x| x.to_string())?,
                     ),
-                    #[allow(clippy::redundant_clone)]
-                    "first_release" => intermediate_rep.first_release.push(
-                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
-                            .map_err(|x| x.to_string())?,
-                    ),
                     "authors" => {
                         return std::result::Result::Err(
                             "Parsing a container in this style is not supported in BookProperties"
                                 .to_string(),
                         )
                     }
-                    "generes" => {
+                    "genres" => {
                         return std::result::Result::Err(
                             "Parsing a container in this style is not supported in BookProperties"
                                 .to_string(),
@@ -1297,6 +1318,14 @@ impl std::str::FromStr for BookProperties {
                     "price" => intermediate_rep.price.push(
                         <f64 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
                     ),
+                    #[allow(clippy::redundant_clone)]
+                    "available" => intermediate_rep.available.push(
+                        <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
+                    #[allow(clippy::redundant_clone)]
+                    "status" => intermediate_rep.status.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     _ => {
                         return std::result::Result::Err(
                             "Unexpected key while parsing BookProperties".to_string(),
@@ -1313,13 +1342,14 @@ impl std::str::FromStr for BookProperties {
         std::result::Result::Ok(BookProperties {
             title: intermediate_rep.title.into_iter().next(),
             release: intermediate_rep.release.into_iter().next(),
-            first_release: intermediate_rep.first_release.into_iter().next(),
             authors: intermediate_rep.authors.into_iter().next(),
-            generes: intermediate_rep.generes.into_iter().next(),
+            genres: intermediate_rep.genres.into_iter().next(),
             discount_codes: intermediate_rep.discount_codes.into_iter().next(),
             series: intermediate_rep.series.into_iter().next(),
             edition: intermediate_rep.edition.into_iter().next(),
             price: intermediate_rep.price.into_iter().next(),
+            available: intermediate_rep.available.into_iter().next(),
+            status: intermediate_rep.status.into_iter().next(),
         })
     }
 }
@@ -1376,8 +1406,7 @@ pub struct DiscountCode {
     pub id: String,
 
     #[serde(rename = "percentage_discount")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub percentage_discount: Option<i32>,
+    pub percentage_discount: i32,
 
     #[serde(rename = "valid_from")]
     pub valid_from: chrono::naive::NaiveDate,
@@ -1393,13 +1422,14 @@ impl DiscountCode {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
     pub fn new(
         id: String,
+        percentage_discount: i32,
         valid_from: chrono::naive::NaiveDate,
         valid_to: chrono::naive::NaiveDate,
         code: String,
     ) -> DiscountCode {
         DiscountCode {
             id,
-            percentage_discount: None,
+            percentage_discount,
             valid_from,
             valid_to,
             code,
@@ -1415,15 +1445,8 @@ impl std::fmt::Display for DiscountCode {
         let params: Vec<Option<String>> = vec![
             Some("id".to_string()),
             Some(self.id.to_string()),
-            self.percentage_discount
-                .as_ref()
-                .map(|percentage_discount| {
-                    [
-                        "percentage_discount".to_string(),
-                        percentage_discount.to_string(),
-                    ]
-                    .join(",")
-                }),
+            Some("percentage_discount".to_string()),
+            Some(self.percentage_discount.to_string()),
             // Skipping valid_from in query parameter serialization
 
             // Skipping valid_to in query parameter serialization
@@ -1517,7 +1540,11 @@ impl std::str::FromStr for DiscountCode {
                 .into_iter()
                 .next()
                 .ok_or_else(|| "id missing in DiscountCode".to_string())?,
-            percentage_discount: intermediate_rep.percentage_discount.into_iter().next(),
+            percentage_discount: intermediate_rep
+                .percentage_discount
+                .into_iter()
+                .next()
+                .ok_or_else(|| "percentage_discount missing in DiscountCode".to_string())?,
             valid_from: intermediate_rep
                 .valid_from
                 .into_iter()
@@ -1570,176 +1597,6 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<DiscountCode
                     }
                     std::result::Result::Err(err) => std::result::Result::Err(format!(
                         "Unable to convert header value '{}' into DiscountCode - {}",
-                        value, err
-                    )),
-                }
-            }
-            std::result::Result::Err(e) => std::result::Result::Err(format!(
-                "Unable to convert header: {:?} to string: {}",
-                hdr_value, e
-            )),
-        }
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
-#[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
-pub struct DiscountCodeProperties {
-    #[serde(rename = "percentage_discount")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub percentage_discount: Option<i32>,
-
-    #[serde(rename = "valid_from")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub valid_from: Option<chrono::naive::NaiveDate>,
-
-    #[serde(rename = "valid_to")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub valid_to: Option<chrono::naive::NaiveDate>,
-}
-
-impl DiscountCodeProperties {
-    #[allow(clippy::new_without_default, clippy::too_many_arguments)]
-    pub fn new() -> DiscountCodeProperties {
-        DiscountCodeProperties {
-            percentage_discount: None,
-            valid_from: None,
-            valid_to: None,
-        }
-    }
-}
-
-/// Converts the DiscountCodeProperties value to the Query Parameters representation (style=form, explode=false)
-/// specified in https://swagger.io/docs/specification/serialization/
-/// Should be implemented in a serde serializer
-impl std::fmt::Display for DiscountCodeProperties {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let params: Vec<Option<String>> = vec![
-            self.percentage_discount
-                .as_ref()
-                .map(|percentage_discount| {
-                    [
-                        "percentage_discount".to_string(),
-                        percentage_discount.to_string(),
-                    ]
-                    .join(",")
-                }),
-            // Skipping valid_from in query parameter serialization
-
-            // Skipping valid_to in query parameter serialization
-        ];
-
-        write!(
-            f,
-            "{}",
-            params.into_iter().flatten().collect::<Vec<_>>().join(",")
-        )
-    }
-}
-
-/// Converts Query Parameters representation (style=form, explode=false) to a DiscountCodeProperties value
-/// as specified in https://swagger.io/docs/specification/serialization/
-/// Should be implemented in a serde deserializer
-impl std::str::FromStr for DiscountCodeProperties {
-    type Err = String;
-
-    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
-        /// An intermediate representation of the struct to use for parsing.
-        #[derive(Default)]
-        #[allow(dead_code)]
-        struct IntermediateRep {
-            pub percentage_discount: Vec<i32>,
-            pub valid_from: Vec<chrono::naive::NaiveDate>,
-            pub valid_to: Vec<chrono::naive::NaiveDate>,
-        }
-
-        let mut intermediate_rep = IntermediateRep::default();
-
-        // Parse into intermediate representation
-        let mut string_iter = s.split(',');
-        let mut key_result = string_iter.next();
-
-        while key_result.is_some() {
-            let val = match string_iter.next() {
-                Some(x) => x,
-                None => {
-                    return std::result::Result::Err(
-                        "Missing value while parsing DiscountCodeProperties".to_string(),
-                    )
-                }
-            };
-
-            if let Some(key) = key_result {
-                #[allow(clippy::match_single_binding)]
-                match key {
-                    #[allow(clippy::redundant_clone)]
-                    "percentage_discount" => intermediate_rep.percentage_discount.push(
-                        <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
-                    ),
-                    #[allow(clippy::redundant_clone)]
-                    "valid_from" => intermediate_rep.valid_from.push(
-                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
-                            .map_err(|x| x.to_string())?,
-                    ),
-                    #[allow(clippy::redundant_clone)]
-                    "valid_to" => intermediate_rep.valid_to.push(
-                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
-                            .map_err(|x| x.to_string())?,
-                    ),
-                    _ => {
-                        return std::result::Result::Err(
-                            "Unexpected key while parsing DiscountCodeProperties".to_string(),
-                        )
-                    }
-                }
-            }
-
-            // Get the next key
-            key_result = string_iter.next();
-        }
-
-        // Use the intermediate representation to return the struct
-        std::result::Result::Ok(DiscountCodeProperties {
-            percentage_discount: intermediate_rep.percentage_discount.into_iter().next(),
-            valid_from: intermediate_rep.valid_from.into_iter().next(),
-            valid_to: intermediate_rep.valid_to.into_iter().next(),
-        })
-    }
-}
-
-// Methods for converting between header::IntoHeaderValue<DiscountCodeProperties> and HeaderValue
-
-#[cfg(feature = "server")]
-impl std::convert::TryFrom<header::IntoHeaderValue<DiscountCodeProperties>> for HeaderValue {
-    type Error = String;
-
-    fn try_from(
-        hdr_value: header::IntoHeaderValue<DiscountCodeProperties>,
-    ) -> std::result::Result<Self, Self::Error> {
-        let hdr_value = hdr_value.to_string();
-        match HeaderValue::from_str(&hdr_value) {
-            std::result::Result::Ok(value) => std::result::Result::Ok(value),
-            std::result::Result::Err(e) => std::result::Result::Err(format!(
-                "Invalid header value for DiscountCodeProperties - value: {} is invalid {}",
-                hdr_value, e
-            )),
-        }
-    }
-}
-
-#[cfg(feature = "server")]
-impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<DiscountCodeProperties> {
-    type Error = String;
-
-    fn try_from(hdr_value: HeaderValue) -> std::result::Result<Self, Self::Error> {
-        match hdr_value.to_str() {
-            std::result::Result::Ok(value) => {
-                match <DiscountCodeProperties as std::str::FromStr>::from_str(value) {
-                    std::result::Result::Ok(value) => {
-                        std::result::Result::Ok(header::IntoHeaderValue(value))
-                    }
-                    std::result::Result::Err(err) => std::result::Result::Err(format!(
-                        "Unable to convert header value '{}' into DiscountCodeProperties - {}",
                         value, err
                     )),
                 }
@@ -2041,25 +1898,22 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<HealthCheckR
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
 pub struct Inventory {
     #[serde(rename = "books_available")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub books_available: Option<i32>,
+    pub books_available: i32,
 
     #[serde(rename = "books_reordered")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub books_reordered: Option<i32>,
+    pub books_reordered: i32,
 
     #[serde(rename = "books_out_of_stock")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub books_out_of_stock: Option<i32>,
+    pub books_out_of_stock: i32,
 }
 
 impl Inventory {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
-    pub fn new() -> Inventory {
+    pub fn new(books_available: i32, books_reordered: i32, books_out_of_stock: i32) -> Inventory {
         Inventory {
-            books_available: None,
-            books_reordered: None,
-            books_out_of_stock: None,
+            books_available,
+            books_reordered,
+            books_out_of_stock,
         }
     }
 }
@@ -2070,19 +1924,12 @@ impl Inventory {
 impl std::fmt::Display for Inventory {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-            self.books_available.as_ref().map(|books_available| {
-                ["books_available".to_string(), books_available.to_string()].join(",")
-            }),
-            self.books_reordered.as_ref().map(|books_reordered| {
-                ["books_reordered".to_string(), books_reordered.to_string()].join(",")
-            }),
-            self.books_out_of_stock.as_ref().map(|books_out_of_stock| {
-                [
-                    "books_out_of_stock".to_string(),
-                    books_out_of_stock.to_string(),
-                ]
-                .join(",")
-            }),
+            Some("books_available".to_string()),
+            Some(self.books_available.to_string()),
+            Some("books_reordered".to_string()),
+            Some(self.books_reordered.to_string()),
+            Some("books_out_of_stock".to_string()),
+            Some(self.books_out_of_stock.to_string()),
         ];
 
         write!(
@@ -2154,9 +2001,21 @@ impl std::str::FromStr for Inventory {
 
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(Inventory {
-            books_available: intermediate_rep.books_available.into_iter().next(),
-            books_reordered: intermediate_rep.books_reordered.into_iter().next(),
-            books_out_of_stock: intermediate_rep.books_out_of_stock.into_iter().next(),
+            books_available: intermediate_rep
+                .books_available
+                .into_iter()
+                .next()
+                .ok_or_else(|| "books_available missing in Inventory".to_string())?,
+            books_reordered: intermediate_rep
+                .books_reordered
+                .into_iter()
+                .next()
+                .ok_or_else(|| "books_reordered missing in Inventory".to_string())?,
+            books_out_of_stock: intermediate_rep
+                .books_out_of_stock
+                .into_iter()
+                .next()
+                .ok_or_else(|| "books_out_of_stock missing in Inventory".to_string())?,
         })
     }
 }
@@ -2451,9 +2310,9 @@ pub struct NewBook {
     #[serde(rename = "authors")]
     pub authors: Vec<String>,
 
-    #[serde(rename = "generes")]
+    #[serde(rename = "genres")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub generes: Option<Vec<String>>,
+    pub genres: Option<Vec<String>>,
 
     #[serde(rename = "discount_codes")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -2471,6 +2330,10 @@ pub struct NewBook {
     /// the price of this book in Dollar
     #[serde(rename = "price")]
     pub price: f64,
+
+    /// The number of available items
+    #[serde(rename = "available")]
+    pub available: i32,
 }
 
 impl NewBook {
@@ -2480,17 +2343,19 @@ impl NewBook {
         release: chrono::naive::NaiveDate,
         authors: Vec<String>,
         price: f64,
+        available: i32,
     ) -> NewBook {
         NewBook {
             title,
             release,
             first_release: None,
             authors,
-            generes: None,
+            genres: None,
             discount_codes: None,
             series: None,
             edition: None,
             price,
+            available,
         }
     }
 }
@@ -2514,10 +2379,10 @@ impl std::fmt::Display for NewBook {
                     .collect::<Vec<_>>()
                     .join(","),
             ),
-            self.generes.as_ref().map(|generes| {
+            self.genres.as_ref().map(|genres| {
                 [
-                    "generes".to_string(),
-                    generes
+                    "genres".to_string(),
+                    genres
                         .iter()
                         .map(|x| x.to_string())
                         .collect::<Vec<_>>()
@@ -2544,6 +2409,8 @@ impl std::fmt::Display for NewBook {
                 .map(|edition| ["edition".to_string(), edition.to_string()].join(",")),
             Some("price".to_string()),
             Some(self.price.to_string()),
+            Some("available".to_string()),
+            Some(self.available.to_string()),
         ];
 
         write!(
@@ -2569,11 +2436,12 @@ impl std::str::FromStr for NewBook {
             pub release: Vec<chrono::naive::NaiveDate>,
             pub first_release: Vec<chrono::naive::NaiveDate>,
             pub authors: Vec<Vec<String>>,
-            pub generes: Vec<Vec<String>>,
+            pub genres: Vec<Vec<String>>,
             pub discount_codes: Vec<Vec<String>>,
             pub series: Vec<String>,
             pub edition: Vec<i32>,
             pub price: Vec<f64>,
+            pub available: Vec<i32>,
         }
 
         let mut intermediate_rep = IntermediateRep::default();
@@ -2615,7 +2483,7 @@ impl std::str::FromStr for NewBook {
                                 .to_string(),
                         )
                     }
-                    "generes" => {
+                    "genres" => {
                         return std::result::Result::Err(
                             "Parsing a container in this style is not supported in NewBook"
                                 .to_string(),
@@ -2638,6 +2506,10 @@ impl std::str::FromStr for NewBook {
                     #[allow(clippy::redundant_clone)]
                     "price" => intermediate_rep.price.push(
                         <f64 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
+                    #[allow(clippy::redundant_clone)]
+                    "available" => intermediate_rep.available.push(
+                        <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
                     ),
                     _ => {
                         return std::result::Result::Err(
@@ -2669,7 +2541,7 @@ impl std::str::FromStr for NewBook {
                 .into_iter()
                 .next()
                 .ok_or_else(|| "authors missing in NewBook".to_string())?,
-            generes: intermediate_rep.generes.into_iter().next(),
+            genres: intermediate_rep.genres.into_iter().next(),
             discount_codes: intermediate_rep.discount_codes.into_iter().next(),
             series: intermediate_rep.series.into_iter().next(),
             edition: intermediate_rep.edition.into_iter().next(),
@@ -2678,6 +2550,11 @@ impl std::str::FromStr for NewBook {
                 .into_iter()
                 .next()
                 .ok_or_else(|| "price missing in NewBook".to_string())?,
+            available: intermediate_rep
+                .available
+                .into_iter()
+                .next()
+                .ok_or_else(|| "available missing in NewBook".to_string())?,
         })
     }
 }
@@ -2731,8 +2608,7 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<NewBook> {
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
 pub struct NewDiscountCode {
     #[serde(rename = "percentage_discount")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub percentage_discount: Option<i32>,
+    pub percentage_discount: i32,
 
     #[serde(rename = "valid_from")]
     pub valid_from: chrono::naive::NaiveDate,
@@ -2747,12 +2623,13 @@ pub struct NewDiscountCode {
 impl NewDiscountCode {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
     pub fn new(
+        percentage_discount: i32,
         valid_from: chrono::naive::NaiveDate,
         valid_to: chrono::naive::NaiveDate,
         code: String,
     ) -> NewDiscountCode {
         NewDiscountCode {
-            percentage_discount: None,
+            percentage_discount,
             valid_from,
             valid_to,
             code,
@@ -2766,15 +2643,8 @@ impl NewDiscountCode {
 impl std::fmt::Display for NewDiscountCode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-            self.percentage_discount
-                .as_ref()
-                .map(|percentage_discount| {
-                    [
-                        "percentage_discount".to_string(),
-                        percentage_discount.to_string(),
-                    ]
-                    .join(",")
-                }),
+            Some("percentage_discount".to_string()),
+            Some(self.percentage_discount.to_string()),
             // Skipping valid_from in query parameter serialization
 
             // Skipping valid_to in query parameter serialization
@@ -2858,7 +2728,11 @@ impl std::str::FromStr for NewDiscountCode {
 
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(NewDiscountCode {
-            percentage_discount: intermediate_rep.percentage_discount.into_iter().next(),
+            percentage_discount: intermediate_rep
+                .percentage_discount
+                .into_iter()
+                .next()
+                .ok_or_else(|| "percentage_discount missing in NewDiscountCode".to_string())?,
             valid_from: intermediate_rep
                 .valid_from
                 .into_iter()
@@ -2925,14 +2799,147 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<NewDiscountC
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
+pub struct NewGenre {
+    #[serde(rename = "name")]
+    pub name: String,
+}
+
+impl NewGenre {
+    #[allow(clippy::new_without_default, clippy::too_many_arguments)]
+    pub fn new(name: String) -> NewGenre {
+        NewGenre { name }
+    }
+}
+
+/// Converts the NewGenre value to the Query Parameters representation (style=form, explode=false)
+/// specified in https://swagger.io/docs/specification/serialization/
+/// Should be implemented in a serde serializer
+impl std::fmt::Display for NewGenre {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let params: Vec<Option<String>> =
+            vec![Some("name".to_string()), Some(self.name.to_string())];
+
+        write!(
+            f,
+            "{}",
+            params.into_iter().flatten().collect::<Vec<_>>().join(",")
+        )
+    }
+}
+
+/// Converts Query Parameters representation (style=form, explode=false) to a NewGenre value
+/// as specified in https://swagger.io/docs/specification/serialization/
+/// Should be implemented in a serde deserializer
+impl std::str::FromStr for NewGenre {
+    type Err = String;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        /// An intermediate representation of the struct to use for parsing.
+        #[derive(Default)]
+        #[allow(dead_code)]
+        struct IntermediateRep {
+            pub name: Vec<String>,
+        }
+
+        let mut intermediate_rep = IntermediateRep::default();
+
+        // Parse into intermediate representation
+        let mut string_iter = s.split(',');
+        let mut key_result = string_iter.next();
+
+        while key_result.is_some() {
+            let val = match string_iter.next() {
+                Some(x) => x,
+                None => {
+                    return std::result::Result::Err(
+                        "Missing value while parsing NewGenre".to_string(),
+                    )
+                }
+            };
+
+            if let Some(key) = key_result {
+                #[allow(clippy::match_single_binding)]
+                match key {
+                    #[allow(clippy::redundant_clone)]
+                    "name" => intermediate_rep.name.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
+                    _ => {
+                        return std::result::Result::Err(
+                            "Unexpected key while parsing NewGenre".to_string(),
+                        )
+                    }
+                }
+            }
+
+            // Get the next key
+            key_result = string_iter.next();
+        }
+
+        // Use the intermediate representation to return the struct
+        std::result::Result::Ok(NewGenre {
+            name: intermediate_rep
+                .name
+                .into_iter()
+                .next()
+                .ok_or_else(|| "name missing in NewGenre".to_string())?,
+        })
+    }
+}
+
+// Methods for converting between header::IntoHeaderValue<NewGenre> and HeaderValue
+
+#[cfg(feature = "server")]
+impl std::convert::TryFrom<header::IntoHeaderValue<NewGenre>> for HeaderValue {
+    type Error = String;
+
+    fn try_from(
+        hdr_value: header::IntoHeaderValue<NewGenre>,
+    ) -> std::result::Result<Self, Self::Error> {
+        let hdr_value = hdr_value.to_string();
+        match HeaderValue::from_str(&hdr_value) {
+            std::result::Result::Ok(value) => std::result::Result::Ok(value),
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Invalid header value for NewGenre - value: {} is invalid {}",
+                hdr_value, e
+            )),
+        }
+    }
+}
+
+#[cfg(feature = "server")]
+impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<NewGenre> {
+    type Error = String;
+
+    fn try_from(hdr_value: HeaderValue) -> std::result::Result<Self, Self::Error> {
+        match hdr_value.to_str() {
+            std::result::Result::Ok(value) => {
+                match <NewGenre as std::str::FromStr>::from_str(value) {
+                    std::result::Result::Ok(value) => {
+                        std::result::Result::Ok(header::IntoHeaderValue(value))
+                    }
+                    std::result::Result::Err(err) => std::result::Result::Err(format!(
+                        "Unable to convert header value '{}' into NewGenre - {}",
+                        value, err
+                    )),
+                }
+            }
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Unable to convert header: {:?} to string: {}",
+                hdr_value, e
+            )),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
+#[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
 pub struct NewOrder {
     #[serde(rename = "book_id")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub book_id: Option<String>,
+    pub book_id: String,
 
     #[serde(rename = "customer_id")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub customer_id: Option<String>,
+    pub customer_id: String,
 
     #[serde(rename = "quantity")]
     pub quantity: i32,
@@ -2940,35 +2947,30 @@ pub struct NewOrder {
     #[serde(rename = "shipping_date")]
     pub shipping_date: chrono::DateTime<chrono::Utc>,
 
+    #[serde(rename = "billing_address")]
+    pub billing_address: models::Address,
+
     #[serde(rename = "shipping_address_override")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub shipping_address_override: Option<models::Address>,
-
-    /// Order Status
-    /// Note: inline enums are not fully supported by openapi-generator
-    #[serde(rename = "status")]
-    pub status: String,
-
-    #[serde(rename = "complete")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub complete: Option<bool>,
 }
 
 impl NewOrder {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
     pub fn new(
+        book_id: String,
+        customer_id: String,
         quantity: i32,
         shipping_date: chrono::DateTime<chrono::Utc>,
-        status: String,
+        billing_address: models::Address,
     ) -> NewOrder {
         NewOrder {
-            book_id: None,
-            customer_id: None,
+            book_id,
+            customer_id,
             quantity,
             shipping_date,
+            billing_address,
             shipping_address_override: None,
-            status,
-            complete: None,
         }
     }
 }
@@ -2979,22 +2981,17 @@ impl NewOrder {
 impl std::fmt::Display for NewOrder {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-            self.book_id
-                .as_ref()
-                .map(|book_id| ["book_id".to_string(), book_id.to_string()].join(",")),
-            self.customer_id
-                .as_ref()
-                .map(|customer_id| ["customer_id".to_string(), customer_id.to_string()].join(",")),
+            Some("book_id".to_string()),
+            Some(self.book_id.to_string()),
+            Some("customer_id".to_string()),
+            Some(self.customer_id.to_string()),
             Some("quantity".to_string()),
             Some(self.quantity.to_string()),
             // Skipping shipping_date in query parameter serialization
 
+            // Skipping billing_address in query parameter serialization
+
             // Skipping shipping_address_override in query parameter serialization
-            Some("status".to_string()),
-            Some(self.status.to_string()),
-            self.complete
-                .as_ref()
-                .map(|complete| ["complete".to_string(), complete.to_string()].join(",")),
         ];
 
         write!(
@@ -3020,9 +3017,8 @@ impl std::str::FromStr for NewOrder {
             pub customer_id: Vec<String>,
             pub quantity: Vec<i32>,
             pub shipping_date: Vec<chrono::DateTime<chrono::Utc>>,
+            pub billing_address: Vec<models::Address>,
             pub shipping_address_override: Vec<models::Address>,
-            pub status: Vec<String>,
-            pub complete: Vec<bool>,
         }
 
         let mut intermediate_rep = IntermediateRep::default();
@@ -3062,17 +3058,14 @@ impl std::str::FromStr for NewOrder {
                             .map_err(|x| x.to_string())?,
                     ),
                     #[allow(clippy::redundant_clone)]
-                    "shipping_address_override" => intermediate_rep.shipping_address_override.push(
+                    "billing_address" => intermediate_rep.billing_address.push(
                         <models::Address as std::str::FromStr>::from_str(val)
                             .map_err(|x| x.to_string())?,
                     ),
                     #[allow(clippy::redundant_clone)]
-                    "status" => intermediate_rep.status.push(
-                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
-                    ),
-                    #[allow(clippy::redundant_clone)]
-                    "complete" => intermediate_rep.complete.push(
-                        <bool as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    "shipping_address_override" => intermediate_rep.shipping_address_override.push(
+                        <models::Address as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
                     ),
                     _ => {
                         return std::result::Result::Err(
@@ -3088,8 +3081,16 @@ impl std::str::FromStr for NewOrder {
 
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(NewOrder {
-            book_id: intermediate_rep.book_id.into_iter().next(),
-            customer_id: intermediate_rep.customer_id.into_iter().next(),
+            book_id: intermediate_rep
+                .book_id
+                .into_iter()
+                .next()
+                .ok_or_else(|| "book_id missing in NewOrder".to_string())?,
+            customer_id: intermediate_rep
+                .customer_id
+                .into_iter()
+                .next()
+                .ok_or_else(|| "customer_id missing in NewOrder".to_string())?,
             quantity: intermediate_rep
                 .quantity
                 .into_iter()
@@ -3100,16 +3101,15 @@ impl std::str::FromStr for NewOrder {
                 .into_iter()
                 .next()
                 .ok_or_else(|| "shipping_date missing in NewOrder".to_string())?,
+            billing_address: intermediate_rep
+                .billing_address
+                .into_iter()
+                .next()
+                .ok_or_else(|| "billing_address missing in NewOrder".to_string())?,
             shipping_address_override: intermediate_rep
                 .shipping_address_override
                 .into_iter()
                 .next(),
-            status: intermediate_rep
-                .status
-                .into_iter()
-                .next()
-                .ok_or_else(|| "status missing in NewOrder".to_string())?,
-            complete: intermediate_rep.complete.into_iter().next(),
         })
     }
 }
@@ -3166,18 +3166,19 @@ pub struct Order {
     pub id: String,
 
     #[serde(rename = "book_id")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub book_id: Option<String>,
+    pub book_id: String,
 
     #[serde(rename = "customer_id")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub customer_id: Option<String>,
+    pub customer_id: String,
 
     #[serde(rename = "quantity")]
     pub quantity: i32,
 
     #[serde(rename = "shipping_date")]
     pub shipping_date: chrono::DateTime<chrono::Utc>,
+
+    #[serde(rename = "billing_address")]
+    pub billing_address: models::Address,
 
     #[serde(rename = "shipping_address_override")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -3187,29 +3188,28 @@ pub struct Order {
     /// Note: inline enums are not fully supported by openapi-generator
     #[serde(rename = "status")]
     pub status: String,
-
-    #[serde(rename = "complete")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub complete: Option<bool>,
 }
 
 impl Order {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
     pub fn new(
         id: String,
+        book_id: String,
+        customer_id: String,
         quantity: i32,
         shipping_date: chrono::DateTime<chrono::Utc>,
+        billing_address: models::Address,
         status: String,
     ) -> Order {
         Order {
             id,
-            book_id: None,
-            customer_id: None,
+            book_id,
+            customer_id,
             quantity,
             shipping_date,
+            billing_address,
             shipping_address_override: None,
             status,
-            complete: None,
         }
     }
 }
@@ -3222,22 +3222,19 @@ impl std::fmt::Display for Order {
         let params: Vec<Option<String>> = vec![
             Some("id".to_string()),
             Some(self.id.to_string()),
-            self.book_id
-                .as_ref()
-                .map(|book_id| ["book_id".to_string(), book_id.to_string()].join(",")),
-            self.customer_id
-                .as_ref()
-                .map(|customer_id| ["customer_id".to_string(), customer_id.to_string()].join(",")),
+            Some("book_id".to_string()),
+            Some(self.book_id.to_string()),
+            Some("customer_id".to_string()),
+            Some(self.customer_id.to_string()),
             Some("quantity".to_string()),
             Some(self.quantity.to_string()),
             // Skipping shipping_date in query parameter serialization
 
+            // Skipping billing_address in query parameter serialization
+
             // Skipping shipping_address_override in query parameter serialization
             Some("status".to_string()),
             Some(self.status.to_string()),
-            self.complete
-                .as_ref()
-                .map(|complete| ["complete".to_string(), complete.to_string()].join(",")),
         ];
 
         write!(
@@ -3264,9 +3261,9 @@ impl std::str::FromStr for Order {
             pub customer_id: Vec<String>,
             pub quantity: Vec<i32>,
             pub shipping_date: Vec<chrono::DateTime<chrono::Utc>>,
+            pub billing_address: Vec<models::Address>,
             pub shipping_address_override: Vec<models::Address>,
             pub status: Vec<String>,
-            pub complete: Vec<bool>,
         }
 
         let mut intermediate_rep = IntermediateRep::default();
@@ -3310,6 +3307,11 @@ impl std::str::FromStr for Order {
                             .map_err(|x| x.to_string())?,
                     ),
                     #[allow(clippy::redundant_clone)]
+                    "billing_address" => intermediate_rep.billing_address.push(
+                        <models::Address as std::str::FromStr>::from_str(val)
+                            .map_err(|x| x.to_string())?,
+                    ),
+                    #[allow(clippy::redundant_clone)]
                     "shipping_address_override" => intermediate_rep.shipping_address_override.push(
                         <models::Address as std::str::FromStr>::from_str(val)
                             .map_err(|x| x.to_string())?,
@@ -3317,10 +3319,6 @@ impl std::str::FromStr for Order {
                     #[allow(clippy::redundant_clone)]
                     "status" => intermediate_rep.status.push(
                         <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
-                    ),
-                    #[allow(clippy::redundant_clone)]
-                    "complete" => intermediate_rep.complete.push(
-                        <bool as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
                     ),
                     _ => {
                         return std::result::Result::Err(
@@ -3341,8 +3339,16 @@ impl std::str::FromStr for Order {
                 .into_iter()
                 .next()
                 .ok_or_else(|| "id missing in Order".to_string())?,
-            book_id: intermediate_rep.book_id.into_iter().next(),
-            customer_id: intermediate_rep.customer_id.into_iter().next(),
+            book_id: intermediate_rep
+                .book_id
+                .into_iter()
+                .next()
+                .ok_or_else(|| "book_id missing in Order".to_string())?,
+            customer_id: intermediate_rep
+                .customer_id
+                .into_iter()
+                .next()
+                .ok_or_else(|| "customer_id missing in Order".to_string())?,
             quantity: intermediate_rep
                 .quantity
                 .into_iter()
@@ -3353,6 +3359,11 @@ impl std::str::FromStr for Order {
                 .into_iter()
                 .next()
                 .ok_or_else(|| "shipping_date missing in Order".to_string())?,
+            billing_address: intermediate_rep
+                .billing_address
+                .into_iter()
+                .next()
+                .ok_or_else(|| "billing_address missing in Order".to_string())?,
             shipping_address_override: intermediate_rep
                 .shipping_address_override
                 .into_iter()
@@ -3362,7 +3373,6 @@ impl std::str::FromStr for Order {
                 .into_iter()
                 .next()
                 .ok_or_else(|| "status missing in Order".to_string())?,
-            complete: intermediate_rep.complete.into_iter().next(),
         })
     }
 }
@@ -3413,6 +3423,9 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<Order> {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
 pub struct OrderProperties {
+    #[serde(rename = "book_id")]
+    pub book_id: String,
+
     #[serde(rename = "quantity")]
     pub quantity: i32,
 
@@ -3423,24 +3436,21 @@ pub struct OrderProperties {
     /// Note: inline enums are not fully supported by openapi-generator
     #[serde(rename = "status")]
     pub status: String,
-
-    #[serde(rename = "complete")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub complete: Option<bool>,
 }
 
 impl OrderProperties {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
     pub fn new(
+        book_id: String,
         quantity: i32,
         shipping_date: chrono::DateTime<chrono::Utc>,
         status: String,
     ) -> OrderProperties {
         OrderProperties {
+            book_id,
             quantity,
             shipping_date,
             status,
-            complete: None,
         }
     }
 }
@@ -3451,14 +3461,13 @@ impl OrderProperties {
 impl std::fmt::Display for OrderProperties {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
+            Some("book_id".to_string()),
+            Some(self.book_id.to_string()),
             Some("quantity".to_string()),
             Some(self.quantity.to_string()),
             // Skipping shipping_date in query parameter serialization
             Some("status".to_string()),
             Some(self.status.to_string()),
-            self.complete
-                .as_ref()
-                .map(|complete| ["complete".to_string(), complete.to_string()].join(",")),
         ];
 
         write!(
@@ -3480,10 +3489,10 @@ impl std::str::FromStr for OrderProperties {
         #[derive(Default)]
         #[allow(dead_code)]
         struct IntermediateRep {
+            pub book_id: Vec<String>,
             pub quantity: Vec<i32>,
             pub shipping_date: Vec<chrono::DateTime<chrono::Utc>>,
             pub status: Vec<String>,
-            pub complete: Vec<bool>,
         }
 
         let mut intermediate_rep = IntermediateRep::default();
@@ -3506,6 +3515,10 @@ impl std::str::FromStr for OrderProperties {
                 #[allow(clippy::match_single_binding)]
                 match key {
                     #[allow(clippy::redundant_clone)]
+                    "book_id" => intermediate_rep.book_id.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
+                    #[allow(clippy::redundant_clone)]
                     "quantity" => intermediate_rep.quantity.push(
                         <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
                     ),
@@ -3517,10 +3530,6 @@ impl std::str::FromStr for OrderProperties {
                     #[allow(clippy::redundant_clone)]
                     "status" => intermediate_rep.status.push(
                         <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
-                    ),
-                    #[allow(clippy::redundant_clone)]
-                    "complete" => intermediate_rep.complete.push(
-                        <bool as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
                     ),
                     _ => {
                         return std::result::Result::Err(
@@ -3536,6 +3545,11 @@ impl std::str::FromStr for OrderProperties {
 
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(OrderProperties {
+            book_id: intermediate_rep
+                .book_id
+                .into_iter()
+                .next()
+                .ok_or_else(|| "book_id missing in OrderProperties".to_string())?,
             quantity: intermediate_rep
                 .quantity
                 .into_iter()
@@ -3551,7 +3565,6 @@ impl std::str::FromStr for OrderProperties {
                 .into_iter()
                 .next()
                 .ok_or_else(|| "status missing in OrderProperties".to_string())?,
-            complete: intermediate_rep.complete.into_iter().next(),
         })
     }
 }

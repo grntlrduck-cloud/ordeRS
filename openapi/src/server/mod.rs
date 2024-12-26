@@ -19,6 +19,7 @@ where
     A: apis::author::Author
         + apis::book::Book
         + apis::discount::Discount
+        + apis::genre::Genre
         + apis::health::Health
         + apis::store::Store
         + apis::ApiKeyAuthHeader<Claims = C>
@@ -33,16 +34,16 @@ where
                 .get(get_author_by_id::<I, A>)
                 .patch(update_author::<I, A>),
         )
-        .route("/api/v1/book", post(add_book::<I, A>))
-        .route(
-            "/api/v1/book/findByAuthorId",
-            get(get_books_by_authors::<I, A>),
-        )
+        .route("/api/v1/books", post(add_book::<I, A>))
         .route(
             "/api/v1/books/:book_id",
             delete(delete_book::<I, A>)
                 .get(get_book_by_id::<I, A>)
                 .patch(update_book::<I, A>),
+        )
+        .route(
+            "/api/v1/books/findByAuthorId",
+            get(get_books_by_authors::<I, A>),
         )
         .route(
             "/api/v1/books/findbyGenereId",
@@ -55,9 +56,12 @@ where
         .route("/api/v1/discounts", post(add_discount::<I, A>))
         .route(
             "/api/v1/discounts/:discount_id",
-            delete(delete_discount::<I, A>)
-                .get(get_discount_by_id::<I, A>)
-                .patch(update_discount::<I, A>),
+            delete(delete_discount::<I, A>).get(get_discount_by_id::<I, A>),
+        )
+        .route("/api/v1/genres", post(add_genre::<I, A>))
+        .route(
+            "/api/v1/genres/:genre_id",
+            delete(delete_genre::<I, A>).get(get_genre_by_id::<I, A>),
         )
         .route("/api/v1/health/readiness", get(get_readiness::<I, A>))
         .route("/api/v1/store/inventory", get(get_inventory::<I, A>))
@@ -212,6 +216,10 @@ where
 
     let resp = match result {
         Ok(rsp) => match rsp {
+            apis::author::DeleteAuthorResponse::Status200_SuccessfullyDeleted => {
+                let mut response = response.status(200);
+                response.body(Body::empty())
+            }
             apis::author::DeleteAuthorResponse::Status400_InvalidAuthorIdValue => {
                 let mut response = response.status(400);
                 response.body(Body::empty())
@@ -453,7 +461,7 @@ fn add_book_validation(
 
     Ok((body,))
 }
-/// AddBook - POST /api/v1/book
+/// AddBook - POST /api/v1/books
 #[tracing::instrument(skip_all)]
 async fn add_book<I, A>(
     method: Method,
@@ -487,8 +495,8 @@ where
 
     let resp = match result {
         Ok(rsp) => match rsp {
-            apis::book::AddBookResponse::Status201_SuccessfulOperation(body) => {
-                let mut response = response.status(201);
+            apis::book::AddBookResponse::Status200_SuccessfulOperation(body) => {
+                let mut response = response.status(200);
                 {
                     let mut response_headers = response.headers_mut().unwrap();
                     response_headers.insert(
@@ -578,6 +586,10 @@ where
 
     let resp = match result {
         Ok(rsp) => match rsp {
+            apis::book::DeleteBookResponse::Status200_SuccessfulOperation => {
+                let mut response = response.status(200);
+                response.body(Body::empty())
+            }
             apis::book::DeleteBookResponse::Status400_InvalidBookIdValue => {
                 let mut response = response.status(400);
                 response.body(Body::empty())
@@ -703,7 +715,7 @@ fn get_books_by_authors_validation(
 
     Ok((query_params,))
 }
-/// GetBooksByAuthors - GET /api/v1/book/findByAuthorId
+/// GetBooksByAuthors - GET /api/v1/books/findByAuthorId
 #[tracing::instrument(skip_all)]
 async fn get_books_by_authors<I, A>(
     method: Method,
@@ -1214,6 +1226,10 @@ where
 
     let resp = match result {
         Ok(rsp) => match rsp {
+            apis::discount::DeleteDiscountResponse::Status200_SuccessfulOperation => {
+                let mut response = response.status(200);
+                response.body(Body::empty())
+            }
             apis::discount::DeleteDiscountResponse::Status400_InvalidDiscountIdValue => {
                 let mut response = response.status(400);
                 response.body(Body::empty())
@@ -1334,49 +1350,39 @@ where
 
 #[derive(validator::Validate)]
 #[allow(dead_code)]
-struct UpdateDiscountBodyValidator<'a> {
+struct AddGenreBodyValidator<'a> {
     #[validate(nested)]
-    body: &'a models::DiscountCodeProperties,
+    body: &'a models::NewGenre,
 }
 
 #[tracing::instrument(skip_all)]
-fn update_discount_validation(
-    path_params: models::UpdateDiscountPathParams,
-    body: models::DiscountCodeProperties,
-) -> std::result::Result<
-    (
-        models::UpdateDiscountPathParams,
-        models::DiscountCodeProperties,
-    ),
-    ValidationErrors,
-> {
-    path_params.validate()?;
-    let b = UpdateDiscountBodyValidator { body: &body };
+fn add_genre_validation(
+    body: models::NewGenre,
+) -> std::result::Result<(models::NewGenre,), ValidationErrors> {
+    let b = AddGenreBodyValidator { body: &body };
     b.validate()?;
 
-    Ok((path_params, body))
+    Ok((body,))
 }
-/// UpdateDiscount - PATCH /api/v1/discounts/{discountId}
+/// AddGenre - POST /api/v1/genres
 #[tracing::instrument(skip_all)]
-async fn update_discount<I, A>(
+async fn add_genre<I, A>(
     method: Method,
     host: Host,
     cookies: CookieJar,
-    Path(path_params): Path<models::UpdateDiscountPathParams>,
     State(api_impl): State<I>,
-    Json(body): Json<models::DiscountCodeProperties>,
+    Json(body): Json<models::NewGenre>,
 ) -> Result<Response, StatusCode>
 where
     I: AsRef<A> + Send + Sync,
-    A: apis::discount::Discount,
+    A: apis::genre::Genre,
 {
     #[allow(clippy::redundant_closure)]
-    let validation =
-        tokio::task::spawn_blocking(move || update_discount_validation(path_params, body))
-            .await
-            .unwrap();
+    let validation = tokio::task::spawn_blocking(move || add_genre_validation(body))
+        .await
+        .unwrap();
 
-    let Ok((path_params, body)) = validation else {
+    let Ok((body,)) = validation else {
         return Response::builder()
             .status(StatusCode::BAD_REQUEST)
             .body(Body::from(validation.unwrap_err().to_string()))
@@ -1385,14 +1391,14 @@ where
 
     let result = api_impl
         .as_ref()
-        .update_discount(method, host, cookies, path_params, body)
+        .add_genre(method, host, cookies, body)
         .await;
 
     let mut response = Response::builder();
 
     let resp = match result {
         Ok(rsp) => match rsp {
-            apis::discount::UpdateDiscountResponse::Status200_SuccessfulOperation(body) => {
+            apis::genre::AddGenreResponse::Status200_SuccessfulOperation(body) => {
                 let mut response = response.status(200);
                 {
                     let mut response_headers = response.headers_mut().unwrap();
@@ -1415,19 +1421,178 @@ where
                 .unwrap()?;
                 response.body(Body::from(body_content))
             }
-            apis::discount::UpdateDiscountResponse::Status400_InvalidIDSupplied => {
+            apis::genre::AddGenreResponse::Status400_InvalidInput => {
                 let mut response = response.status(400);
                 response.body(Body::empty())
             }
-            apis::discount::UpdateDiscountResponse::Status404_DiscountNotFound => {
-                let mut response = response.status(404);
-                response.body(Body::empty())
-            }
-            apis::discount::UpdateDiscountResponse::Status422_ValidationException => {
+            apis::genre::AddGenreResponse::Status422_ValidationException => {
                 let mut response = response.status(422);
                 response.body(Body::empty())
             }
-            apis::discount::UpdateDiscountResponse::Status500_ServerError => {
+            apis::genre::AddGenreResponse::Status500_ServerError => {
+                let mut response = response.status(500);
+                response.body(Body::empty())
+            }
+        },
+        Err(_) => {
+            // Application code returned an error. This should not happen, as the implementation should
+            // return a valid response.
+            response.status(500).body(Body::empty())
+        }
+    };
+
+    resp.map_err(|e| {
+        error!(error = ?e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })
+}
+
+#[tracing::instrument(skip_all)]
+fn delete_genre_validation(
+    path_params: models::DeleteGenrePathParams,
+) -> std::result::Result<(models::DeleteGenrePathParams,), ValidationErrors> {
+    path_params.validate()?;
+
+    Ok((path_params,))
+}
+/// DeleteGenre - DELETE /api/v1/genres/{genreId}
+#[tracing::instrument(skip_all)]
+async fn delete_genre<I, A>(
+    method: Method,
+    host: Host,
+    cookies: CookieJar,
+    Path(path_params): Path<models::DeleteGenrePathParams>,
+    State(api_impl): State<I>,
+) -> Result<Response, StatusCode>
+where
+    I: AsRef<A> + Send + Sync,
+    A: apis::genre::Genre,
+{
+    #[allow(clippy::redundant_closure)]
+    let validation = tokio::task::spawn_blocking(move || delete_genre_validation(path_params))
+        .await
+        .unwrap();
+
+    let Ok((path_params,)) = validation else {
+        return Response::builder()
+            .status(StatusCode::BAD_REQUEST)
+            .body(Body::from(validation.unwrap_err().to_string()))
+            .map_err(|_| StatusCode::BAD_REQUEST);
+    };
+
+    let result = api_impl
+        .as_ref()
+        .delete_genre(method, host, cookies, path_params)
+        .await;
+
+    let mut response = Response::builder();
+
+    let resp = match result {
+        Ok(rsp) => match rsp {
+            apis::genre::DeleteGenreResponse::Status200_SuccessfulOperation => {
+                let mut response = response.status(200);
+                response.body(Body::empty())
+            }
+            apis::genre::DeleteGenreResponse::Status400_InvalidGenereIdValue => {
+                let mut response = response.status(400);
+                response.body(Body::empty())
+            }
+            apis::genre::DeleteGenreResponse::Status404_GenreNotFound => {
+                let mut response = response.status(404);
+                response.body(Body::empty())
+            }
+            apis::genre::DeleteGenreResponse::Status500_ServerError => {
+                let mut response = response.status(500);
+                response.body(Body::empty())
+            }
+        },
+        Err(_) => {
+            // Application code returned an error. This should not happen, as the implementation should
+            // return a valid response.
+            response.status(500).body(Body::empty())
+        }
+    };
+
+    resp.map_err(|e| {
+        error!(error = ?e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })
+}
+
+#[tracing::instrument(skip_all)]
+fn get_genre_by_id_validation(
+    path_params: models::GetGenreByIdPathParams,
+) -> std::result::Result<(models::GetGenreByIdPathParams,), ValidationErrors> {
+    path_params.validate()?;
+
+    Ok((path_params,))
+}
+/// GetGenreById - GET /api/v1/genres/{genreId}
+#[tracing::instrument(skip_all)]
+async fn get_genre_by_id<I, A>(
+    method: Method,
+    host: Host,
+    cookies: CookieJar,
+    Path(path_params): Path<models::GetGenreByIdPathParams>,
+    State(api_impl): State<I>,
+) -> Result<Response, StatusCode>
+where
+    I: AsRef<A> + Send + Sync,
+    A: apis::genre::Genre,
+{
+    #[allow(clippy::redundant_closure)]
+    let validation = tokio::task::spawn_blocking(move || get_genre_by_id_validation(path_params))
+        .await
+        .unwrap();
+
+    let Ok((path_params,)) = validation else {
+        return Response::builder()
+            .status(StatusCode::BAD_REQUEST)
+            .body(Body::from(validation.unwrap_err().to_string()))
+            .map_err(|_| StatusCode::BAD_REQUEST);
+    };
+
+    let result = api_impl
+        .as_ref()
+        .get_genre_by_id(method, host, cookies, path_params)
+        .await;
+
+    let mut response = Response::builder();
+
+    let resp = match result {
+        Ok(rsp) => match rsp {
+            apis::genre::GetGenreByIdResponse::Status200_SuccessfulOperation(body) => {
+                let mut response = response.status(200);
+                {
+                    let mut response_headers = response.headers_mut().unwrap();
+                    response_headers.insert(
+                        CONTENT_TYPE,
+                        HeaderValue::from_str("application/json").map_err(|e| {
+                            error!(error = ?e);
+                            StatusCode::INTERNAL_SERVER_ERROR
+                        })?,
+                    );
+                }
+
+                let body_content = tokio::task::spawn_blocking(move || {
+                    serde_json::to_vec(&body).map_err(|e| {
+                        error!(error = ?e);
+                        StatusCode::INTERNAL_SERVER_ERROR
+                    })
+                })
+                .await
+                .unwrap()?;
+                response.body(Body::from(body_content))
+            }
+            apis::genre::GetGenreByIdResponse::Status400_InvalidParameters => {
+                let mut response = response.status(400);
+                response.body(Body::empty())
+            }
+            apis::genre::GetGenreByIdResponse::Status404_GenrNotFound => {
+                let mut response = response.status(404);
+                response.body(Body::empty())
+            }
+            apis::genre::GetGenreByIdResponse::Status500_ServerError => {
                 let mut response = response.status(500);
                 response.body(Body::empty())
             }

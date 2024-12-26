@@ -1,4 +1,5 @@
 mod adapters;
+mod domain;
 
 use adapters::rest::server;
 use chrono::Local;

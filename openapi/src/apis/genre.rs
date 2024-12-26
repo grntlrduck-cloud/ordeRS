@@ -10,27 +10,27 @@ use crate::{models, types::*};
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[must_use]
 #[allow(clippy::large_enum_variant)]
-pub enum AddDiscountResponse {
+pub enum AddGenreResponse {
     /// Successful operation
-    Status200_SuccessfulOperation(models::DiscountCode),
+    Status200_SuccessfulOperation(models::Genre),
     /// Invalid input
     Status400_InvalidInput,
     /// Validation exception
     Status422_ValidationException,
-    /// server error
+    /// Server error
     Status500_ServerError,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[must_use]
 #[allow(clippy::large_enum_variant)]
-pub enum DeleteDiscountResponse {
+pub enum DeleteGenreResponse {
     /// Successful operation
     Status200_SuccessfulOperation,
-    /// Invalid discountId value
-    Status400_InvalidDiscountIdValue,
-    /// Discont not found
-    Status404_DiscontNotFound,
+    /// Invalid genereId value
+    Status400_InvalidGenereIdValue,
+    /// Genre not found
+    Status404_GenreNotFound,
     /// Server error
     Status500_ServerError,
 }
@@ -38,51 +38,51 @@ pub enum DeleteDiscountResponse {
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[must_use]
 #[allow(clippy::large_enum_variant)]
-pub enum GetDiscountByIdResponse {
+pub enum GetGenreByIdResponse {
     /// successful operation
-    Status200_SuccessfulOperation(Vec<models::DiscountCode>),
+    Status200_SuccessfulOperation(Vec<models::Genre>),
     /// Invalid parameters
     Status400_InvalidParameters,
-    /// DiscountCode not found
-    Status404_DiscountCodeNotFound,
+    /// Genr not found
+    Status404_GenrNotFound,
     /// Server error
     Status500_ServerError,
 }
 
-/// Discount
+/// Genre
 #[async_trait]
 #[allow(clippy::ptr_arg)]
-pub trait Discount {
-    /// Add a new discount to the store.
+pub trait Genre {
+    /// Add a new genere to the store.
     ///
-    /// AddDiscount - POST /api/v1/discounts
-    async fn add_discount(
+    /// AddGenre - POST /api/v1/genres
+    async fn add_genre(
         &self,
         method: Method,
         host: Host,
         cookies: CookieJar,
-        body: models::NewDiscountCode,
-    ) -> Result<AddDiscountResponse, ()>;
+        body: models::NewGenre,
+    ) -> Result<AddGenreResponse, ()>;
 
-    /// Deletes a discount.
+    /// Deletes a genere.
     ///
-    /// DeleteDiscount - DELETE /api/v1/discounts/{discountId}
-    async fn delete_discount(
+    /// DeleteGenre - DELETE /api/v1/genres/{genreId}
+    async fn delete_genre(
         &self,
         method: Method,
         host: Host,
         cookies: CookieJar,
-        path_params: models::DeleteDiscountPathParams,
-    ) -> Result<DeleteDiscountResponse, ()>;
+        path_params: models::DeleteGenrePathParams,
+    ) -> Result<DeleteGenreResponse, ()>;
 
-    /// Finds discount by Id.
+    /// Finds genre by Id.
     ///
-    /// GetDiscountById - GET /api/v1/discounts/{discountId}
-    async fn get_discount_by_id(
+    /// GetGenreById - GET /api/v1/genres/{genreId}
+    async fn get_genre_by_id(
         &self,
         method: Method,
         host: Host,
         cookies: CookieJar,
-        path_params: models::GetDiscountByIdPathParams,
-    ) -> Result<GetDiscountByIdResponse, ()>;
+        path_params: models::GetGenreByIdPathParams,
+    ) -> Result<GetGenreByIdResponse, ()>;
 }

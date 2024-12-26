@@ -12,7 +12,7 @@ use crate::{models, types::*};
 #[allow(clippy::large_enum_variant)]
 pub enum AddBookResponse {
     /// Successful operation
-    Status201_SuccessfulOperation(models::Book),
+    Status200_SuccessfulOperation(models::Book),
     /// Invalid input
     Status400_InvalidInput,
     /// Validation exception
@@ -25,6 +25,8 @@ pub enum AddBookResponse {
 #[must_use]
 #[allow(clippy::large_enum_variant)]
 pub enum DeleteBookResponse {
+    /// Successful operation
+    Status200_SuccessfulOperation,
     /// Invalid bookId value
     Status400_InvalidBookIdValue,
     /// BookId not found
@@ -109,7 +111,7 @@ pub enum UpdateBookResponse {
 pub trait Book {
     /// Add a new book to the store.
     ///
-    /// AddBook - POST /api/v1/book
+    /// AddBook - POST /api/v1/books
     async fn add_book(
         &self,
         method: Method,
@@ -142,7 +144,7 @@ pub trait Book {
 
     /// Finds Books by AuthorId.
     ///
-    /// GetBooksByAuthors - GET /api/v1/book/findByAuthorId
+    /// GetBooksByAuthors - GET /api/v1/books/findByAuthorId
     async fn get_books_by_authors(
         &self,
         method: Method,

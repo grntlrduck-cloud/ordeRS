@@ -11,7 +11,7 @@ use crate::{models, types::*};
 #[must_use]
 #[allow(clippy::large_enum_variant)]
 pub enum DeleteOrderResponse {
-    /// successful operation
+    /// Successful operation
     Status200_SuccessfulOperation,
     /// Invalid ID supplied
     Status400_InvalidIDSupplied,
@@ -49,7 +49,7 @@ pub enum GetOrderByIdResponse {
 #[must_use]
 #[allow(clippy::large_enum_variant)]
 pub enum PlaceOrderResponse {
-    /// successful operation
+    /// Successful operation
     Status200_SuccessfulOperation(models::Order),
     /// Invalid input
     Status400_InvalidInput,

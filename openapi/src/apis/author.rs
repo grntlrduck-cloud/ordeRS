@@ -25,6 +25,8 @@ pub enum AddAuthorResponse {
 #[must_use]
 #[allow(clippy::large_enum_variant)]
 pub enum DeleteAuthorResponse {
+    /// Successfully deleted
+    Status200_SuccessfullyDeleted,
     /// Invalid authorId value
     Status400_InvalidAuthorIdValue,
     /// Author not found
