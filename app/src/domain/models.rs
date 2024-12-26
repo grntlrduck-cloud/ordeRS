@@ -24,10 +24,10 @@ pub struct AuthorDomain {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct AuthorUpdateProps {
-    pub date_of_birth: Option<chrono::naive::NaiveDate>,
+    pub id: Ksuid,
     pub date_of_death: Option<chrono::naive::NaiveDate>,
-    pub first_name: Option<String>,
     pub last_name: Option<String>,
+    pub second_names: Option<Vec<String>>,
     pub title: Option<String>,
 }
 
@@ -79,11 +79,12 @@ impl std::str::FromStr for BookStatus {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct BookUpdateProps {
-    pub authors: Option<Vec<AuthorDomain>>,
+    pub id: Ksuid,
+    pub authors: Option<Vec<Ksuid>>,
     pub available: Option<i32>,
-    pub discounts: Option<Vec<DiscountCodeDomain>>,
+    pub discounts: Option<Vec<Ksuid>>,
+    pub genres: Option<Vec<Ksuid>>,
     pub edition: Option<i32>,
-    pub firs_release: Option<chrono::naive::NaiveDate>,
     pub price: Option<f64>,
     pub release: Option<chrono::naive::NaiveDate>,
     pub series: Option<String>,
@@ -176,7 +177,9 @@ impl std::str::FromStr for OrderStatus {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct OrderUpdateProps {
-    pub quantity: Option<i32>,
-    pub shipping_date: Option<chrono::DateTime<chrono::Utc>>,
-    pub status: Option<OrderStatus>,
+    pub id: Ksuid,
+    pub book_id: Ksuid,
+    pub quantity: i32,
+    pub shipping_date: chrono::DateTime<chrono::Utc>,
+    pub status: OrderStatus,
 }

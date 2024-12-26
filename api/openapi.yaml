@@ -725,8 +725,6 @@ components:
         title:
           type: string
           example: Prof. Dr.
-        first_name:
-          type: string
         second_names:
           type: array
           items:
@@ -810,11 +808,6 @@ components:
         release:
           type: string
           description: the date when this edition of the book was released
-          format: date
-          example: 2024-12-09
-        first_release:
-          type: string
-          description: the date when the first edition of the book was release
           format: date
           example: 2024-12-09
         authors:
@@ -1079,6 +1072,8 @@ components:
     OrderProperties:
       type: object
       properties:
+        book_id:
+          type: string
         quantity:
           type: integer
           format: int32
@@ -1095,4 +1090,4 @@ components:
             - shipped
             - delivered
             - canceled
-      required: [shipping_date, quantity, status]
+      required: [book_id, shipping_date, quantity, status]

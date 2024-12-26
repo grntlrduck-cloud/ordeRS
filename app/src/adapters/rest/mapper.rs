@@ -7,6 +7,28 @@ use std::fmt;
 use std::str::FromStr;
 
 #[derive(Debug)]
+struct BookAvailabilityError(i32);
+
+impl fmt::Display for BookAvailabilityError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Invalid number of books available: {}", self.0)
+    }
+}
+
+impl Error for BookAvailabilityError {}
+
+#[derive(Debug)]
+struct BookStatusError(String);
+
+impl fmt::Display for BookStatusError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Invalid book status: {}", self.0)
+    }
+}
+
+impl Error for BookStatusError {}
+
+#[derive(Debug)]
 struct DiscountPercentageError(i32);
 
 impl fmt::Display for DiscountPercentageError {
@@ -22,26 +44,26 @@ impl fmt::Display for DiscountPercentageError {
 impl Error for DiscountPercentageError {}
 
 #[derive(Debug)]
-struct BookStatusError(String);
+struct OrderStatusError(String);
 
-impl fmt::Display for BookStatusError {
+impl fmt::Display for OrderStatusError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Invalid book status: {}", self.0)
+        write!(f, "Invalid order status: {}", self.0)
     }
 }
 
-impl Error for BookStatusError {}
+impl Error for OrderStatusError {}
 
 #[derive(Debug)]
-struct BookAvailabilityError(i32);
+struct OrderQuantityError(i32);
 
-impl fmt::Display for BookAvailabilityError {
+impl fmt::Display for OrderQuantityError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Invalid number of books available: {}", self.0)
+        write!(f, "Invalid order quantity: {}", self.0)
     }
 }
 
-impl Error for BookAvailabilityError {}
+impl Error for OrderQuantityError {}
 
 #[derive(Debug)]
 pub enum MapperError {
@@ -55,6 +77,18 @@ pub enum MapperError {
     },
     DiscountPercentageOutOfBounds {
         percentage: i32,
+        source: Box<dyn Error + Send + Sync>,
+    },
+    InvalidBookStatus {
+        status: String,
+        source: Box<dyn Error + Send + Sync>,
+    },
+    InvalidOrderStatus {
+        status: String,
+        source: Box<dyn Error + Send + Sync>,
+    },
+    OrderQuantityOutOfBounds {
+        quantity: i32,
         source: Box<dyn Error + Send + Sync>,
     },
 }
@@ -75,6 +109,15 @@ impl fmt::Display for MapperError {
                     percentage
                 )
             }
+            MapperError::InvalidBookStatus { status, .. } => {
+                write!(f, "Invalid book status: {}", status)
+            }
+            MapperError::InvalidOrderStatus { status, .. } => {
+                write!(f, "Invalid order status: {}", status)
+            }
+            MapperError::OrderQuantityOutOfBounds { quantity, .. } => {
+                write!(f, "Invalid quantity for order: {}. Minimum is 1", quantity)
+            }
         }
     }
 }
@@ -85,6 +128,9 @@ impl Error for MapperError {
             MapperError::InvalidKsuid { source, .. } => Some(source),
             MapperError::BooksAvailableOutOfBound { source, .. } => Some(source.as_ref()),
             MapperError::DiscountPercentageOutOfBounds { source, .. } => Some(source.as_ref()),
+            MapperError::InvalidBookStatus { source, .. } => Some(source.as_ref()),
+            MapperError::InvalidOrderStatus { source, .. } => Some(source.as_ref()),
+            MapperError::OrderQuantityOutOfBounds { source, .. } => Some(source.as_ref()),
         }
     }
 }
@@ -121,6 +167,23 @@ fn map_author_to_rest(author: dmodels::AuthorDomain) -> rmodels::Author {
         date_of_birth: author.date_of_birth,
         date_of_death: author.date_of_death,
     }
+}
+
+fn map_author_update_props_to_domain(
+    id: String,
+    props: rmodels::AuthorProperties,
+) -> Result<dmodels::AuthorUpdateProps, MapperError> {
+    let kid = Ksuid::from_str(&id).map_err(|e| MapperError::InvalidKsuid {
+        id: id.clone(),
+        source: e,
+    })?;
+    Ok(dmodels::AuthorUpdateProps {
+        id: kid,
+        date_of_death: props.date_of_death,
+        last_name: props.last_name,
+        second_names: props.second_names,
+        title: props.title,
+    })
 }
 
 fn map_book_to_rest(book: dmodels::BookDomain) -> rmodels::Book {
@@ -162,6 +225,91 @@ fn map_book_to_rest(book: dmodels::BookDomain) -> rmodels::Book {
         available: book.available,
         status: book.status.to_string(),
     }
+}
+
+fn map_book_props_to_domain(
+    id: String,
+    props: rmodels::BookProperties,
+) -> Result<dmodels::BookUpdateProps, MapperError> {
+    let kid = Ksuid::from_str(&id).map_err(|e| MapperError::InvalidKsuid {
+        id: id.clone(),
+        source: e,
+    })?;
+
+    let authors = match props.authors {
+        Some(authors) => {
+            let result = authors
+                .into_iter()
+                .map(|a| {
+                    Ksuid::from_str(&a).map_err(|e| MapperError::InvalidKsuid {
+                        id: a.clone(),
+                        source: e,
+                    })
+                })
+                .collect::<Result<Vec<Ksuid>, MapperError>>()?;
+            Some(result)
+        }
+        None => None,
+    };
+
+    let genres = match props.genres {
+        Some(genres) => {
+            let result = genres
+                .into_iter()
+                .map(|g| {
+                    Ksuid::from_str(&g).map_err(|e| MapperError::InvalidKsuid {
+                        id: g.clone(),
+                        source: e,
+                    })
+                })
+                .collect::<Result<Vec<Ksuid>, MapperError>>()?;
+            Some(result)
+        }
+        None => None,
+    };
+
+    let discounts = match props.discount_codes {
+        Some(discounts) => {
+            let result = discounts
+                .into_iter()
+                .map(|d| {
+                    Ksuid::from_str(&d).map_err(|e| MapperError::InvalidKsuid {
+                        id: d.clone(),
+                        source: e,
+                    })
+                })
+                .collect::<Result<Vec<Ksuid>, MapperError>>()?;
+            Some(result)
+        }
+        None => None,
+    };
+
+    let status = match props.status {
+        Some(status) => {
+            let result = dmodels::BookStatus::from_str(&status).map_err(|_| {
+                MapperError::InvalidBookStatus {
+                    status: status.clone(),
+                    source: Box::new(BookStatusError(status.clone())),
+                }
+            })?;
+            Some(result)
+        }
+        None => None,
+    };
+
+    Ok(dmodels::BookUpdateProps {
+        id: kid,
+        authors,
+        available: props.available,
+        discounts,
+        genres,
+        edition: props.edition,
+        price: props.price,
+        release: props.release,
+        series: props.series,
+        status,
+        title: props.title,
+    })
 }
 
 fn map_discount_code_to_rest(discount: dmodels::DiscountCodeDomain) -> rmodels::DiscountCode {
@@ -308,6 +456,12 @@ fn map_new_genre_to_domain(genre: String) -> dmodels::GenereDomain {
 fn map_new_order_to_domain(
     new_order: rmodels::NewOrder,
 ) -> Result<dmodels::OrderDomain, MapperError> {
+    if new_order.quantity < 1 {
+        return Err(MapperError::OrderQuantityOutOfBounds {
+            quantity: new_order.quantity,
+            source: Box::new(OrderQuantityError(new_order.quantity)),
+        });
+    }
     let book_id = Ksuid::from_str(&new_order.book_id).map_err(|e| MapperError::InvalidKsuid {
         id: new_order.book_id.clone(),
         source: e,
@@ -353,6 +507,42 @@ fn map_order_to_rest(order: dmodels::OrderDomain) -> rmodels::Order {
         shipping_address_override: address_override,
         status: order.status.to_string(),
     }
+}
+
+fn map_order_props_to_domain(
+    id: String,
+    props: rmodels::OrderProperties,
+) -> Result<dmodels::OrderUpdateProps, MapperError> {
+    if props.quantity < 1 {
+        return Err(MapperError::OrderQuantityOutOfBounds {
+            quantity: props.quantity,
+            source: Box::new(OrderQuantityError(props.quantity)),
+        });
+    }
+    let kid = Ksuid::from_str(&id).map_err(|e| MapperError::InvalidKsuid {
+        id: id.clone(),
+        source: e,
+    })?;
+
+    let book_id = Ksuid::from_str(&props.book_id).map_err(|e| MapperError::InvalidKsuid {
+        id: props.book_id.clone(),
+        source: e,
+    })?;
+
+    let status = dmodels::OrderStatus::from_str(&props.status).map_err(|_| {
+        MapperError::InvalidOrderStatus {
+            status: props.status.clone(),
+            source: Box::new(BookStatusError(props.status.clone())),
+        }
+    })?;
+
+    Ok(dmodels::OrderUpdateProps {
+        id: kid,
+        book_id,
+        quantity: props.quantity,
+        shipping_date: props.shipping_date,
+        status,
+    })
 }
 
 #[cfg(test)]
@@ -489,6 +679,38 @@ mod tests {
                 assert_eq!(id, "invalid-id");
             }
             _ => panic!("Expected InvalidKsuid error"),
+        }
+    }
+
+    #[test]
+    fn test_map_new_order_to_domain_invalid_quantity() {
+        // Arrange
+        let new_order = rmodels::NewOrder {
+            book_id: String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
+            customer_id: String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
+            quantity: 0, // Invalid quantity - less than 1
+            shipping_date: DateTime::from_timestamp(1640995200, 0).unwrap(),
+            billing_address: rmodels::Address {
+                street: String::from("Main St"),
+                street_number: String::from("123"),
+                zip_code: String::from("12345"),
+                city: String::from("City"),
+                province: Some(String::from("Province")),
+                country: String::from("Country"),
+            },
+            shipping_address_override: None,
+        };
+
+        // Act
+        let result = map_new_order_to_domain(new_order);
+
+        // Assert
+        assert!(result.is_err());
+        match result {
+            Err(MapperError::OrderQuantityOutOfBounds { quantity, .. }) => {
+                assert_eq!(quantity, 0);
+            }
+            _ => panic!("Expected OrderQuantityOutOfBounds error"),
         }
     }
 
@@ -1008,5 +1230,339 @@ mod tests {
         assert_eq!(discount.code, "");
         assert_eq!(discount.valid_from, discount.valid_to); // Same day
         assert!(!discount.id.to_string().is_empty());
+    }
+
+    #[test]
+    fn test_map_order_props_to_domain_success() {
+        // Arrange
+        let order_props = rmodels::OrderProperties {
+            book_id: String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
+            quantity: 5,
+            shipping_date: DateTime::from_timestamp(1640995200, 0).unwrap(),
+            status: String::from("shipped"),
+        };
+
+        // Act
+        let result =
+            map_order_props_to_domain(String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"), order_props);
+
+        // Assert
+        assert!(result.is_ok());
+        let props = result.unwrap();
+        assert_eq!(props.quantity, 5);
+        assert_eq!(props.status, dmodels::OrderStatus::Shipped);
+    }
+
+    #[test]
+    fn test_map_order_props_to_domain_invalid_id() {
+        // Arrange
+        let order_props = rmodels::OrderProperties {
+            book_id: String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
+            quantity: 5,
+            shipping_date: DateTime::from_timestamp(1640995200, 0).unwrap(),
+            status: String::from("shipped"),
+        };
+
+        // Act
+        let result = map_order_props_to_domain(String::from("invalid-id"), order_props);
+
+        // Assert
+        assert!(result.is_err());
+        match result {
+            Err(MapperError::InvalidKsuid { id, .. }) => {
+                assert_eq!(id, "invalid-id");
+            }
+            _ => panic!("Expected InvalidKsuid error"),
+        }
+    }
+
+    #[test]
+    fn test_map_order_props_to_domain_invalid_book_id() {
+        // Arrange
+        let order_props = rmodels::OrderProperties {
+            book_id: String::from("invalid-book-id"),
+            quantity: 5,
+            shipping_date: DateTime::from_timestamp(1640995200, 0).unwrap(),
+            status: String::from("shipped"),
+        };
+
+        // Act
+        let result =
+            map_order_props_to_domain(String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"), order_props);
+
+        // Assert
+        assert!(result.is_err());
+        match result {
+            Err(MapperError::InvalidKsuid { id, .. }) => {
+                assert_eq!(id, "invalid-book-id");
+            }
+            _ => panic!("Expected InvalidKsuid error"),
+        }
+    }
+
+    #[test]
+    fn test_map_order_props_to_domain_invalid_quantity() {
+        // Arrange
+        let order_props = rmodels::OrderProperties {
+            book_id: String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
+            quantity: 0,
+            shipping_date: DateTime::from_timestamp(1640995200, 0).unwrap(),
+            status: String::from("shipped"),
+        };
+
+        // Act
+        let result =
+            map_order_props_to_domain(String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"), order_props);
+
+        // Assert
+        assert!(result.is_err());
+        match result {
+            Err(MapperError::OrderQuantityOutOfBounds { quantity, .. }) => {
+                assert_eq!(quantity, 0);
+            }
+            _ => panic!("Expected OrderQuantityOutOfBounds error"),
+        }
+    }
+
+    #[test]
+    fn test_map_order_props_to_domain_invalid_status() {
+        // Arrange
+        let order_props = rmodels::OrderProperties {
+            book_id: String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
+            quantity: 5,
+            shipping_date: DateTime::from_timestamp(1640995200, 0).unwrap(),
+            status: String::from("invalid-status"),
+        };
+
+        // Act
+        let result =
+            map_order_props_to_domain(String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"), order_props);
+
+        // Assert
+        assert!(result.is_err());
+        match result {
+            Err(MapperError::InvalidOrderStatus { status, .. }) => {
+                assert_eq!(status, "invalid-status");
+            }
+            _ => panic!("Expected InvalidOrderStatus error"),
+        }
+    }
+
+    #[test]
+    fn test_map_book_props_to_domain_success() {
+        // Arrange
+        let book_props = rmodels::BookProperties {
+            title: Some(String::from("Updated Title")),
+            release: Some(NaiveDate::from_ymd_opt(2024, 1, 1).unwrap()),
+            authors: Some(vec![String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3")]),
+            series: Some(String::from("Updated Series")),
+            genres: Some(vec![String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3")]),
+            edition: Some(2),
+            price: Some(39.99),
+            discount_codes: Some(vec![String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3")]),
+            available: Some(15),
+            status: Some(String::from("available")),
+        };
+
+        // Act
+        let result =
+            map_book_props_to_domain(String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"), book_props);
+
+        // Assert
+        assert!(result.is_ok());
+        let props = result.unwrap();
+        assert_eq!(props.title.unwrap(), "Updated Title");
+        assert_eq!(props.available.unwrap(), 15);
+        assert_eq!(props.status.unwrap(), dmodels::BookStatus::Available);
+    }
+
+    #[test]
+    fn test_map_book_props_to_domain_minimal_fields() {
+        // Arrange
+        let book_props = rmodels::BookProperties {
+            title: Some(String::from("Updated Title")),
+            release: None,
+            authors: None,
+            series: None,
+            genres: None,
+            edition: None,
+            price: None,
+            discount_codes: None,
+            available: None,
+            status: None,
+        };
+
+        // Act
+        let result =
+            map_book_props_to_domain(String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"), book_props);
+
+        // Assert
+        assert!(result.is_ok());
+        let props = result.unwrap();
+        assert_eq!(props.title.unwrap(), "Updated Title");
+        assert!(props.release.is_none());
+        assert!(props.authors.is_none());
+        assert!(props.status.is_none());
+    }
+
+    #[test]
+    fn test_map_book_props_to_domain_invalid_id() {
+        // Arrange
+        let book_props = rmodels::BookProperties {
+            title: Some(String::from("Updated Title")),
+            release: None,
+            authors: None,
+            series: None,
+            genres: None,
+            edition: None,
+            price: None,
+            discount_codes: None,
+            available: None,
+            status: None,
+        };
+
+        // Act
+        let result = map_book_props_to_domain(String::from("invalid-id"), book_props);
+
+        // Assert
+        assert!(result.is_err());
+        match result {
+            Err(MapperError::InvalidKsuid { id, .. }) => {
+                assert_eq!(id, "invalid-id");
+            }
+            _ => panic!("Expected InvalidKsuid error"),
+        }
+    }
+
+    #[test]
+    fn test_map_book_props_to_domain_invalid_author_id() {
+        // Arrange
+        let book_props = rmodels::BookProperties {
+            title: Some(String::from("Updated Title")),
+            release: None,
+            authors: Some(vec![String::from("invalid-author-id")]),
+            series: None,
+            genres: None,
+            edition: None,
+            price: None,
+            discount_codes: None,
+            available: None,
+            status: None,
+        };
+
+        // Act
+        let result =
+            map_book_props_to_domain(String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"), book_props);
+
+        // Assert
+        assert!(result.is_err());
+        match result {
+            Err(MapperError::InvalidKsuid { id, .. }) => {
+                assert_eq!(id, "invalid-author-id");
+            }
+            _ => panic!("Expected InvalidKsuid error"),
+        }
+    }
+
+    #[test]
+    fn test_map_book_props_to_domain_invalid_status() {
+        // Arrange
+        let book_props = rmodels::BookProperties {
+            title: Some(String::from("Updated Title")),
+            release: None,
+            authors: None,
+            series: None,
+            genres: None,
+            edition: None,
+            price: None,
+            discount_codes: None,
+            available: None,
+            status: Some(String::from("invalid-status")),
+        };
+
+        // Act
+        let result =
+            map_book_props_to_domain(String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"), book_props);
+
+        // Assert
+        assert!(result.is_err());
+        match result {
+            Err(MapperError::InvalidBookStatus { status, .. }) => {
+                assert_eq!(status, "invalid-status");
+            }
+            _ => panic!("Expected InvalidBookStatus error"),
+        }
+    }
+
+    #[test]
+    fn test_map_author_update_props_to_domain_success() {
+        // Arrange
+        let author_props = rmodels::AuthorProperties {
+            title: Some(String::from("Dr.")),
+            last_name: Some(String::from("Updated")),
+            second_names: Some(vec![String::from("Middle"), String::from("Name")]),
+            date_of_death: Some(NaiveDate::from_ymd_opt(2023, 12, 31).unwrap()),
+        };
+
+        // Act
+        let result = map_author_update_props_to_domain(
+            String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
+            author_props,
+        );
+
+        // Assert
+        assert!(result.is_ok());
+        let props = result.unwrap();
+        assert_eq!(props.title.unwrap(), "Dr.");
+        assert_eq!(props.last_name.unwrap(), "Updated");
+        assert_eq!(props.second_names.unwrap().len(), 2);
+    }
+
+    #[test]
+    fn test_map_author_update_props_to_domain_minimal_fields() {
+        // Arrange
+        let author_props = rmodels::AuthorProperties {
+            title: None,
+            last_name: Some(String::from("Updated")),
+            second_names: None,
+            date_of_death: None,
+        };
+
+        // Act
+        let result = map_author_update_props_to_domain(
+            String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
+            author_props,
+        );
+
+        // Assert
+        assert!(result.is_ok());
+        let props = result.unwrap();
+        assert!(props.title.is_none());
+        assert_eq!(props.last_name.unwrap(), "Updated");
+        assert!(props.second_names.is_none());
+        assert!(props.date_of_death.is_none());
+    }
+
+    #[test]
+    fn test_map_author_update_props_to_domain_invalid_id() {
+        // Arrange
+        let author_props = rmodels::AuthorProperties {
+            title: None,
+            last_name: Some(String::from("Updated")),
+            second_names: None,
+            date_of_death: None,
+        };
+
+        // Act
+        let result = map_author_update_props_to_domain(String::from("invalid-id"), author_props);
+
+        // Assert
+        assert!(result.is_err());
+        match result {
+            Err(MapperError::InvalidKsuid { id, .. }) => {
+                assert_eq!(id, "invalid-id");
+            }
+            _ => panic!("Expected InvalidKsuid error"),
+        }
     }
 }

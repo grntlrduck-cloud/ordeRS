@@ -596,10 +596,6 @@ pub struct AuthorProperties {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
 
-    #[serde(rename = "first_name")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub first_name: Option<String>,
-
     #[serde(rename = "second_names")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub second_names: Option<Vec<String>>,
@@ -618,7 +614,6 @@ impl AuthorProperties {
     pub fn new() -> AuthorProperties {
         AuthorProperties {
             title: None,
-            first_name: None,
             second_names: None,
             last_name: None,
             date_of_death: None,
@@ -635,9 +630,6 @@ impl std::fmt::Display for AuthorProperties {
             self.title
                 .as_ref()
                 .map(|title| ["title".to_string(), title.to_string()].join(",")),
-            self.first_name
-                .as_ref()
-                .map(|first_name| ["first_name".to_string(), first_name.to_string()].join(",")),
             self.second_names.as_ref().map(|second_names| {
                 [
                     "second_names".to_string(),
@@ -675,7 +667,6 @@ impl std::str::FromStr for AuthorProperties {
         #[allow(dead_code)]
         struct IntermediateRep {
             pub title: Vec<String>,
-            pub first_name: Vec<String>,
             pub second_names: Vec<Vec<String>>,
             pub last_name: Vec<String>,
             pub date_of_death: Vec<chrono::naive::NaiveDate>,
@@ -702,10 +693,6 @@ impl std::str::FromStr for AuthorProperties {
                 match key {
                     #[allow(clippy::redundant_clone)]
                     "title" => intermediate_rep.title.push(
-                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
-                    ),
-                    #[allow(clippy::redundant_clone)]
-                    "first_name" => intermediate_rep.first_name.push(
                         <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
                     ),
                     "second_names" => return std::result::Result::Err(
@@ -736,7 +723,6 @@ impl std::str::FromStr for AuthorProperties {
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(AuthorProperties {
             title: intermediate_rep.title.into_iter().next(),
-            first_name: intermediate_rep.first_name.into_iter().next(),
             second_names: intermediate_rep.second_names.into_iter().next(),
             last_name: intermediate_rep.last_name.into_iter().next(),
             date_of_death: intermediate_rep.date_of_death.into_iter().next(),
@@ -1127,11 +1113,6 @@ pub struct BookProperties {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub release: Option<chrono::naive::NaiveDate>,
 
-    /// the date when the first edition of the book was release
-    #[serde(rename = "first_release")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub first_release: Option<chrono::naive::NaiveDate>,
-
     #[serde(rename = "authors")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub authors: Option<Vec<String>>,
@@ -1176,7 +1157,6 @@ impl BookProperties {
         BookProperties {
             title: None,
             release: None,
-            first_release: None,
             authors: None,
             genres: None,
             discount_codes: None,
@@ -1199,8 +1179,6 @@ impl std::fmt::Display for BookProperties {
                 .as_ref()
                 .map(|title| ["title".to_string(), title.to_string()].join(",")),
             // Skipping release in query parameter serialization
-
-            // Skipping first_release in query parameter serialization
             self.authors.as_ref().map(|authors| {
                 [
                     "authors".to_string(),
@@ -1272,7 +1250,6 @@ impl std::str::FromStr for BookProperties {
         struct IntermediateRep {
             pub title: Vec<String>,
             pub release: Vec<chrono::naive::NaiveDate>,
-            pub first_release: Vec<chrono::naive::NaiveDate>,
             pub authors: Vec<Vec<String>>,
             pub genres: Vec<Vec<String>>,
             pub discount_codes: Vec<Vec<String>>,
@@ -1308,11 +1285,6 @@ impl std::str::FromStr for BookProperties {
                     ),
                     #[allow(clippy::redundant_clone)]
                     "release" => intermediate_rep.release.push(
-                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
-                            .map_err(|x| x.to_string())?,
-                    ),
-                    #[allow(clippy::redundant_clone)]
-                    "first_release" => intermediate_rep.first_release.push(
                         <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
                             .map_err(|x| x.to_string())?,
                     ),
@@ -1370,7 +1342,6 @@ impl std::str::FromStr for BookProperties {
         std::result::Result::Ok(BookProperties {
             title: intermediate_rep.title.into_iter().next(),
             release: intermediate_rep.release.into_iter().next(),
-            first_release: intermediate_rep.first_release.into_iter().next(),
             authors: intermediate_rep.authors.into_iter().next(),
             genres: intermediate_rep.genres.into_iter().next(),
             discount_codes: intermediate_rep.discount_codes.into_iter().next(),
@@ -3452,6 +3423,9 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<Order> {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
 pub struct OrderProperties {
+    #[serde(rename = "book_id")]
+    pub book_id: String,
+
     #[serde(rename = "quantity")]
     pub quantity: i32,
 
@@ -3467,11 +3441,13 @@ pub struct OrderProperties {
 impl OrderProperties {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
     pub fn new(
+        book_id: String,
         quantity: i32,
         shipping_date: chrono::DateTime<chrono::Utc>,
         status: String,
     ) -> OrderProperties {
         OrderProperties {
+            book_id,
             quantity,
             shipping_date,
             status,
@@ -3485,6 +3461,8 @@ impl OrderProperties {
 impl std::fmt::Display for OrderProperties {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
+            Some("book_id".to_string()),
+            Some(self.book_id.to_string()),
             Some("quantity".to_string()),
             Some(self.quantity.to_string()),
             // Skipping shipping_date in query parameter serialization
@@ -3511,6 +3489,7 @@ impl std::str::FromStr for OrderProperties {
         #[derive(Default)]
         #[allow(dead_code)]
         struct IntermediateRep {
+            pub book_id: Vec<String>,
             pub quantity: Vec<i32>,
             pub shipping_date: Vec<chrono::DateTime<chrono::Utc>>,
             pub status: Vec<String>,
@@ -3535,6 +3514,10 @@ impl std::str::FromStr for OrderProperties {
             if let Some(key) = key_result {
                 #[allow(clippy::match_single_binding)]
                 match key {
+                    #[allow(clippy::redundant_clone)]
+                    "book_id" => intermediate_rep.book_id.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
                     #[allow(clippy::redundant_clone)]
                     "quantity" => intermediate_rep.quantity.push(
                         <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
@@ -3562,6 +3545,11 @@ impl std::str::FromStr for OrderProperties {
 
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(OrderProperties {
+            book_id: intermediate_rep
+                .book_id
+                .into_iter()
+                .next()
+                .ok_or_else(|| "book_id missing in OrderProperties".to_string())?,
             quantity: intermediate_rep
                 .quantity
                 .into_iter()
