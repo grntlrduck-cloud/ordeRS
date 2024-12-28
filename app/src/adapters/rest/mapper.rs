@@ -456,16 +456,26 @@ fn map_new_genre_to_domain(genre: String) -> dmodels::GenereDomain {
 fn map_new_order_to_domain(
     new_order: rmodels::NewOrder,
 ) -> Result<dmodels::OrderDomain, MapperError> {
-    if new_order.quantity < 1 {
-        return Err(MapperError::OrderQuantityOutOfBounds {
-            quantity: new_order.quantity,
-            source: Box::new(OrderQuantityError(new_order.quantity)),
-        });
-    }
-    let book_id = Ksuid::from_str(&new_order.book_id).map_err(|e| MapperError::InvalidKsuid {
-        id: new_order.book_id.clone(),
-        source: e,
-    })?;
+    let books = new_order
+        .books
+        .into_iter()
+        .map(|b| {
+            if b.quantity < 1 {
+                return Err(MapperError::OrderQuantityOutOfBounds {
+                    quantity: b.quantity,
+                    source: Box::new(OrderQuantityError(b.quantity)),
+                });
+            }
+            let book_id = Ksuid::from_str(&b.book_id).map_err(|e| MapperError::InvalidKsuid {
+                id: b.book_id.clone(),
+                source: e,
+            })?;
+            Ok(dmodels::OrderedBookDomain {
+                book_id,
+                quantity: b.quantity,
+            })
+        })
+        .collect::<Result<Vec<dmodels::OrderedBookDomain>, MapperError>>()?;
 
     let customer_id =
         Ksuid::from_str(&new_order.customer_id).map_err(|e| MapperError::InvalidKsuid {
@@ -481,9 +491,8 @@ fn map_new_order_to_domain(
 
     Ok(dmodels::OrderDomain {
         id: Ksuid::new(None, None),
-        book_id,
+        books,
         customer_id,
-        quantity: new_order.quantity,
         shipping_date: new_order.shipping_date,
         billing_address: map_address_to_domain(new_order.billing_address),
         shipping_address,
@@ -497,11 +506,19 @@ fn map_order_to_rest(order: dmodels::OrderDomain) -> rmodels::Order {
     } else {
         Some(map_address_to_rest(order.shipping_address))
     };
+    let books = order
+        .books
+        .into_iter()
+        .map(|b| rmodels::OrderedBook {
+            book_id: b.book_id.to_string(),
+            quantity: b.quantity,
+        })
+        .collect();
+
     rmodels::Order {
         id: order.id.to_string(),
-        book_id: order.book_id.to_string(),
         customer_id: order.customer_id.to_string(),
-        quantity: order.quantity,
+        books,
         shipping_date: order.shipping_date,
         billing_address: map_address_to_rest(order.billing_address.clone()),
         shipping_address_override: address_override,
@@ -513,19 +530,8 @@ fn map_order_props_to_domain(
     id: String,
     props: rmodels::OrderProperties,
 ) -> Result<dmodels::OrderUpdateProps, MapperError> {
-    if props.quantity < 1 {
-        return Err(MapperError::OrderQuantityOutOfBounds {
-            quantity: props.quantity,
-            source: Box::new(OrderQuantityError(props.quantity)),
-        });
-    }
     let kid = Ksuid::from_str(&id).map_err(|e| MapperError::InvalidKsuid {
         id: id.clone(),
-        source: e,
-    })?;
-
-    let book_id = Ksuid::from_str(&props.book_id).map_err(|e| MapperError::InvalidKsuid {
-        id: props.book_id.clone(),
         source: e,
     })?;
 
@@ -538,8 +544,6 @@ fn map_order_props_to_domain(
 
     Ok(dmodels::OrderUpdateProps {
         id: kid,
-        book_id,
-        quantity: props.quantity,
         shipping_date: props.shipping_date,
         status,
     })
@@ -548,17 +552,19 @@ fn map_order_props_to_domain(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use chrono::{DateTime, NaiveDate};
+    use chrono::{DateTime, NaiveDate, Utc};
     use openapi::models as rmodels;
 
     #[test]
     fn test_map_new_order_to_domain_success() {
         // Arrange
         let new_order = rmodels::NewOrder {
-            book_id: String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
             customer_id: String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
-            quantity: 2,
-            shipping_date: DateTime::from_timestamp(1640995200, 0).unwrap(),
+            books: vec![rmodels::OrderedBook {
+                book_id: String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
+                quantity: 2,
+            }],
+            shipping_date: Utc::now().date_naive(),
             billing_address: rmodels::Address {
                 street: String::from("Main St"),
                 street_number: String::from("123"),
@@ -576,7 +582,8 @@ mod tests {
         // Assert
         assert!(result.is_ok());
         let order = result.unwrap();
-        assert_eq!(order.quantity, 2);
+        assert_eq!(order.books.len(), 1);
+        assert_eq!(order.books[0].quantity, 2);
         assert_eq!(order.status, dmodels::OrderStatus::Placed);
         assert_eq!(order.billing_address.street, "Main St");
         assert_eq!(order.shipping_address.street, "Main St"); // Same as billing since no override
@@ -586,10 +593,12 @@ mod tests {
     fn test_map_new_order_to_domain_with_shipping_override() {
         // Arrange
         let new_order = rmodels::NewOrder {
-            book_id: String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
             customer_id: String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
-            quantity: 2,
-            shipping_date: DateTime::from_timestamp(1640995200, 0).unwrap(),
+            books: vec![rmodels::OrderedBook {
+                book_id: String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
+                quantity: 2,
+            }],
+            shipping_date: Utc::now().date_naive(),
             billing_address: rmodels::Address {
                 street: String::from("Main St"),
                 street_number: String::from("123"),
@@ -622,10 +631,12 @@ mod tests {
     fn test_map_new_order_to_domain_invalid_book_id() {
         // Arrange
         let new_order = rmodels::NewOrder {
-            book_id: String::from("invalid-id"),
             customer_id: String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
-            quantity: 2,
-            shipping_date: DateTime::from_timestamp(1640995200, 0).unwrap(),
+            books: vec![rmodels::OrderedBook {
+                book_id: String::from("invalid-id"),
+                quantity: 2,
+            }],
+            shipping_date: Utc::now().date_naive(),
             billing_address: rmodels::Address {
                 street: String::from("Main St"),
                 street_number: String::from("123"),
@@ -654,10 +665,12 @@ mod tests {
     fn test_map_new_order_to_domain_invalid_customer_id() {
         // Arrange
         let new_order = rmodels::NewOrder {
-            book_id: String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
             customer_id: String::from("invalid-id"),
-            quantity: 2,
-            shipping_date: DateTime::from_timestamp(1640995200, 0).unwrap(),
+            books: vec![rmodels::OrderedBook {
+                book_id: String::from("invalid-id"),
+                quantity: 2,
+            }],
+            shipping_date: Utc::now().date_naive(),
             billing_address: rmodels::Address {
                 street: String::from("Main St"),
                 street_number: String::from("123"),
@@ -686,10 +699,12 @@ mod tests {
     fn test_map_new_order_to_domain_invalid_quantity() {
         // Arrange
         let new_order = rmodels::NewOrder {
-            book_id: String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
             customer_id: String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
-            quantity: 0, // Invalid quantity - less than 1
-            shipping_date: DateTime::from_timestamp(1640995200, 0).unwrap(),
+            books: vec![rmodels::OrderedBook {
+                book_id: String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
+                quantity: 0, // Invalid quantity - less than 1
+            }],
+            shipping_date: Utc::now().date_naive(),
             billing_address: rmodels::Address {
                 street: String::from("Main St"),
                 street_number: String::from("123"),
@@ -717,12 +732,15 @@ mod tests {
     #[test]
     fn test_map_order_to_rest() {
         // Arrange
+        let book_id = Ksuid::new(None, None);
         let order = dmodels::OrderDomain {
             id: Ksuid::new(None, None),
-            book_id: Ksuid::new(None, None),
             customer_id: Ksuid::new(None, None),
-            quantity: 2,
-            shipping_date: DateTime::from_timestamp(1640995200, 0).unwrap(),
+            books: vec![dmodels::OrderedBookDomain {
+                book_id,
+                quantity: 2,
+            }],
+            shipping_date: Utc::now().date_naive(),
             billing_address: dmodels::AddressDomain {
                 street: String::from("Main St"),
                 street_number: String::from("123"),
@@ -752,7 +770,9 @@ mod tests {
             result.shipping_address_override.unwrap().street,
             "Second St"
         );
-        assert_eq!(result.quantity, 2);
+        assert_eq!(result.books.len(), 1);
+        assert_eq!(result.books[0].quantity, 2);
+        assert_eq!(result.books[0].book_id, book_id.to_string());
         assert_eq!(result.status, "placed");
     }
 
@@ -770,10 +790,12 @@ mod tests {
 
         let order = dmodels::OrderDomain {
             id: Ksuid::new(None, None),
-            book_id: Ksuid::new(None, None),
+            books: vec![dmodels::OrderedBookDomain {
+                book_id: Ksuid::new(None, None),
+                quantity: 2,
+            }],
             customer_id: Ksuid::new(None, None),
-            quantity: 2,
-            shipping_date: DateTime::from_timestamp(1640995200, 0).unwrap(),
+            shipping_date: Utc::now().date_naive(),
             billing_address: billing_address.clone(),
             shipping_address: billing_address,
             status: dmodels::OrderStatus::Placed,
@@ -1236,8 +1258,6 @@ mod tests {
     fn test_map_order_props_to_domain_success() {
         // Arrange
         let order_props = rmodels::OrderProperties {
-            book_id: String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
-            quantity: 5,
             shipping_date: DateTime::from_timestamp(1640995200, 0).unwrap(),
             status: String::from("shipped"),
         };
@@ -1249,7 +1269,6 @@ mod tests {
         // Assert
         assert!(result.is_ok());
         let props = result.unwrap();
-        assert_eq!(props.quantity, 5);
         assert_eq!(props.status, dmodels::OrderStatus::Shipped);
     }
 
@@ -1257,8 +1276,6 @@ mod tests {
     fn test_map_order_props_to_domain_invalid_id() {
         // Arrange
         let order_props = rmodels::OrderProperties {
-            book_id: String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
-            quantity: 5,
             shipping_date: DateTime::from_timestamp(1640995200, 0).unwrap(),
             status: String::from("shipped"),
         };
@@ -1277,59 +1294,9 @@ mod tests {
     }
 
     #[test]
-    fn test_map_order_props_to_domain_invalid_book_id() {
-        // Arrange
-        let order_props = rmodels::OrderProperties {
-            book_id: String::from("invalid-book-id"),
-            quantity: 5,
-            shipping_date: DateTime::from_timestamp(1640995200, 0).unwrap(),
-            status: String::from("shipped"),
-        };
-
-        // Act
-        let result =
-            map_order_props_to_domain(String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"), order_props);
-
-        // Assert
-        assert!(result.is_err());
-        match result {
-            Err(MapperError::InvalidKsuid { id, .. }) => {
-                assert_eq!(id, "invalid-book-id");
-            }
-            _ => panic!("Expected InvalidKsuid error"),
-        }
-    }
-
-    #[test]
-    fn test_map_order_props_to_domain_invalid_quantity() {
-        // Arrange
-        let order_props = rmodels::OrderProperties {
-            book_id: String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
-            quantity: 0,
-            shipping_date: DateTime::from_timestamp(1640995200, 0).unwrap(),
-            status: String::from("shipped"),
-        };
-
-        // Act
-        let result =
-            map_order_props_to_domain(String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"), order_props);
-
-        // Assert
-        assert!(result.is_err());
-        match result {
-            Err(MapperError::OrderQuantityOutOfBounds { quantity, .. }) => {
-                assert_eq!(quantity, 0);
-            }
-            _ => panic!("Expected OrderQuantityOutOfBounds error"),
-        }
-    }
-
-    #[test]
     fn test_map_order_props_to_domain_invalid_status() {
         // Arrange
         let order_props = rmodels::OrderProperties {
-            book_id: String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
-            quantity: 5,
             shipping_date: DateTime::from_timestamp(1640995200, 0).unwrap(),
             status: String::from("invalid-status"),
         };

@@ -133,13 +133,18 @@ pub struct NewBookDomain {
 #[derive(Debug, Clone, PartialEq)]
 pub struct OrderDomain {
     pub billing_address: AddressDomain,
-    pub book_id: Ksuid,
     pub customer_id: Ksuid,
     pub id: Ksuid,
-    pub quantity: i32,
+    pub books: Vec<OrderedBookDomain>,
     pub shipping_address: AddressDomain,
-    pub shipping_date: chrono::DateTime<chrono::Utc>,
+    pub shipping_date: chrono::naive::NaiveDate,
     pub status: OrderStatus,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct OrderedBookDomain {
+    pub book_id: Ksuid,
+    pub quantity: i32,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -178,8 +183,6 @@ impl std::str::FromStr for OrderStatus {
 #[derive(Debug, Clone, PartialEq)]
 pub struct OrderUpdateProps {
     pub id: Ksuid,
-    pub book_id: Ksuid,
-    pub quantity: i32,
     pub shipping_date: chrono::DateTime<chrono::Utc>,
     pub status: OrderStatus,
 }

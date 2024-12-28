@@ -105,7 +105,7 @@ pub struct GetGenreByIdPathParams {
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
 pub struct DeleteOrderPathParams {
     /// ID of the order that needs to be deleted
-    pub order_id: i64,
+    pub order_id: String,
 }
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
@@ -2935,17 +2935,15 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<NewGenre> {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
 pub struct NewOrder {
-    #[serde(rename = "book_id")]
-    pub book_id: String,
-
     #[serde(rename = "customer_id")]
     pub customer_id: String,
 
-    #[serde(rename = "quantity")]
-    pub quantity: i32,
+    #[serde(rename = "books")]
+    #[validate(length(min = 1))]
+    pub books: Vec<models::OrderedBook>,
 
     #[serde(rename = "shipping_date")]
-    pub shipping_date: chrono::DateTime<chrono::Utc>,
+    pub shipping_date: chrono::naive::NaiveDate,
 
     #[serde(rename = "billing_address")]
     pub billing_address: models::Address,
@@ -2958,16 +2956,14 @@ pub struct NewOrder {
 impl NewOrder {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
     pub fn new(
-        book_id: String,
         customer_id: String,
-        quantity: i32,
-        shipping_date: chrono::DateTime<chrono::Utc>,
+        books: Vec<models::OrderedBook>,
+        shipping_date: chrono::naive::NaiveDate,
         billing_address: models::Address,
     ) -> NewOrder {
         NewOrder {
-            book_id,
             customer_id,
-            quantity,
+            books,
             shipping_date,
             billing_address,
             shipping_address_override: None,
@@ -2981,12 +2977,10 @@ impl NewOrder {
 impl std::fmt::Display for NewOrder {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-            Some("book_id".to_string()),
-            Some(self.book_id.to_string()),
             Some("customer_id".to_string()),
             Some(self.customer_id.to_string()),
-            Some("quantity".to_string()),
-            Some(self.quantity.to_string()),
+            // Skipping books in query parameter serialization
+
             // Skipping shipping_date in query parameter serialization
 
             // Skipping billing_address in query parameter serialization
@@ -3013,10 +3007,9 @@ impl std::str::FromStr for NewOrder {
         #[derive(Default)]
         #[allow(dead_code)]
         struct IntermediateRep {
-            pub book_id: Vec<String>,
             pub customer_id: Vec<String>,
-            pub quantity: Vec<i32>,
-            pub shipping_date: Vec<chrono::DateTime<chrono::Utc>>,
+            pub books: Vec<Vec<models::OrderedBook>>,
+            pub shipping_date: Vec<chrono::naive::NaiveDate>,
             pub billing_address: Vec<models::Address>,
             pub shipping_address_override: Vec<models::Address>,
         }
@@ -3041,20 +3034,18 @@ impl std::str::FromStr for NewOrder {
                 #[allow(clippy::match_single_binding)]
                 match key {
                     #[allow(clippy::redundant_clone)]
-                    "book_id" => intermediate_rep.book_id.push(
-                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
-                    ),
-                    #[allow(clippy::redundant_clone)]
                     "customer_id" => intermediate_rep.customer_id.push(
                         <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
                     ),
-                    #[allow(clippy::redundant_clone)]
-                    "quantity" => intermediate_rep.quantity.push(
-                        <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
-                    ),
+                    "books" => {
+                        return std::result::Result::Err(
+                            "Parsing a container in this style is not supported in NewOrder"
+                                .to_string(),
+                        )
+                    }
                     #[allow(clippy::redundant_clone)]
                     "shipping_date" => intermediate_rep.shipping_date.push(
-                        <chrono::DateTime<chrono::Utc> as std::str::FromStr>::from_str(val)
+                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
                             .map_err(|x| x.to_string())?,
                     ),
                     #[allow(clippy::redundant_clone)]
@@ -3081,21 +3072,16 @@ impl std::str::FromStr for NewOrder {
 
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(NewOrder {
-            book_id: intermediate_rep
-                .book_id
-                .into_iter()
-                .next()
-                .ok_or_else(|| "book_id missing in NewOrder".to_string())?,
             customer_id: intermediate_rep
                 .customer_id
                 .into_iter()
                 .next()
                 .ok_or_else(|| "customer_id missing in NewOrder".to_string())?,
-            quantity: intermediate_rep
-                .quantity
+            books: intermediate_rep
+                .books
                 .into_iter()
                 .next()
-                .ok_or_else(|| "quantity missing in NewOrder".to_string())?,
+                .ok_or_else(|| "books missing in NewOrder".to_string())?,
             shipping_date: intermediate_rep
                 .shipping_date
                 .into_iter()
@@ -3165,17 +3151,15 @@ pub struct Order {
     #[serde(rename = "id")]
     pub id: String,
 
-    #[serde(rename = "book_id")]
-    pub book_id: String,
+    #[serde(rename = "books")]
+    #[validate(length(min = 1))]
+    pub books: Vec<models::OrderedBook>,
 
     #[serde(rename = "customer_id")]
     pub customer_id: String,
 
-    #[serde(rename = "quantity")]
-    pub quantity: i32,
-
     #[serde(rename = "shipping_date")]
-    pub shipping_date: chrono::DateTime<chrono::Utc>,
+    pub shipping_date: chrono::naive::NaiveDate,
 
     #[serde(rename = "billing_address")]
     pub billing_address: models::Address,
@@ -3194,18 +3178,16 @@ impl Order {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
     pub fn new(
         id: String,
-        book_id: String,
+        books: Vec<models::OrderedBook>,
         customer_id: String,
-        quantity: i32,
-        shipping_date: chrono::DateTime<chrono::Utc>,
+        shipping_date: chrono::naive::NaiveDate,
         billing_address: models::Address,
         status: String,
     ) -> Order {
         Order {
             id,
-            book_id,
+            books,
             customer_id,
-            quantity,
             shipping_date,
             billing_address,
             shipping_address_override: None,
@@ -3222,12 +3204,9 @@ impl std::fmt::Display for Order {
         let params: Vec<Option<String>> = vec![
             Some("id".to_string()),
             Some(self.id.to_string()),
-            Some("book_id".to_string()),
-            Some(self.book_id.to_string()),
+            // Skipping books in query parameter serialization
             Some("customer_id".to_string()),
             Some(self.customer_id.to_string()),
-            Some("quantity".to_string()),
-            Some(self.quantity.to_string()),
             // Skipping shipping_date in query parameter serialization
 
             // Skipping billing_address in query parameter serialization
@@ -3257,10 +3236,9 @@ impl std::str::FromStr for Order {
         #[allow(dead_code)]
         struct IntermediateRep {
             pub id: Vec<String>,
-            pub book_id: Vec<String>,
+            pub books: Vec<Vec<models::OrderedBook>>,
             pub customer_id: Vec<String>,
-            pub quantity: Vec<i32>,
-            pub shipping_date: Vec<chrono::DateTime<chrono::Utc>>,
+            pub shipping_date: Vec<chrono::naive::NaiveDate>,
             pub billing_address: Vec<models::Address>,
             pub shipping_address_override: Vec<models::Address>,
             pub status: Vec<String>,
@@ -3289,21 +3267,19 @@ impl std::str::FromStr for Order {
                     "id" => intermediate_rep.id.push(
                         <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
                     ),
-                    #[allow(clippy::redundant_clone)]
-                    "book_id" => intermediate_rep.book_id.push(
-                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
-                    ),
+                    "books" => {
+                        return std::result::Result::Err(
+                            "Parsing a container in this style is not supported in Order"
+                                .to_string(),
+                        )
+                    }
                     #[allow(clippy::redundant_clone)]
                     "customer_id" => intermediate_rep.customer_id.push(
                         <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
                     ),
                     #[allow(clippy::redundant_clone)]
-                    "quantity" => intermediate_rep.quantity.push(
-                        <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
-                    ),
-                    #[allow(clippy::redundant_clone)]
                     "shipping_date" => intermediate_rep.shipping_date.push(
-                        <chrono::DateTime<chrono::Utc> as std::str::FromStr>::from_str(val)
+                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
                             .map_err(|x| x.to_string())?,
                     ),
                     #[allow(clippy::redundant_clone)]
@@ -3339,21 +3315,16 @@ impl std::str::FromStr for Order {
                 .into_iter()
                 .next()
                 .ok_or_else(|| "id missing in Order".to_string())?,
-            book_id: intermediate_rep
-                .book_id
+            books: intermediate_rep
+                .books
                 .into_iter()
                 .next()
-                .ok_or_else(|| "book_id missing in Order".to_string())?,
+                .ok_or_else(|| "books missing in Order".to_string())?,
             customer_id: intermediate_rep
                 .customer_id
                 .into_iter()
                 .next()
                 .ok_or_else(|| "customer_id missing in Order".to_string())?,
-            quantity: intermediate_rep
-                .quantity
-                .into_iter()
-                .next()
-                .ok_or_else(|| "quantity missing in Order".to_string())?,
             shipping_date: intermediate_rep
                 .shipping_date
                 .into_iter()
@@ -3423,12 +3394,6 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<Order> {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
 pub struct OrderProperties {
-    #[serde(rename = "book_id")]
-    pub book_id: String,
-
-    #[serde(rename = "quantity")]
-    pub quantity: i32,
-
     #[serde(rename = "shipping_date")]
     pub shipping_date: chrono::DateTime<chrono::Utc>,
 
@@ -3440,15 +3405,8 @@ pub struct OrderProperties {
 
 impl OrderProperties {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
-    pub fn new(
-        book_id: String,
-        quantity: i32,
-        shipping_date: chrono::DateTime<chrono::Utc>,
-        status: String,
-    ) -> OrderProperties {
+    pub fn new(shipping_date: chrono::DateTime<chrono::Utc>, status: String) -> OrderProperties {
         OrderProperties {
-            book_id,
-            quantity,
             shipping_date,
             status,
         }
@@ -3461,10 +3419,6 @@ impl OrderProperties {
 impl std::fmt::Display for OrderProperties {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let params: Vec<Option<String>> = vec![
-            Some("book_id".to_string()),
-            Some(self.book_id.to_string()),
-            Some("quantity".to_string()),
-            Some(self.quantity.to_string()),
             // Skipping shipping_date in query parameter serialization
             Some("status".to_string()),
             Some(self.status.to_string()),
@@ -3489,8 +3443,6 @@ impl std::str::FromStr for OrderProperties {
         #[derive(Default)]
         #[allow(dead_code)]
         struct IntermediateRep {
-            pub book_id: Vec<String>,
-            pub quantity: Vec<i32>,
             pub shipping_date: Vec<chrono::DateTime<chrono::Utc>>,
             pub status: Vec<String>,
         }
@@ -3515,14 +3467,6 @@ impl std::str::FromStr for OrderProperties {
                 #[allow(clippy::match_single_binding)]
                 match key {
                     #[allow(clippy::redundant_clone)]
-                    "book_id" => intermediate_rep.book_id.push(
-                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
-                    ),
-                    #[allow(clippy::redundant_clone)]
-                    "quantity" => intermediate_rep.quantity.push(
-                        <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
-                    ),
-                    #[allow(clippy::redundant_clone)]
                     "shipping_date" => intermediate_rep.shipping_date.push(
                         <chrono::DateTime<chrono::Utc> as std::str::FromStr>::from_str(val)
                             .map_err(|x| x.to_string())?,
@@ -3545,16 +3489,6 @@ impl std::str::FromStr for OrderProperties {
 
         // Use the intermediate representation to return the struct
         std::result::Result::Ok(OrderProperties {
-            book_id: intermediate_rep
-                .book_id
-                .into_iter()
-                .next()
-                .ok_or_else(|| "book_id missing in OrderProperties".to_string())?,
-            quantity: intermediate_rep
-                .quantity
-                .into_iter()
-                .next()
-                .ok_or_else(|| "quantity missing in OrderProperties".to_string())?,
             shipping_date: intermediate_rep
                 .shipping_date
                 .into_iter()
@@ -3602,6 +3536,158 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<OrderPropert
                     }
                     std::result::Result::Err(err) => std::result::Result::Err(format!(
                         "Unable to convert header value '{}' into OrderProperties - {}",
+                        value, err
+                    )),
+                }
+            }
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Unable to convert header: {:?} to string: {}",
+                hdr_value, e
+            )),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
+#[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
+pub struct OrderedBook {
+    #[serde(rename = "book_id")]
+    pub book_id: String,
+
+    #[serde(rename = "quantity")]
+    pub quantity: i32,
+}
+
+impl OrderedBook {
+    #[allow(clippy::new_without_default, clippy::too_many_arguments)]
+    pub fn new(book_id: String, quantity: i32) -> OrderedBook {
+        OrderedBook { book_id, quantity }
+    }
+}
+
+/// Converts the OrderedBook value to the Query Parameters representation (style=form, explode=false)
+/// specified in https://swagger.io/docs/specification/serialization/
+/// Should be implemented in a serde serializer
+impl std::fmt::Display for OrderedBook {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let params: Vec<Option<String>> = vec![
+            Some("book_id".to_string()),
+            Some(self.book_id.to_string()),
+            Some("quantity".to_string()),
+            Some(self.quantity.to_string()),
+        ];
+
+        write!(
+            f,
+            "{}",
+            params.into_iter().flatten().collect::<Vec<_>>().join(",")
+        )
+    }
+}
+
+/// Converts Query Parameters representation (style=form, explode=false) to a OrderedBook value
+/// as specified in https://swagger.io/docs/specification/serialization/
+/// Should be implemented in a serde deserializer
+impl std::str::FromStr for OrderedBook {
+    type Err = String;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        /// An intermediate representation of the struct to use for parsing.
+        #[derive(Default)]
+        #[allow(dead_code)]
+        struct IntermediateRep {
+            pub book_id: Vec<String>,
+            pub quantity: Vec<i32>,
+        }
+
+        let mut intermediate_rep = IntermediateRep::default();
+
+        // Parse into intermediate representation
+        let mut string_iter = s.split(',');
+        let mut key_result = string_iter.next();
+
+        while key_result.is_some() {
+            let val = match string_iter.next() {
+                Some(x) => x,
+                None => {
+                    return std::result::Result::Err(
+                        "Missing value while parsing OrderedBook".to_string(),
+                    )
+                }
+            };
+
+            if let Some(key) = key_result {
+                #[allow(clippy::match_single_binding)]
+                match key {
+                    #[allow(clippy::redundant_clone)]
+                    "book_id" => intermediate_rep.book_id.push(
+                        <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
+                    #[allow(clippy::redundant_clone)]
+                    "quantity" => intermediate_rep.quantity.push(
+                        <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
+                    ),
+                    _ => {
+                        return std::result::Result::Err(
+                            "Unexpected key while parsing OrderedBook".to_string(),
+                        )
+                    }
+                }
+            }
+
+            // Get the next key
+            key_result = string_iter.next();
+        }
+
+        // Use the intermediate representation to return the struct
+        std::result::Result::Ok(OrderedBook {
+            book_id: intermediate_rep
+                .book_id
+                .into_iter()
+                .next()
+                .ok_or_else(|| "book_id missing in OrderedBook".to_string())?,
+            quantity: intermediate_rep
+                .quantity
+                .into_iter()
+                .next()
+                .ok_or_else(|| "quantity missing in OrderedBook".to_string())?,
+        })
+    }
+}
+
+// Methods for converting between header::IntoHeaderValue<OrderedBook> and HeaderValue
+
+#[cfg(feature = "server")]
+impl std::convert::TryFrom<header::IntoHeaderValue<OrderedBook>> for HeaderValue {
+    type Error = String;
+
+    fn try_from(
+        hdr_value: header::IntoHeaderValue<OrderedBook>,
+    ) -> std::result::Result<Self, Self::Error> {
+        let hdr_value = hdr_value.to_string();
+        match HeaderValue::from_str(&hdr_value) {
+            std::result::Result::Ok(value) => std::result::Result::Ok(value),
+            std::result::Result::Err(e) => std::result::Result::Err(format!(
+                "Invalid header value for OrderedBook - value: {} is invalid {}",
+                hdr_value, e
+            )),
+        }
+    }
+}
+
+#[cfg(feature = "server")]
+impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<OrderedBook> {
+    type Error = String;
+
+    fn try_from(hdr_value: HeaderValue) -> std::result::Result<Self, Self::Error> {
+        match hdr_value.to_str() {
+            std::result::Result::Ok(value) => {
+                match <OrderedBook as std::str::FromStr>::from_str(value) {
+                    std::result::Result::Ok(value) => {
+                        std::result::Result::Ok(header::IntoHeaderValue(value))
+                    }
+                    std::result::Result::Err(err) => std::result::Result::Err(format!(
+                        "Unable to convert header value '{}' into OrderedBook - {}",
                         value, err
                     )),
                 }

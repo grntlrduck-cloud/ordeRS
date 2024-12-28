@@ -5,23 +5,31 @@ use axum_extra::extract::CookieJar;
 use http::Method;
 use openapi::apis::{author, book, discount, genre, health, store, ApiKeyAuthHeader};
 use openapi::models;
+use std::str::FromStr;
 use std::sync::Arc;
+use svix_ksuid::Ksuid;
 use tokio::net::TcpListener;
 use tokio::signal;
 use tracing_subscriber;
 
+use crate::domain;
+
 /// TODO: implement function bodies
 /// here will come the implementation of the API handler
 pub struct BookStoreServer {
-    // TODO: add db layer
+    order_service: Arc<dyn domain::store::OrderHandler + Send + Sync>,
 }
 
 pub async fn start_server(addr: &str) {
     // initialize tracing
     tracing_subscriber::fmt::init();
 
+    let order_service = Arc::new(domain::order_service::OrderService::new(String::from(
+        "TODO",
+    )));
+
     // Init Axum router
-    let app = openapi::server::new(Arc::new(BookStoreServer {}));
+    let app = openapi::server::new(Arc::new(BookStoreServer { order_service }));
 
     // Add layers to the router
     //let app = app.layer(...);
@@ -243,7 +251,16 @@ impl store::Store for BookStoreServer {
         cookies: CookieJar,
         path_params: models::DeleteOrderPathParams,
     ) -> Result<store::DeleteOrderResponse, ()> {
-        Ok(store::DeleteOrderResponse::Status400_InvalidIDSupplied)
+        match Ksuid::from_str(&path_params.order_id) {
+            Ok(order_id) => {
+                // Now we have a valid Ksuid, we can use it with the order service
+                match self.order_service.delete_order_by_id(order_id).await {
+                    Ok(_) => Ok(store::DeleteOrderResponse::Status200_SuccessfulOperation),
+                    Err(_) => Ok(store::DeleteOrderResponse::Status404_OrderNotFound),
+                }
+            }
+            Err(_) => Ok(store::DeleteOrderResponse::Status400_InvalidIDSupplied),
+        }
     }
 
     async fn get_inventory(
