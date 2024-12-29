@@ -1938,12 +1938,10 @@ struct PlaceOrderBodyValidator<'a> {
 
 #[tracing::instrument(skip_all)]
 fn place_order_validation(
-    body: Option<models::NewOrder>,
-) -> std::result::Result<(Option<models::NewOrder>,), ValidationErrors> {
-    if let Some(body) = &body {
-        let b = PlaceOrderBodyValidator { body };
-        b.validate()?;
-    }
+    body: models::NewOrder,
+) -> std::result::Result<(models::NewOrder,), ValidationErrors> {
+    let b = PlaceOrderBodyValidator { body: &body };
+    b.validate()?;
 
     Ok((body,))
 }
@@ -1954,7 +1952,7 @@ async fn place_order<I, A>(
     host: Host,
     cookies: CookieJar,
     State(api_impl): State<I>,
-    Json(body): Json<Option<models::NewOrder>>,
+    Json(body): Json<models::NewOrder>,
 ) -> Result<Response, StatusCode>
 where
     I: AsRef<A> + Send + Sync,

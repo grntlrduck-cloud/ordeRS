@@ -560,6 +560,8 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/NewOrder"
+        required: true
+
       responses:
         "200":
           description: Successful operation
@@ -628,7 +630,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Book"
+                $ref: "#/components/schemas/Order"
         "400":
           description: Invalid parameters
         "404":

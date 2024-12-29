@@ -135,7 +135,7 @@ impl Error for MapperError {
     }
 }
 
-fn map_address_to_domain(address: rmodels::Address) -> dmodels::AddressDomain {
+pub fn map_address_to_domain(address: rmodels::Address) -> dmodels::AddressDomain {
     dmodels::AddressDomain {
         street: address.street,
         street_number: address.street_number,
@@ -146,7 +146,7 @@ fn map_address_to_domain(address: rmodels::Address) -> dmodels::AddressDomain {
     }
 }
 
-fn map_address_to_rest(address: dmodels::AddressDomain) -> rmodels::Address {
+pub fn map_address_to_rest(address: dmodels::AddressDomain) -> rmodels::Address {
     rmodels::Address {
         street: address.street,
         street_number: address.street_number,
@@ -157,7 +157,7 @@ fn map_address_to_rest(address: dmodels::AddressDomain) -> rmodels::Address {
     }
 }
 
-fn map_author_to_rest(author: dmodels::AuthorDomain) -> rmodels::Author {
+pub fn map_author_to_rest(author: dmodels::AuthorDomain) -> rmodels::Author {
     rmodels::Author {
         id: author.id.to_string(),
         title: author.title,
@@ -169,7 +169,7 @@ fn map_author_to_rest(author: dmodels::AuthorDomain) -> rmodels::Author {
     }
 }
 
-fn map_author_update_props_to_domain(
+pub fn map_author_update_props_to_domain(
     id: String,
     props: rmodels::AuthorProperties,
 ) -> Result<dmodels::AuthorUpdateProps, MapperError> {
@@ -186,7 +186,7 @@ fn map_author_update_props_to_domain(
     })
 }
 
-fn map_book_to_rest(book: dmodels::BookDomain) -> rmodels::Book {
+pub fn map_book_to_rest(book: dmodels::BookDomain) -> rmodels::Book {
     // map the authors to the rest model
     let authors = book.authors.into_iter().map(map_author_to_rest).collect();
 
@@ -227,7 +227,7 @@ fn map_book_to_rest(book: dmodels::BookDomain) -> rmodels::Book {
     }
 }
 
-fn map_book_props_to_domain(
+pub fn map_book_props_to_domain(
     id: String,
     props: rmodels::BookProperties,
 ) -> Result<dmodels::BookUpdateProps, MapperError> {
@@ -312,7 +312,7 @@ fn map_book_props_to_domain(
     })
 }
 
-fn map_discount_code_to_rest(discount: dmodels::DiscountCodeDomain) -> rmodels::DiscountCode {
+pub fn map_discount_code_to_rest(discount: dmodels::DiscountCodeDomain) -> rmodels::DiscountCode {
     rmodels::DiscountCode {
         id: discount.id.to_string(),
         percentage_discount: discount.percentage_discount,
@@ -322,14 +322,14 @@ fn map_discount_code_to_rest(discount: dmodels::DiscountCodeDomain) -> rmodels::
     }
 }
 
-fn map_genre_to_rest(genre: dmodels::GenereDomain) -> rmodels::Genre {
+pub fn map_genre_to_rest(genre: dmodels::GenereDomain) -> rmodels::Genre {
     rmodels::Genre {
         id: genre.id.to_string(),
         name: genre.name,
     }
 }
 
-fn map_inventory_to_rest(inventory: dmodels::InventoryDomain) -> rmodels::Inventory {
+pub fn map_inventory_to_rest(inventory: dmodels::InventoryDomain) -> rmodels::Inventory {
     rmodels::Inventory {
         books_available: inventory.books_available,
         books_reordered: inventory.books_reordered,
@@ -337,7 +337,7 @@ fn map_inventory_to_rest(inventory: dmodels::InventoryDomain) -> rmodels::Invent
     }
 }
 
-fn map_new_author_to_domain(new_author: rmodels::Author) -> dmodels::AuthorDomain {
+pub fn map_new_author_to_domain(new_author: rmodels::Author) -> dmodels::AuthorDomain {
     dmodels::AuthorDomain {
         id: Ksuid::new(None, None),
         title: new_author.title,
@@ -349,7 +349,7 @@ fn map_new_author_to_domain(new_author: rmodels::Author) -> dmodels::AuthorDomai
     }
 }
 
-fn map_new_book_to_domain(
+pub fn map_new_book_to_domain(
     new_book: rmodels::NewBook,
 ) -> Result<dmodels::NewBookDomain, MapperError> {
     if new_book.available < 0 {
@@ -427,7 +427,7 @@ fn map_new_book_to_domain(
     })
 }
 
-fn map_new_discount_code_to_domain(
+pub fn map_new_discount_code_to_domain(
     new_discount: rmodels::NewDiscountCode,
 ) -> Result<dmodels::DiscountCodeDomain, MapperError> {
     if new_discount.percentage_discount < 1 || new_discount.percentage_discount > 80 {
@@ -453,7 +453,7 @@ fn map_new_genre_to_domain(genre: String) -> dmodels::GenereDomain {
     }
 }
 
-fn map_new_order_to_domain(
+pub fn map_new_order_to_domain(
     new_order: rmodels::NewOrder,
 ) -> Result<dmodels::OrderDomain, MapperError> {
     let books = new_order
@@ -500,7 +500,7 @@ fn map_new_order_to_domain(
     })
 }
 
-fn map_order_to_rest(order: dmodels::OrderDomain) -> rmodels::Order {
+pub fn map_order_to_rest(order: dmodels::OrderDomain) -> rmodels::Order {
     let address_override = if order.billing_address == order.shipping_address {
         None
     } else {
@@ -526,7 +526,7 @@ fn map_order_to_rest(order: dmodels::OrderDomain) -> rmodels::Order {
     }
 }
 
-fn map_order_props_to_domain(
+pub fn map_order_props_to_domain(
     id: String,
     props: rmodels::OrderProperties,
 ) -> Result<dmodels::OrderUpdateProps, MapperError> {

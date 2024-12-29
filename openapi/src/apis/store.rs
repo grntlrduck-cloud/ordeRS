@@ -64,7 +64,7 @@ pub enum PlaceOrderResponse {
 #[allow(clippy::large_enum_variant)]
 pub enum UpdateOrderResponse {
     /// Successful operation
-    Status200_SuccessfulOperation(models::Book),
+    Status200_SuccessfulOperation(models::Order),
     /// Invalid parameters
     Status400_InvalidParameters,
     /// Order not found
@@ -119,7 +119,7 @@ pub trait Store {
         method: Method,
         host: Host,
         cookies: CookieJar,
-        body: Option<models::NewOrder>,
+        body: models::NewOrder,
     ) -> Result<PlaceOrderResponse, ()>;
 
     /// Update an existing book.

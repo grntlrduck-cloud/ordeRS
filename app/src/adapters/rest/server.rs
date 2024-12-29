@@ -14,6 +14,8 @@ use tracing_subscriber;
 
 use crate::domain;
 
+use super::mapper;
+
 /// TODO: implement function bodies
 /// here will come the implementation of the API handler
 pub struct BookStoreServer {
@@ -269,7 +271,15 @@ impl store::Store for BookStoreServer {
         host: Host,
         cookies: CookieJar,
     ) -> Result<store::GetInventoryResponse, ()> {
-        Ok(store::GetInventoryResponse::Status500_ServerError)
+        match self.order_service.get_inventory().await {
+            Ok(inventory) => {
+                let model = mapper::map_inventory_to_rest(inventory);
+                Ok(store::GetInventoryResponse::Status200_SuccessfulOperation(
+                    model,
+                ))
+            }
+            Err(_) => Ok(store::GetInventoryResponse::Status500_ServerError),
+        }
     }
 
     async fn get_order_by_id(
@@ -279,7 +289,26 @@ impl store::Store for BookStoreServer {
         cookies: CookieJar,
         path_params: models::GetOrderByIdPathParams,
     ) -> Result<store::GetOrderByIdResponse, ()> {
-        Ok(store::GetOrderByIdResponse::Status400_InvalidIDSupplied)
+        match Ksuid::from_str(&path_params.order_id) {
+            Ok(order_id) => match self.order_service.get_order_by_id(order_id).await {
+                Ok(order) => {
+                    let model = mapper::map_order_to_rest(order);
+                    Ok(store::GetOrderByIdResponse::Status200_SuccessfulOperation(
+                        model,
+                    ))
+                }
+                Err(domain::error::DomainError::BusinessValidationError { .. }) => {
+                    Ok(store::GetOrderByIdResponse::Status400_InvalidIDSupplied)
+                }
+                Err(domain::error::DomainError::NotFoundError { .. }) => {
+                    Ok(store::GetOrderByIdResponse::Status404_OrderNotFound)
+                }
+                Err(domain::error::DomainError::FatalDBError { .. }) => {
+                    Ok(store::GetOrderByIdResponse::Status500_ServerError)
+                }
+            },
+            Err(_) => Ok(store::GetOrderByIdResponse::Status400_InvalidIDSupplied),
+        }
     }
 
     async fn place_order(
@@ -287,9 +316,23 @@ impl store::Store for BookStoreServer {
         method: Method,
         host: Host,
         cookies: CookieJar,
-        body: Option<models::NewOrder>,
+        body: models::NewOrder,
     ) -> Result<store::PlaceOrderResponse, ()> {
-        Ok(store::PlaceOrderResponse::Status400_InvalidInput)
+        match mapper::map_new_order_to_domain(body) {
+            Ok(domain) => match self.order_service.create_order(domain).await {
+                Ok(result) => {
+                    let model = mapper::map_order_to_rest(result);
+                    Ok(store::PlaceOrderResponse::Status200_SuccessfulOperation(
+                        model,
+                    ))
+                }
+                Err(domain::error::DomainError::BusinessValidationError { .. }) => {
+                    Ok(store::PlaceOrderResponse::Status422_ValidationException)
+                }
+                Err(_) => Ok(store::PlaceOrderResponse::Status500_ServerError),
+            },
+            Err(_) => Ok(store::PlaceOrderResponse::Status400_InvalidInput),
+        }
     }
 
     async fn update_order(
@@ -300,7 +343,24 @@ impl store::Store for BookStoreServer {
         path_params: models::UpdateOrderPathParams,
         body: models::OrderProperties,
     ) -> Result<store::UpdateOrderResponse, ()> {
-        Ok(store::UpdateOrderResponse::Status400_InvalidParameters)
+        match mapper::map_order_props_to_domain(path_params.order_id, body) {
+            Ok(domain) => match self.order_service.update_order(domain).await {
+                Ok(result) => {
+                    let model = mapper::map_order_to_rest(result);
+                    Ok(store::UpdateOrderResponse::Status200_SuccessfulOperation(
+                        model,
+                    ))
+                }
+                Err(domain::error::DomainError::NotFoundError { .. }) => {
+                    Ok(store::UpdateOrderResponse::Status404_OrderNotFound)
+                }
+                Err(domain::error::DomainError::BusinessValidationError { .. }) => {
+                    Ok(store::UpdateOrderResponse::Status422_ValidationException)
+                }
+                Err(_) => Ok(store::UpdateOrderResponse::Status500_ServerError),
+            },
+            Err(_) => Ok(store::UpdateOrderResponse::Status400_InvalidParameters),
+        }
     }
 }
 

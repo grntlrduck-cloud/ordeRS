@@ -42,7 +42,10 @@ impl store::OrderHandler for OrderService {
 
     /// Delete an existing order by id
     async fn delete_order_by_id(&self, id: Ksuid) -> Result<(), error::DomainError> {
-        Ok(())
+        Err(error::DomainError::NotFoundError {
+            id: id.to_string(),
+            source: Box::new(error::OrderNotFoundError(id.to_string())),
+        })
     }
 
     /// Get inventory statistics
