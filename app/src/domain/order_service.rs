@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use super::{error, models, store};
 use async_trait::async_trait;
 use chrono::Utc;
@@ -8,8 +10,8 @@ pub struct OrderService {
 }
 
 impl OrderService {
-    pub fn new(todo: String) -> Self {
-        OrderService { todo }
+    pub fn new(todo: String) -> Arc<Self> {
+        Arc::new(OrderService { todo })
     }
 }
 

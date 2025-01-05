@@ -40,7 +40,7 @@ pub enum DeleteBookResponse {
 #[allow(clippy::large_enum_variant)]
 pub enum GetBookByIdResponse {
     /// successful operation
-    Status200_SuccessfulOperation(Vec<models::Book>),
+    Status200_SuccessfulOperation(models::Book),
     /// Invalid parameters
     Status400_InvalidParameters,
     /// Book not found

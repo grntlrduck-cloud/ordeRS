@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use super::error;
 use super::models;
 use super::store;
@@ -9,6 +11,12 @@ use svix_ksuid::KsuidLike;
 
 pub struct BookService {
     todo: String,
+}
+
+impl BookService {
+    pub fn new(todo: String) -> Arc<Self> {
+        Arc::new(BookService { todo })
+    }
 }
 
 #[async_trait]

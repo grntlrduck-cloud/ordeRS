@@ -87,9 +87,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/DiscountCode"
+                $ref: "#/components/schemas/DiscountCode"
         "400":
           description: Invalid parameters
         "404":
@@ -168,9 +166,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Author"
+                $ref: "#/components/schemas/Author"
         "400":
           description: Invalid parameters
         "404":
@@ -285,9 +281,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Book"
+                $ref: "#/components/schemas/Book"
         "400":
           description: Invalid parameters
         "404":
@@ -353,6 +347,7 @@ paths:
           description: BookId not found
         "500":
           description: Server error
+
   /books/findByAuthorId:
     get:
       tags:
@@ -498,9 +493,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Genre"
+                $ref: "#/components/schemas/Genre"
         "400":
           description: Invalid parameters
         "404":

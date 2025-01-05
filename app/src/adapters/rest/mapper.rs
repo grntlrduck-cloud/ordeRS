@@ -337,7 +337,7 @@ pub fn map_inventory_to_rest(inventory: dmodels::InventoryDomain) -> rmodels::In
     }
 }
 
-pub fn map_new_author_to_domain(new_author: rmodels::Author) -> dmodels::AuthorDomain {
+pub fn map_new_author_to_domain(new_author: rmodels::NewAuthor) -> dmodels::AuthorDomain {
     dmodels::AuthorDomain {
         id: Ksuid::new(None, None),
         title: new_author.title,
@@ -1082,8 +1082,7 @@ mod tests {
     #[test]
     fn test_map_new_author_to_domain_with_all_fields() {
         // Arrange
-        let new_author = rmodels::Author {
-            id: String::from("not-used-in-mapping"),
+        let new_author = rmodels::NewAuthor {
             title: Some(String::from("Dr.")),
             first_name: String::from("John"),
             second_names: Some(vec![String::from("Middle"), String::from("Name")]),
@@ -1110,8 +1109,7 @@ mod tests {
     #[test]
     fn test_map_new_author_to_domain_minimal_fields() {
         // Arrange
-        let new_author = rmodels::Author {
-            id: String::from("not-used-in-mapping"),
+        let new_author = rmodels::NewAuthor {
             title: None,
             first_name: String::from("John"),
             second_names: None,

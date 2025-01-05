@@ -40,7 +40,7 @@ pub enum DeleteDiscountResponse {
 #[allow(clippy::large_enum_variant)]
 pub enum GetDiscountByIdResponse {
     /// successful operation
-    Status200_SuccessfulOperation(Vec<models::DiscountCode>),
+    Status200_SuccessfulOperation(models::DiscountCode),
     /// Invalid parameters
     Status400_InvalidParameters,
     /// DiscountCode not found

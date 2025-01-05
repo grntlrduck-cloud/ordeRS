@@ -14,24 +14,30 @@ use tracing_subscriber;
 
 use crate::domain;
 
-use super::mapper;
+use super::mapper::{
+    self, map_author_to_rest, map_author_update_props_to_domain, map_new_author_to_domain,
+};
 
 /// TODO: implement function bodies
 /// here will come the implementation of the API handler
 pub struct BookStoreServer {
     order_service: Arc<dyn domain::store::OrderHandler + Send + Sync>,
+    book_service: Arc<dyn domain::store::BookHandler + Send + Sync>,
 }
 
 pub async fn start_server(addr: &str) {
     // initialize tracing
     tracing_subscriber::fmt::init();
 
-    let order_service = Arc::new(domain::order_service::OrderService::new(String::from(
-        "TODO",
-    )));
+    let order_service = domain::order_service::OrderService::new(String::from("TODO"));
+
+    let book_service = domain::book_service::BookService::new(String::from("TODO"));
 
     // Init Axum router
-    let app = openapi::server::new(Arc::new(BookStoreServer { order_service }));
+    let app = openapi::server::new(Arc::new(BookStoreServer {
+        order_service,
+        book_service,
+    }));
 
     // Add layers to the router
     //let app = app.layer(...);
@@ -98,7 +104,16 @@ impl author::Author for BookStoreServer {
         cookies: CookieJar,
         body: models::NewAuthor,
     ) -> Result<author::AddAuthorResponse, ()> {
-        Ok(author::AddAuthorResponse::Status400_InvalidInput)
+        let domain = map_new_author_to_domain(body);
+        match self.book_service.create_author(domain).await {
+            Ok(result) => {
+                let model = map_author_to_rest(result);
+                Ok(author::AddAuthorResponse::Status200_SuccessfulOperation(
+                    model,
+                ))
+            }
+            Err(_) => Ok(author::AddAuthorResponse::Status500_ServerError),
+        }
     }
 
     async fn delete_author(
@@ -108,7 +123,16 @@ impl author::Author for BookStoreServer {
         cookies: CookieJar,
         path_params: models::DeleteAuthorPathParams,
     ) -> Result<author::DeleteAuthorResponse, ()> {
-        Ok(author::DeleteAuthorResponse::Status400_InvalidAuthorIdValue)
+        match Ksuid::from_str(&path_params.author_id) {
+            Ok(id) => match self.book_service.delte_author_by_id(id).await {
+                Ok(author) => Ok(author::DeleteAuthorResponse::Status200_SuccessfullyDeleted),
+                Err(domain::error::DomainError::NotFoundError { .. }) => {
+                    Ok(author::DeleteAuthorResponse::Status404_AuthorNotFound)
+                }
+                Err(_) => Ok(author::DeleteAuthorResponse::Status500_ServerError),
+            },
+            Err(_) => Ok(author::DeleteAuthorResponse::Status400_InvalidAuthorIdValue),
+        }
     }
 
     async fn get_author_by_id(
@@ -118,8 +142,19 @@ impl author::Author for BookStoreServer {
         cookies: CookieJar,
         path_params: models::GetAuthorByIdPathParams,
     ) -> Result<author::GetAuthorByIdResponse, ()> {
-        println!("Not yet implemented!");
-        Ok(author::GetAuthorByIdResponse::Status400_InvalidParameters)
+        match Ksuid::from_str(&path_params.author_id) {
+            Ok(id) => match self.book_service.get_author_by_id(id).await {
+                Ok(author) => {
+                    let model = map_author_to_rest(author);
+                    Ok(author::GetAuthorByIdResponse::Status200_SuccessfulOperation(model))
+                }
+                Err(domain::error::DomainError::NotFoundError { .. }) => {
+                    Ok(author::GetAuthorByIdResponse::Status404_AuthorNotFound)
+                }
+                Err(_) => Ok(author::GetAuthorByIdResponse::Status500_ServerError),
+            },
+            Err(_) => Ok(author::GetAuthorByIdResponse::Status400_InvalidParameters),
+        }
     }
 
     async fn update_author(
@@ -130,7 +165,24 @@ impl author::Author for BookStoreServer {
         path_params: models::UpdateAuthorPathParams,
         body: models::AuthorProperties,
     ) -> Result<author::UpdateAuthorResponse, ()> {
-        Ok(author::UpdateAuthorResponse::Status400_InvalidParameters)
+        match map_author_update_props_to_domain(path_params.author_id, body) {
+            Ok(props) => match self.book_service.update_author(props).await {
+                Ok(author) => {
+                    let model = map_author_to_rest(author);
+                    Ok(author::UpdateAuthorResponse::Status200_SuccessfulOperation(
+                        model,
+                    ))
+                }
+                Err(domain::error::DomainError::NotFoundError { .. }) => {
+                    Ok(author::UpdateAuthorResponse::Status404_AuthorNotFound)
+                }
+                Err(domain::error::DomainError::BusinessValidationError { .. }) => {
+                    Ok(author::UpdateAuthorResponse::Status422_ValidationException)
+                }
+                Err(_) => Ok(author::UpdateAuthorResponse::Status500_ServerError),
+            },
+            Err(_) => Ok(author::UpdateAuthorResponse::Status400_InvalidParameters),
+        }
     }
 }
 

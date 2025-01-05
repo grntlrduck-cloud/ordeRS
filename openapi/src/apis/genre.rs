@@ -40,7 +40,7 @@ pub enum DeleteGenreResponse {
 #[allow(clippy::large_enum_variant)]
 pub enum GetGenreByIdResponse {
     /// successful operation
-    Status200_SuccessfulOperation(Vec<models::Genre>),
+    Status200_SuccessfulOperation(models::Genre),
     /// Invalid parameters
     Status400_InvalidParameters,
     /// Genr not found

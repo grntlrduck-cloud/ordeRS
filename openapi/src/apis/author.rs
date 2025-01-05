@@ -40,7 +40,7 @@ pub enum DeleteAuthorResponse {
 #[allow(clippy::large_enum_variant)]
 pub enum GetAuthorByIdResponse {
     /// successful operation
-    Status200_SuccessfulOperation(Vec<models::Author>),
+    Status200_SuccessfulOperation(models::Author),
     /// Invalid parameters
     Status400_InvalidParameters,
     /// Author not found
