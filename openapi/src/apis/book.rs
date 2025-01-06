@@ -57,8 +57,6 @@ pub enum GetBooksByAuthorsResponse {
     Status200_SuccessfulOperation(Vec<models::Book>),
     /// Invalid author values
     Status400_InvalidAuthorValues,
-    /// Author not found
-    Status404_AuthorNotFound,
     /// Server error
     Status500_ServerError,
 }
@@ -71,8 +69,6 @@ pub enum GetBooksByGeneresResponse {
     Status200_SuccessfulOperation(Vec<models::Book>),
     /// Invalid genre values
     Status400_InvalidGenreValues,
-    /// Genere not found
-    Status404_GenereNotFound,
     /// Server error
     Status500_ServerError,
 }

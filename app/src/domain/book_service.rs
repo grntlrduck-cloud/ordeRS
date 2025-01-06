@@ -44,7 +44,7 @@ impl store::BookHandler for BookService {
 
     /// Delete an existing book in the store
     async fn delete_book_by_id(&self, id: Ksuid) -> Result<(), error::DomainError> {
-        Err(error::DomainError::NotFoundError {
+        Err(error::DomainError::NotFound {
             id: id.to_string(),
             source: Box::new(error::BookNotFoundError(id.to_string())),
         })
@@ -163,7 +163,7 @@ impl store::BookHandler for BookService {
 
     /// Delete an existing discount code
     async fn delte_discount_code_by_id(&self, id: Ksuid) -> Result<(), error::DomainError> {
-        Err(error::DomainError::NotFoundError {
+        Err(error::DomainError::NotFound {
             id: id.to_string(),
             source: Box::new(error::DiscountCodeNotFoundError(id.to_string())),
         })
@@ -194,7 +194,7 @@ impl store::BookHandler for BookService {
 
     /// Delete an existing genre in the store
     async fn delte_genre_by_id(&self, id: Ksuid) -> Result<(), error::DomainError> {
-        Err(error::DomainError::BusinessValidationError {
+        Err(error::DomainError::BusinessConstraintViolation {
             message: format!("failed to delete genre {}", id),
             source: Box::new(error::GenreNotFoundError(id.to_string())),
         })
@@ -219,7 +219,7 @@ impl store::BookHandler for BookService {
 
     /// Delete an existing author
     async fn delte_author_by_id(&self, id: Ksuid) -> Result<(), error::DomainError> {
-        Err(error::DomainError::FatalDBError {
+        Err(error::DomainError::FatalDBFailure {
             message: format!("Failed to delete author {}", id),
             source: Box::new(error::AuthorNotFoundError(id.to_string())),
         })

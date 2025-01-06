@@ -14,9 +14,7 @@ use tracing_subscriber;
 
 use crate::domain;
 
-use super::mapper::{
-    self, map_author_to_rest, map_author_update_props_to_domain, map_new_author_to_domain,
-};
+use super::mapper::*;
 
 /// TODO: implement function bodies
 /// here will come the implementation of the API handler
@@ -126,7 +124,7 @@ impl author::Author for BookStoreServer {
         match Ksuid::from_str(&path_params.author_id) {
             Ok(id) => match self.book_service.delte_author_by_id(id).await {
                 Ok(author) => Ok(author::DeleteAuthorResponse::Status200_SuccessfullyDeleted),
-                Err(domain::error::DomainError::NotFoundError { .. }) => {
+                Err(domain::error::DomainError::NotFound { .. }) => {
                     Ok(author::DeleteAuthorResponse::Status404_AuthorNotFound)
                 }
                 Err(_) => Ok(author::DeleteAuthorResponse::Status500_ServerError),
@@ -148,7 +146,7 @@ impl author::Author for BookStoreServer {
                     let model = map_author_to_rest(author);
                     Ok(author::GetAuthorByIdResponse::Status200_SuccessfulOperation(model))
                 }
-                Err(domain::error::DomainError::NotFoundError { .. }) => {
+                Err(domain::error::DomainError::NotFound { .. }) => {
                     Ok(author::GetAuthorByIdResponse::Status404_AuthorNotFound)
                 }
                 Err(_) => Ok(author::GetAuthorByIdResponse::Status500_ServerError),
@@ -173,10 +171,10 @@ impl author::Author for BookStoreServer {
                         model,
                     ))
                 }
-                Err(domain::error::DomainError::NotFoundError { .. }) => {
+                Err(domain::error::DomainError::NotFound { .. }) => {
                     Ok(author::UpdateAuthorResponse::Status404_AuthorNotFound)
                 }
-                Err(domain::error::DomainError::BusinessValidationError { .. }) => {
+                Err(domain::error::DomainError::BusinessConstraintViolation { .. }) => {
                     Ok(author::UpdateAuthorResponse::Status422_ValidationException)
                 }
                 Err(_) => Ok(author::UpdateAuthorResponse::Status500_ServerError),
@@ -196,7 +194,19 @@ impl book::Book for BookStoreServer {
         cookies: CookieJar,
         body: models::NewBook,
     ) -> Result<book::AddBookResponse, ()> {
-        Ok(book::AddBookResponse::Status400_InvalidInput)
+        match map_new_book_to_domain(body) {
+            Ok(new_book) => match self.book_service.create_book(new_book).await {
+                Ok(book) => {
+                    let model = map_book_to_rest(book);
+                    Ok(book::AddBookResponse::Status200_SuccessfulOperation(model))
+                }
+                Err(domain::error::DomainError::BusinessConstraintViolation { .. }) => {
+                    Ok(book::AddBookResponse::Status422_ValidationException)
+                }
+                Err(_) => Ok(book::AddBookResponse::Status500_ServerError),
+            },
+            Err(_) => Ok(book::AddBookResponse::Status400_InvalidInput),
+        }
     }
 
     async fn delete_book(
@@ -206,7 +216,16 @@ impl book::Book for BookStoreServer {
         cookies: CookieJar,
         path_params: models::DeleteBookPathParams,
     ) -> Result<book::DeleteBookResponse, ()> {
-        Ok(book::DeleteBookResponse::Status400_InvalidBookIdValue)
+        match Ksuid::from_str(&path_params.book_id) {
+            Ok(id) => match self.book_service.delete_book_by_id(id).await {
+                Ok(_) => Ok(book::DeleteBookResponse::Status200_SuccessfulOperation),
+                Err(domain::error::DomainError::NotFound { .. }) => {
+                    Ok(book::DeleteBookResponse::Status404_BookIdNotFound)
+                }
+                Err(_) => Ok(book::DeleteBookResponse::Status500_ServerError),
+            },
+            Err(_) => Ok(book::DeleteBookResponse::Status400_InvalidBookIdValue),
+        }
     }
 
     async fn get_book_by_id(
@@ -216,7 +235,21 @@ impl book::Book for BookStoreServer {
         cookies: CookieJar,
         path_params: models::GetBookByIdPathParams,
     ) -> Result<book::GetBookByIdResponse, ()> {
-        Ok(book::GetBookByIdResponse::Status400_InvalidParameters)
+        match Ksuid::from_str(&path_params.book_id) {
+            Ok(id) => match self.book_service.get_book_by_id(id).await {
+                Ok(book) => {
+                    let model = map_book_to_rest(book);
+                    Ok(book::GetBookByIdResponse::Status200_SuccessfulOperation(
+                        model,
+                    ))
+                }
+                Err(domain::error::DomainError::NotFound { .. }) => {
+                    Ok(book::GetBookByIdResponse::Status404_BookNotFound)
+                }
+                Err(_) => Ok(book::GetBookByIdResponse::Status500_ServerError),
+            },
+            Err(_) => Ok(book::GetBookByIdResponse::Status400_InvalidParameters),
+        }
     }
 
     async fn get_books_by_authors(
@@ -226,7 +259,16 @@ impl book::Book for BookStoreServer {
         cookies: CookieJar,
         query_params: models::GetBooksByAuthorsQueryParams,
     ) -> Result<book::GetBooksByAuthorsResponse, ()> {
-        Ok(book::GetBooksByAuthorsResponse::Status400_InvalidAuthorValues)
+        match map_strings_to_ksuids(query_params.authors) {
+            Ok(ids) => match self.book_service.get_books_by_authors(ids).await {
+                Ok(books) => {
+                    let models = books.into_iter().map(map_book_to_rest).collect();
+                    Ok(book::GetBooksByAuthorsResponse::Status200_SuccessfulOperation(models))
+                }
+                Err(_) => Ok(book::GetBooksByAuthorsResponse::Status500_ServerError),
+            },
+            Err(_) => Ok(book::GetBooksByAuthorsResponse::Status400_InvalidAuthorValues),
+        }
     }
 
     async fn get_books_by_generes(
@@ -236,7 +278,16 @@ impl book::Book for BookStoreServer {
         cookies: CookieJar,
         query_params: models::GetBooksByGeneresQueryParams,
     ) -> Result<book::GetBooksByGeneresResponse, ()> {
-        Ok(book::GetBooksByGeneresResponse::Status400_InvalidGenreValues)
+        match map_strings_to_ksuids(query_params.genres) {
+            Ok(ids) => match self.book_service.get_books_by_generes(ids).await {
+                Ok(books) => {
+                    let models = books.into_iter().map(map_book_to_rest).collect();
+                    Ok(book::GetBooksByGeneresResponse::Status200_SuccessfulOperation(models))
+                }
+                Err(_) => Ok(book::GetBooksByGeneresResponse::Status500_ServerError),
+            },
+            Err(_) => Ok(book::GetBooksByGeneresResponse::Status400_InvalidGenreValues),
+        }
     }
 
     async fn get_books_by_status(
@@ -246,7 +297,16 @@ impl book::Book for BookStoreServer {
         cookies: CookieJar,
         query_params: models::GetBooksByStatusQueryParams,
     ) -> Result<book::GetBooksByStatusResponse, ()> {
-        Ok(book::GetBooksByStatusResponse::Status400_InvalidStatusValue)
+        match map_book_status_list_to_domain(query_params.status) {
+            Ok(status_list) => match self.book_service.get_books_by_status(status_list).await {
+                Ok(books) => {
+                    let models = books.into_iter().map(map_book_to_rest).collect();
+                    Ok(book::GetBooksByStatusResponse::Status200_SuccessfulOperation(models))
+                }
+                Err(_) => Ok(book::GetBooksByStatusResponse::Status500_ServerError),
+            },
+            Err(_) => Ok(book::GetBooksByStatusResponse::Status400_InvalidStatusValue),
+        }
     }
 
     async fn update_book(
@@ -257,7 +317,24 @@ impl book::Book for BookStoreServer {
         path_params: models::UpdateBookPathParams,
         body: models::BookProperties,
     ) -> Result<book::UpdateBookResponse, ()> {
-        Ok(book::UpdateBookResponse::Status400_InvalidParameters)
+        match map_book_props_to_domain(path_params.book_id, body) {
+            Ok(props) => match self.book_service.update_book(props).await {
+                Ok(book) => {
+                    let model = map_book_to_rest(book);
+                    Ok(book::UpdateBookResponse::Status200_SuccessfulOperation(
+                        model,
+                    ))
+                }
+                Err(domain::error::DomainError::NotFound { .. }) => {
+                    Ok(book::UpdateBookResponse::Status404_BookNotFound)
+                }
+                Err(domain::error::DomainError::BusinessConstraintViolation { .. }) => {
+                    Ok(book::UpdateBookResponse::Status422_ValidationException)
+                }
+                Err(_) => Ok(book::UpdateBookResponse::Status500_ServerError),
+            },
+            Err(_) => Ok(book::UpdateBookResponse::Status400_InvalidParameters),
+        }
     }
 }
 
@@ -271,7 +348,16 @@ impl discount::Discount for BookStoreServer {
         cookies: CookieJar,
         body: models::NewDiscountCode,
     ) -> Result<discount::AddDiscountResponse, ()> {
-        Ok(discount::AddDiscountResponse::Status400_InvalidInput)
+        match map_new_discount_code_to_domain(body) {
+            Ok(new_discount) => match self.book_service.create_discount_code(new_discount).await {
+                Ok(d) => {
+                    let model = map_discount_code_to_rest(d);
+                    Ok(discount::AddDiscountResponse::Status200_SuccessfulOperation(model))
+                }
+                Err(_) => Ok(discount::AddDiscountResponse::Status500_ServerError),
+            },
+            Err(_) => Ok(discount::AddDiscountResponse::Status400_InvalidInput),
+        }
     }
 
     async fn delete_discount(
@@ -281,7 +367,16 @@ impl discount::Discount for BookStoreServer {
         cookies: CookieJar,
         path_params: models::DeleteDiscountPathParams,
     ) -> Result<discount::DeleteDiscountResponse, ()> {
-        Ok(discount::DeleteDiscountResponse::Status400_InvalidDiscountIdValue)
+        match Ksuid::from_str(&path_params.discount_id) {
+            Ok(id) => match self.book_service.delte_discount_code_by_id(id).await {
+                Ok(_) => Ok(discount::DeleteDiscountResponse::Status200_SuccessfulOperation),
+                Err(domain::error::DomainError::NotFound { .. }) => {
+                    Ok(discount::DeleteDiscountResponse::Status404_DiscontNotFound)
+                }
+                Err(_) => Ok(discount::DeleteDiscountResponse::Status500_ServerError),
+            },
+            Err(_) => Ok(discount::DeleteDiscountResponse::Status400_InvalidDiscountIdValue),
+        }
     }
 
     async fn get_discount_by_id(
@@ -291,7 +386,19 @@ impl discount::Discount for BookStoreServer {
         cookies: CookieJar,
         path_params: models::GetDiscountByIdPathParams,
     ) -> Result<discount::GetDiscountByIdResponse, ()> {
-        Ok(discount::GetDiscountByIdResponse::Status400_InvalidParameters)
+        match Ksuid::from_str(&path_params.discount_id) {
+            Ok(id) => match self.book_service.get_discount_code_by_id(id).await {
+                Ok(d) => {
+                    let model = map_discount_code_to_rest(d);
+                    Ok(discount::GetDiscountByIdResponse::Status200_SuccessfulOperation(model))
+                }
+                Err(domain::error::DomainError::NotFound { .. }) => {
+                    Ok(discount::GetDiscountByIdResponse::Status404_DiscountCodeNotFound)
+                }
+                Err(_) => Ok(discount::GetDiscountByIdResponse::Status500_ServerError),
+            },
+            Err(_) => Ok(discount::GetDiscountByIdResponse::Status400_InvalidParameters),
+        }
     }
 }
 
@@ -325,7 +432,7 @@ impl store::Store for BookStoreServer {
     ) -> Result<store::GetInventoryResponse, ()> {
         match self.order_service.get_inventory().await {
             Ok(inventory) => {
-                let model = mapper::map_inventory_to_rest(inventory);
+                let model = map_inventory_to_rest(inventory);
                 Ok(store::GetInventoryResponse::Status200_SuccessfulOperation(
                     model,
                 ))
@@ -344,18 +451,18 @@ impl store::Store for BookStoreServer {
         match Ksuid::from_str(&path_params.order_id) {
             Ok(order_id) => match self.order_service.get_order_by_id(order_id).await {
                 Ok(order) => {
-                    let model = mapper::map_order_to_rest(order);
+                    let model = map_order_to_rest(order);
                     Ok(store::GetOrderByIdResponse::Status200_SuccessfulOperation(
                         model,
                     ))
                 }
-                Err(domain::error::DomainError::BusinessValidationError { .. }) => {
+                Err(domain::error::DomainError::BusinessConstraintViolation { .. }) => {
                     Ok(store::GetOrderByIdResponse::Status400_InvalidIDSupplied)
                 }
-                Err(domain::error::DomainError::NotFoundError { .. }) => {
+                Err(domain::error::DomainError::NotFound { .. }) => {
                     Ok(store::GetOrderByIdResponse::Status404_OrderNotFound)
                 }
-                Err(domain::error::DomainError::FatalDBError { .. }) => {
+                Err(domain::error::DomainError::FatalDBFailure { .. }) => {
                     Ok(store::GetOrderByIdResponse::Status500_ServerError)
                 }
             },
@@ -370,15 +477,15 @@ impl store::Store for BookStoreServer {
         cookies: CookieJar,
         body: models::NewOrder,
     ) -> Result<store::PlaceOrderResponse, ()> {
-        match mapper::map_new_order_to_domain(body) {
+        match map_new_order_to_domain(body) {
             Ok(domain) => match self.order_service.create_order(domain).await {
                 Ok(result) => {
-                    let model = mapper::map_order_to_rest(result);
+                    let model = map_order_to_rest(result);
                     Ok(store::PlaceOrderResponse::Status200_SuccessfulOperation(
                         model,
                     ))
                 }
-                Err(domain::error::DomainError::BusinessValidationError { .. }) => {
+                Err(domain::error::DomainError::BusinessConstraintViolation { .. }) => {
                     Ok(store::PlaceOrderResponse::Status422_ValidationException)
                 }
                 Err(_) => Ok(store::PlaceOrderResponse::Status500_ServerError),
@@ -395,18 +502,18 @@ impl store::Store for BookStoreServer {
         path_params: models::UpdateOrderPathParams,
         body: models::OrderProperties,
     ) -> Result<store::UpdateOrderResponse, ()> {
-        match mapper::map_order_props_to_domain(path_params.order_id, body) {
+        match map_order_props_to_domain(path_params.order_id, body) {
             Ok(domain) => match self.order_service.update_order(domain).await {
                 Ok(result) => {
-                    let model = mapper::map_order_to_rest(result);
+                    let model = map_order_to_rest(result);
                     Ok(store::UpdateOrderResponse::Status200_SuccessfulOperation(
                         model,
                     ))
                 }
-                Err(domain::error::DomainError::NotFoundError { .. }) => {
+                Err(domain::error::DomainError::NotFound { .. }) => {
                     Ok(store::UpdateOrderResponse::Status404_OrderNotFound)
                 }
-                Err(domain::error::DomainError::BusinessValidationError { .. }) => {
+                Err(domain::error::DomainError::BusinessConstraintViolation { .. }) => {
                     Ok(store::UpdateOrderResponse::Status422_ValidationException)
                 }
                 Err(_) => Ok(store::UpdateOrderResponse::Status500_ServerError),
@@ -426,7 +533,19 @@ impl genre::Genre for BookStoreServer {
         cookies: CookieJar,
         body: models::NewGenre,
     ) -> Result<genre::AddGenreResponse, ()> {
-        Ok(genre::AddGenreResponse::Status400_InvalidInput)
+        let new_genre = map_new_genre_to_domain(body.name);
+        match self.book_service.create_genre(new_genre).await {
+            Ok(genre) => {
+                let model = map_genre_to_rest(genre);
+                Ok(genre::AddGenreResponse::Status200_SuccessfulOperation(
+                    model,
+                ))
+            }
+            Err(domain::error::DomainError::BusinessConstraintViolation { .. }) => {
+                Ok(genre::AddGenreResponse::Status422_ValidationException)
+            }
+            Err(_) => Ok(genre::AddGenreResponse::Status500_ServerError),
+        }
     }
 
     async fn delete_genre(
@@ -436,7 +555,16 @@ impl genre::Genre for BookStoreServer {
         cookies: CookieJar,
         path_params: models::DeleteGenrePathParams,
     ) -> Result<genre::DeleteGenreResponse, ()> {
-        Ok(genre::DeleteGenreResponse::Status400_InvalidGenereIdValue)
+        match Ksuid::from_str(&path_params.genre_id) {
+            Ok(id) => match self.book_service.delte_genre_by_id(id).await {
+                Ok(_) => Ok(genre::DeleteGenreResponse::Status200_SuccessfulOperation),
+                Err(domain::error::DomainError::NotFound { .. }) => {
+                    Ok(genre::DeleteGenreResponse::Status404_GenreNotFound)
+                }
+                Err(_) => Ok(genre::DeleteGenreResponse::Status500_ServerError),
+            },
+            Err(_) => Ok(genre::DeleteGenreResponse::Status400_InvalidGenereIdValue),
+        }
     }
 
     async fn get_genre_by_id(
@@ -446,7 +574,21 @@ impl genre::Genre for BookStoreServer {
         cookies: CookieJar,
         path_params: models::GetGenreByIdPathParams,
     ) -> Result<genre::GetGenreByIdResponse, ()> {
-        Ok(genre::GetGenreByIdResponse::Status400_InvalidParameters)
+        match Ksuid::from_str(&path_params.genre_id) {
+            Ok(id) => match self.book_service.get_genre_by_id(id).await {
+                Ok(genre) => {
+                    let model = map_genre_to_rest(genre);
+                    Ok(genre::GetGenreByIdResponse::Status200_SuccessfulOperation(
+                        model,
+                    ))
+                }
+                Err(domain::error::DomainError::NotFound { .. }) => {
+                    Ok(genre::GetGenreByIdResponse::Status404_GenrNotFound)
+                }
+                Err(_) => Ok(genre::GetGenreByIdResponse::Status500_ServerError),
+            },
+            Err(_) => Ok(genre::GetGenreByIdResponse::Status400_InvalidParameters),
+        }
     }
 }
 

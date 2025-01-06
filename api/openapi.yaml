@@ -376,8 +376,6 @@ paths:
                   $ref: "#/components/schemas/Book"
         "400":
           description: Invalid author values
-        "404":
-          description: Author not found
         "500":
           description: Server error
 
@@ -409,8 +407,6 @@ paths:
                   $ref: "#/components/schemas/Book"
         "400":
           description: Invalid genre values
-        "404":
-          description: Genere not found
         "500":
           description: Server error
 

@@ -238,48 +238,24 @@ pub fn map_book_props_to_domain(
 
     let authors = match props.authors {
         Some(authors) => {
-            let result = authors
-                .into_iter()
-                .map(|a| {
-                    Ksuid::from_str(&a).map_err(|e| MapperError::InvalidKsuid {
-                        id: a.clone(),
-                        source: e,
-                    })
-                })
-                .collect::<Result<Vec<Ksuid>, MapperError>>()?;
-            Some(result)
+            let result = map_strings_to_ksuids(authors);
+            Some(result?)
         }
         None => None,
     };
 
     let genres = match props.genres {
         Some(genres) => {
-            let result = genres
-                .into_iter()
-                .map(|g| {
-                    Ksuid::from_str(&g).map_err(|e| MapperError::InvalidKsuid {
-                        id: g.clone(),
-                        source: e,
-                    })
-                })
-                .collect::<Result<Vec<Ksuid>, MapperError>>()?;
-            Some(result)
+            let result = map_strings_to_ksuids(genres);
+            Some(result?)
         }
         None => None,
     };
 
     let discounts = match props.discount_codes {
         Some(discounts) => {
-            let result = discounts
-                .into_iter()
-                .map(|d| {
-                    Ksuid::from_str(&d).map_err(|e| MapperError::InvalidKsuid {
-                        id: d.clone(),
-                        source: e,
-                    })
-                })
-                .collect::<Result<Vec<Ksuid>, MapperError>>()?;
-            Some(result)
+            let result = map_strings_to_ksuids(discounts);
+            Some(result?)
         }
         None => None,
     };
@@ -366,29 +342,12 @@ pub fn map_new_book_to_domain(
     let edition = new_book.edition.unwrap_or(1);
 
     // map authorIds to Ksuid
-    let d_authors = new_book
-        .authors
-        .into_iter()
-        .map(|a| {
-            Ksuid::from_str(&a).map_err(|e| MapperError::InvalidKsuid {
-                id: a.clone(),
-                source: e,
-            })
-        })
-        .collect::<Result<Vec<Ksuid>, MapperError>>()?;
+    let d_authors = map_strings_to_ksuids(new_book.authors)?;
 
     // map genereIds to Ksuid
     let d_genres = match new_book.genres {
         Some(genres) => {
-            let result: Result<Vec<Ksuid>, MapperError> = genres
-                .into_iter()
-                .map(|g| {
-                    Ksuid::from_str(&g).map_err(|e| MapperError::InvalidKsuid {
-                        id: g.clone(),
-                        source: e,
-                    })
-                })
-                .collect();
+            let result = map_strings_to_ksuids(genres);
             Some(result?)
         }
         None => None,
@@ -397,15 +356,7 @@ pub fn map_new_book_to_domain(
     // map discount codes to Ksuid
     let d_discounts = match new_book.discount_codes {
         Some(discounts) => {
-            let result: Result<Vec<Ksuid>, MapperError> = discounts
-                .into_iter()
-                .map(|d| {
-                    Ksuid::from_str(&d).map_err(|e| MapperError::InvalidKsuid {
-                        id: d.clone(),
-                        source: e,
-                    })
-                })
-                .collect();
+            let result = map_strings_to_ksuids(discounts);
             Some(result?)
         }
         None => None,
@@ -446,7 +397,7 @@ pub fn map_new_discount_code_to_domain(
     })
 }
 
-fn map_new_genre_to_domain(genre: String) -> dmodels::GenereDomain {
+pub fn map_new_genre_to_domain(genre: String) -> dmodels::GenereDomain {
     dmodels::GenereDomain {
         id: Ksuid::new(None, None),
         name: genre,
@@ -538,7 +489,7 @@ pub fn map_order_props_to_domain(
     let status = dmodels::OrderStatus::from_str(&props.status).map_err(|_| {
         MapperError::InvalidOrderStatus {
             status: props.status.clone(),
-            source: Box::new(BookStatusError(props.status.clone())),
+            source: Box::new(OrderStatusError(props.status.clone())),
         }
     })?;
 
@@ -549,9 +500,36 @@ pub fn map_order_props_to_domain(
     })
 }
 
+pub fn map_strings_to_ksuids(ids_str: Vec<String>) -> Result<Vec<Ksuid>, MapperError> {
+    ids_str
+        .into_iter()
+        .map(|id| {
+            Ksuid::from_str(&id).map_err(|e| MapperError::InvalidKsuid {
+                id: id.clone(),
+                source: e,
+            })
+        })
+        .collect::<Result<Vec<Ksuid>, MapperError>>()
+}
+
+pub fn map_book_status_list_to_domain(
+    status_str: Vec<String>,
+) -> Result<Vec<dmodels::BookStatus>, MapperError> {
+    status_str
+        .into_iter()
+        .map(|s| {
+            dmodels::BookStatus::from_str(&s).map_err(|_| MapperError::InvalidBookStatus {
+                status: s.clone(),
+                source: Box::new(BookStatusError(s.clone())),
+            })
+        })
+        .collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::domain::models::BookStatus;
     use chrono::{DateTime, NaiveDate, Utc};
     use openapi::models as rmodels;
 
@@ -1529,5 +1507,62 @@ mod tests {
             }
             _ => panic!("Expected InvalidKsuid error"),
         }
+    }
+
+    #[test]
+    fn test_map_book_status_list_to_domain_success() {
+        // Arrange
+        let status_list = vec![
+            String::from("available"),
+            String::from("out-of-stock"),
+            String::from("re-ordered"),
+        ];
+
+        // Act
+        let result = map_book_status_list_to_domain(status_list);
+
+        // Assert
+        assert!(result.is_ok());
+        let statuses = result.unwrap();
+        assert_eq!(statuses.len(), 3);
+        assert_eq!(statuses[0], BookStatus::Available);
+        assert_eq!(statuses[1], BookStatus::OutOfStock);
+        assert_eq!(statuses[2], BookStatus::ReOrdered);
+    }
+
+    #[test]
+    fn test_map_book_status_list_to_domain_invalid_status() {
+        // Arrange
+        let status_list = vec![
+            String::from("available"),
+            String::from("invalid_status"),
+            String::from("re-ordered"),
+        ];
+
+        // Act
+        let result = map_book_status_list_to_domain(status_list);
+
+        // Assert
+        assert!(result.is_err());
+        match result {
+            Err(MapperError::InvalidBookStatus { status, .. }) => {
+                assert_eq!(status, "invalid_status");
+            }
+            _ => panic!("Expected InvalidBookStatus error"),
+        }
+    }
+
+    #[test]
+    fn test_map_book_status_list_to_domain_empty_list() {
+        // Arrange
+        let status_list: Vec<String> = vec![];
+
+        // Act
+        let result = map_book_status_list_to_domain(status_list);
+
+        // Assert
+        assert!(result.is_ok());
+        let statuses = result.unwrap();
+        assert!(statuses.is_empty());
     }
 }

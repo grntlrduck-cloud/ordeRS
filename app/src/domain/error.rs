@@ -58,15 +58,15 @@ impl Error for DiscountCodeNotFoundError {}
 
 #[derive(Debug)]
 pub enum DomainError {
-    NotFoundError {
+    NotFound {
         id: String,
         source: Box<dyn Error + Send + Sync>,
     },
-    FatalDBError {
+    FatalDBFailure {
         message: String,
         source: Box<dyn Error + Send + Sync>,
     },
-    BusinessValidationError {
+    BusinessConstraintViolation {
         message: String,
         source: Box<dyn Error + Send + Sync>,
     },
@@ -75,11 +75,11 @@ pub enum DomainError {
 impl fmt::Display for DomainError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            DomainError::NotFoundError { id, .. } => write!(f, "Item not found: {}", id),
-            DomainError::FatalDBError { message, .. } => {
+            DomainError::NotFound { id, .. } => write!(f, "Item not found: {}", id),
+            DomainError::FatalDBFailure { message, .. } => {
                 write!(f, "Failed to perform DB operation: {}", message)
             }
-            DomainError::BusinessValidationError { message, .. } => {
+            DomainError::BusinessConstraintViolation { message, .. } => {
                 write!(f, "Business validation constraints not met: {}", message)
             }
         }
@@ -89,9 +89,9 @@ impl fmt::Display for DomainError {
 impl Error for DomainError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
         match self {
-            DomainError::NotFoundError { source, .. } => Some(source.as_ref()),
-            DomainError::FatalDBError { source, .. } => Some(source.as_ref()),
-            DomainError::BusinessValidationError { source, .. } => Some(source.as_ref()),
+            DomainError::NotFound { source, .. } => Some(source.as_ref()),
+            DomainError::FatalDBFailure { source, .. } => Some(source.as_ref()),
+            DomainError::BusinessConstraintViolation { source, .. } => Some(source.as_ref()),
         }
     }
 }

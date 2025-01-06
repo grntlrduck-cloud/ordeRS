@@ -777,10 +777,6 @@ where
                 let mut response = response.status(400);
                 response.body(Body::empty())
             }
-            apis::book::GetBooksByAuthorsResponse::Status404_AuthorNotFound => {
-                let mut response = response.status(404);
-                response.body(Body::empty())
-            }
             apis::book::GetBooksByAuthorsResponse::Status500_ServerError => {
                 let mut response = response.status(500);
                 response.body(Body::empty())
@@ -867,10 +863,6 @@ where
             }
             apis::book::GetBooksByGeneresResponse::Status400_InvalidGenreValues => {
                 let mut response = response.status(400);
-                response.body(Body::empty())
-            }
-            apis::book::GetBooksByGeneresResponse::Status404_GenereNotFound => {
-                let mut response = response.status(404);
                 response.body(Body::empty())
             }
             apis::book::GetBooksByGeneresResponse::Status500_ServerError => {
