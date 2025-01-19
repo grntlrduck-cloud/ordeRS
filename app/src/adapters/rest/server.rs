@@ -14,7 +14,8 @@ use tracing_subscriber;
 
 use crate::domain;
 
-use super::mapper::*;
+use super::domain_mappers::*;
+use super::rest_mappers::*;
 
 /// TODO: implement function bodies
 /// here will come the implementation of the API handler
