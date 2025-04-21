@@ -20,13 +20,13 @@ pub fn map_author_update_props_to_domain(
     id: &str,
     props: &rmodels::AuthorProperties,
 ) -> Result<dmodels::AuthorUpdateProps, MapperError> {
-    let kid = Ksuid::from_str(&id).map_err(|e| MapperError::InvalidKsuid {
+    let kid = Ksuid::from_str(id).map_err(|e| MapperError::InvalidKsuid {
         id: String::from(id),
         source: e,
     })?;
     Ok(dmodels::AuthorUpdateProps {
         id: kid,
-        date_of_death: props.date_of_death.clone(),
+        date_of_death: props.date_of_death,
         last_name: props.last_name.clone(),
         second_names: props.second_names.clone(),
         title: props.title.clone(),
@@ -68,7 +68,7 @@ pub fn map_book_props_to_domain(
 
     let status = match &props.status {
         Some(status) => {
-            let result = dmodels::BookStatus::from_str(&status).map_err(|_| {
+            let result = dmodels::BookStatus::from_str(status).map_err(|_| {
                 MapperError::InvalidBookStatus {
                     status: status.clone(),
                     source: Box::new(BookStatusError(status.clone())),
@@ -101,8 +101,8 @@ pub fn map_new_author_to_domain(new_author: &rmodels::NewAuthor) -> dmodels::Aut
         first_name: new_author.first_name.clone(),
         last_name: new_author.last_name.clone(),
         second_names: new_author.second_names.clone(),
-        date_of_birth: new_author.date_of_birth.clone(),
-        date_of_death: new_author.date_of_death.clone(),
+        date_of_birth: new_author.date_of_birth,
+        date_of_death: new_author.date_of_death,
     }
 }
 
@@ -137,7 +137,7 @@ pub fn map_new_book_to_domain(
     // map discount codes to Ksuid
     let d_discounts = match &new_book.discount_codes {
         Some(discounts) => {
-            let result = map_strings_to_ksuids(&discounts);
+            let result = map_strings_to_ksuids(discounts);
             Some(result?)
         }
         None => None,
@@ -256,9 +256,9 @@ pub fn map_order_props_to_domain(
 
 pub fn map_strings_to_ksuids(ids_str: &Vec<String>) -> Result<Vec<Ksuid>, MapperError> {
     ids_str
-        .into_iter()
+        .iter()
         .map(|id| {
-            Ksuid::from_str(&id).map_err(|e| MapperError::InvalidKsuid {
+            Ksuid::from_str(id).map_err(|e| MapperError::InvalidKsuid {
                 id: id.clone(),
                 source: e,
             })
@@ -270,9 +270,9 @@ pub fn map_book_status_list_to_domain(
     status_str: &Vec<String>,
 ) -> Result<Vec<dmodels::BookStatus>, MapperError> {
     status_str
-        .into_iter()
+        .iter()
         .map(|s| {
-            dmodels::BookStatus::from_str(&s).map_err(|_| MapperError::InvalidBookStatus {
+            dmodels::BookStatus::from_str(s).map_err(|_| MapperError::InvalidBookStatus {
                 status: s.clone(),
                 source: Box::new(BookStatusError(s.clone())),
             })

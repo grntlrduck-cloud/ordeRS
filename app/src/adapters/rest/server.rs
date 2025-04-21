@@ -84,13 +84,11 @@ impl health::Health for BookStoreServer {
         host: &Host,
         cookies: &CookieJar,
     ) -> Result<health::GetReadinessResponse, ()> {
-        Ok(
-            health::GetReadinessResponse::Status200_Successful(
-                models::HealthCheckResponse {
-                    status: Some(String::from("serving")),
-                },
-            ),
-        )
+        Ok(health::GetReadinessResponse::Status200_Successful(
+            models::HealthCheckResponse {
+                status: Some(String::from("serving")),
+            },
+        ))
     }
 }
 
@@ -118,7 +116,7 @@ impl author::Author for BookStoreServer {
 
     async fn delete_author(
         &self,
-        method:&Method,
+        method: &Method,
         host: &Host,
         cookies: &CookieJar,
         path_params: &models::DeleteAuthorPathParams,
@@ -137,7 +135,7 @@ impl author::Author for BookStoreServer {
 
     async fn get_author_by_id(
         &self,
-        method:&Method,
+        method: &Method,
         host: &Host,
         cookies: &CookieJar,
         path_params: &models::GetAuthorByIdPathParams,
@@ -159,7 +157,7 @@ impl author::Author for BookStoreServer {
 
     async fn update_author(
         &self,
-        method:&Method,
+        method: &Method,
         host: &Host,
         cookies: &CookieJar,
         path_params: &models::UpdateAuthorPathParams,
@@ -191,7 +189,7 @@ impl author::Author for BookStoreServer {
 impl book::Book for BookStoreServer {
     async fn add_book(
         &self,
-        method:&Method,
+        method: &Method,
         host: &Host,
         cookies: &CookieJar,
         body: &models::NewBook,
@@ -213,7 +211,7 @@ impl book::Book for BookStoreServer {
 
     async fn delete_book(
         &self,
-        method:&Method,
+        method: &Method,
         host: &Host,
         cookies: &CookieJar,
         path_params: &models::DeleteBookPathParams,
@@ -232,7 +230,7 @@ impl book::Book for BookStoreServer {
 
     async fn get_book_by_id(
         &self,
-        method:&Method,
+        method: &Method,
         host: &Host,
         cookies: &CookieJar,
         path_params: &models::GetBookByIdPathParams,
@@ -256,7 +254,7 @@ impl book::Book for BookStoreServer {
 
     async fn get_books_by_authors(
         &self,
-        method:&Method,
+        method: &Method,
         host: &Host,
         cookies: &CookieJar,
         query_params: &models::GetBooksByAuthorsQueryParams,
@@ -275,7 +273,7 @@ impl book::Book for BookStoreServer {
 
     async fn get_books_by_generes(
         &self,
-        method:&Method,
+        method: &Method,
         host: &Host,
         cookies: &CookieJar,
         query_params: &models::GetBooksByGeneresQueryParams,
@@ -294,7 +292,7 @@ impl book::Book for BookStoreServer {
 
     async fn get_books_by_status(
         &self,
-        method:&Method,
+        method: &Method,
         host: &Host,
         cookies: &CookieJar,
         query_params: &models::GetBooksByStatusQueryParams,
@@ -313,7 +311,7 @@ impl book::Book for BookStoreServer {
 
     async fn update_book(
         &self,
-        method:&Method,
+        method: &Method,
         host: &Host,
         cookies: &CookieJar,
         path_params: &models::UpdateBookPathParams,
@@ -345,7 +343,7 @@ impl book::Book for BookStoreServer {
 impl discount::Discount for BookStoreServer {
     async fn add_discount(
         &self,
-        method:&Method,
+        method: &Method,
         host: &Host,
         cookies: &CookieJar,
         body: &models::NewDiscountCode,
@@ -364,7 +362,7 @@ impl discount::Discount for BookStoreServer {
 
     async fn delete_discount(
         &self,
-        method:&Method,
+        method: &Method,
         host: &Host,
         cookies: &CookieJar,
         path_params: &models::DeleteDiscountPathParams,
@@ -383,7 +381,7 @@ impl discount::Discount for BookStoreServer {
 
     async fn get_discount_by_id(
         &self,
-        method:&Method,
+        method: &Method,
         host: &Host,
         cookies: &CookieJar,
         path_params: &models::GetDiscountByIdPathParams,
@@ -409,7 +407,7 @@ impl discount::Discount for BookStoreServer {
 impl store::Store for BookStoreServer {
     async fn delete_order(
         &self,
-        method:&Method,
+        method: &Method,
         host: &Host,
         cookies: &CookieJar,
         path_params: &models::DeleteOrderPathParams,
@@ -428,7 +426,7 @@ impl store::Store for BookStoreServer {
 
     async fn get_inventory(
         &self,
-        method:&Method,
+        method: &Method,
         host: &Host,
         cookies: &CookieJar,
     ) -> Result<store::GetInventoryResponse, ()> {
@@ -445,7 +443,7 @@ impl store::Store for BookStoreServer {
 
     async fn get_order_by_id(
         &self,
-        method:&Method,
+        method: &Method,
         host: &Host,
         cookies: &CookieJar,
         path_params: &models::GetOrderByIdPathParams,
@@ -474,7 +472,7 @@ impl store::Store for BookStoreServer {
 
     async fn place_order(
         &self,
-        method:&Method,
+        method: &Method,
         host: &Host,
         cookies: &CookieJar,
         body: &models::NewOrder,
@@ -498,7 +496,7 @@ impl store::Store for BookStoreServer {
 
     async fn update_order(
         &self,
-        method:&Method,
+        method: &Method,
         host: &Host,
         cookies: &CookieJar,
         path_params: &models::UpdateOrderPathParams,
@@ -530,7 +528,7 @@ impl store::Store for BookStoreServer {
 impl genre::Genre for BookStoreServer {
     async fn add_genre(
         &self,
-        method:&Method,
+        method: &Method,
         host: &Host,
         cookies: &CookieJar,
         body: &models::NewGenre,
@@ -552,7 +550,7 @@ impl genre::Genre for BookStoreServer {
 
     async fn delete_genre(
         &self,
-        method:&Method,
+        method: &Method,
         host: &Host,
         cookies: &CookieJar,
         path_params: &models::DeleteGenrePathParams,
@@ -571,7 +569,7 @@ impl genre::Genre for BookStoreServer {
 
     async fn get_genre_by_id(
         &self,
-        method:&Method,
+        method: &Method,
         host: &Host,
         cookies: &CookieJar,
         path_params: &models::GetGenreByIdPathParams,
