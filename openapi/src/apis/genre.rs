@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use axum::extract::*;
-use axum_extra::extract::{CookieJar, Multipart};
+use axum_extra::extract::{CookieJar, Host};
 use bytes::Bytes;
 use http::Method;
 use serde::{Deserialize, Serialize};
@@ -52,37 +52,37 @@ pub enum GetGenreByIdResponse {
 /// Genre
 #[async_trait]
 #[allow(clippy::ptr_arg)]
-pub trait Genre {
+pub trait Genre<E: std::fmt::Debug + Send + Sync + 'static = ()>: super::ErrorHandler<E> {
     /// Add a new genere to the store.
     ///
     /// AddGenre - POST /api/v1/genres
     async fn add_genre(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        body: models::NewGenre,
-    ) -> Result<AddGenreResponse, ()>;
+        method: &Method,
+        host: &Host,
+        cookies: &CookieJar,
+        body: &models::NewGenre,
+    ) -> Result<AddGenreResponse, E>;
 
     /// Deletes a genere.
     ///
     /// DeleteGenre - DELETE /api/v1/genres/{genreId}
     async fn delete_genre(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        path_params: models::DeleteGenrePathParams,
-    ) -> Result<DeleteGenreResponse, ()>;
+        method: &Method,
+        host: &Host,
+        cookies: &CookieJar,
+        path_params: &models::DeleteGenrePathParams,
+    ) -> Result<DeleteGenreResponse, E>;
 
     /// Finds genre by Id.
     ///
     /// GetGenreById - GET /api/v1/genres/{genreId}
     async fn get_genre_by_id(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        path_params: models::GetGenreByIdPathParams,
-    ) -> Result<GetGenreByIdResponse, ()>;
+        method: &Method,
+        host: &Host,
+        cookies: &CookieJar,
+        path_params: &models::GetGenreByIdPathParams,
+    ) -> Result<GetGenreByIdResponse, E>;
 }

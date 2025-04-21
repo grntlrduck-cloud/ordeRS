@@ -5,44 +5,44 @@ use crate::domain::models as dmodels;
 use openapi::models as rmodels;
 use svix_ksuid::*;
 
-pub fn map_address_to_domain(address: rmodels::Address) -> dmodels::AddressDomain {
+pub fn map_address_to_domain(address: &rmodels::Address) -> dmodels::AddressDomain {
     dmodels::AddressDomain {
-        street: address.street,
-        street_number: address.street_number,
-        zip_code: address.zip_code,
-        city: address.city,
-        province: address.province,
-        country: address.country,
+        street: address.street.clone(),
+        street_number: address.street_number.clone(),
+        zip_code: address.zip_code.clone(),
+        city: address.city.clone(),
+        province: address.province.clone(),
+        country: address.country.clone(),
     }
 }
 
 pub fn map_author_update_props_to_domain(
-    id: String,
-    props: rmodels::AuthorProperties,
+    id: &str,
+    props: &rmodels::AuthorProperties,
 ) -> Result<dmodels::AuthorUpdateProps, MapperError> {
     let kid = Ksuid::from_str(&id).map_err(|e| MapperError::InvalidKsuid {
-        id: id.clone(),
+        id: String::from(id),
         source: e,
     })?;
     Ok(dmodels::AuthorUpdateProps {
         id: kid,
-        date_of_death: props.date_of_death,
-        last_name: props.last_name,
-        second_names: props.second_names,
-        title: props.title,
+        date_of_death: props.date_of_death.clone(),
+        last_name: props.last_name.clone(),
+        second_names: props.second_names.clone(),
+        title: props.title.clone(),
     })
 }
 
 pub fn map_book_props_to_domain(
-    id: String,
-    props: rmodels::BookProperties,
+    id: &str,
+    props: &rmodels::BookProperties,
 ) -> Result<dmodels::BookUpdateProps, MapperError> {
-    let kid = Ksuid::from_str(&id).map_err(|e| MapperError::InvalidKsuid {
-        id: id.clone(),
+    let kid = Ksuid::from_str(id).map_err(|e| MapperError::InvalidKsuid {
+        id: String::from(id),
         source: e,
     })?;
 
-    let authors = match props.authors {
+    let authors = match &props.authors {
         Some(authors) => {
             let result = map_strings_to_ksuids(authors);
             Some(result?)
@@ -50,7 +50,7 @@ pub fn map_book_props_to_domain(
         None => None,
     };
 
-    let genres = match props.genres {
+    let genres = match &props.genres {
         Some(genres) => {
             let result = map_strings_to_ksuids(genres);
             Some(result?)
@@ -58,7 +58,7 @@ pub fn map_book_props_to_domain(
         None => None,
     };
 
-    let discounts = match props.discount_codes {
+    let discounts = match &props.discount_codes {
         Some(discounts) => {
             let result = map_strings_to_ksuids(discounts);
             Some(result?)
@@ -66,7 +66,7 @@ pub fn map_book_props_to_domain(
         None => None,
     };
 
-    let status = match props.status {
+    let status = match &props.status {
         Some(status) => {
             let result = dmodels::BookStatus::from_str(&status).map_err(|_| {
                 MapperError::InvalidBookStatus {
@@ -88,26 +88,26 @@ pub fn map_book_props_to_domain(
         edition: props.edition,
         price: props.price,
         release: props.release,
-        series: props.series,
+        series: props.series.clone(),
         status,
-        title: props.title,
+        title: props.title.clone(),
     })
 }
 
-pub fn map_new_author_to_domain(new_author: rmodels::NewAuthor) -> dmodels::AuthorDomain {
+pub fn map_new_author_to_domain(new_author: &rmodels::NewAuthor) -> dmodels::AuthorDomain {
     dmodels::AuthorDomain {
         id: Ksuid::new(None, None),
-        title: new_author.title,
-        first_name: new_author.first_name,
-        last_name: new_author.last_name,
-        second_names: new_author.second_names,
-        date_of_birth: new_author.date_of_birth,
-        date_of_death: new_author.date_of_death,
+        title: new_author.title.clone(),
+        first_name: new_author.first_name.clone(),
+        last_name: new_author.last_name.clone(),
+        second_names: new_author.second_names.clone(),
+        date_of_birth: new_author.date_of_birth.clone(),
+        date_of_death: new_author.date_of_death.clone(),
     }
 }
 
 pub fn map_new_book_to_domain(
-    new_book: rmodels::NewBook,
+    new_book: &rmodels::NewBook,
 ) -> Result<dmodels::NewBookDomain, MapperError> {
     if new_book.available < 0 {
         return Err(MapperError::BooksAvailableOutOfBound {
@@ -123,10 +123,10 @@ pub fn map_new_book_to_domain(
     let edition = new_book.edition.unwrap_or(1);
 
     // map authorIds to Ksuid
-    let d_authors = map_strings_to_ksuids(new_book.authors)?;
+    let d_authors = map_strings_to_ksuids(&new_book.authors)?;
 
     // map genereIds to Ksuid
-    let d_genres = match new_book.genres {
+    let d_genres = match &new_book.genres {
         Some(genres) => {
             let result = map_strings_to_ksuids(genres);
             Some(result?)
@@ -135,9 +135,9 @@ pub fn map_new_book_to_domain(
     };
 
     // map discount codes to Ksuid
-    let d_discounts = match new_book.discount_codes {
+    let d_discounts = match &new_book.discount_codes {
         Some(discounts) => {
-            let result = map_strings_to_ksuids(discounts);
+            let result = map_strings_to_ksuids(&discounts);
             Some(result?)
         }
         None => None,
@@ -145,22 +145,22 @@ pub fn map_new_book_to_domain(
 
     Ok(dmodels::NewBookDomain {
         id: Ksuid::new(None, None),
-        title: new_book.title,
+        title: new_book.title.clone(),
         release: new_book.release,
         first_release,
         authors: d_authors,
-        series: new_book.series,
+        series: new_book.series.clone(),
         genres: d_genres,
         edition,
         price: new_book.price,
-        discounts: d_discounts,
+        discounts: d_discounts.clone(),
         available: new_book.available,
         status: dmodels::BookStatus::Available,
     })
 }
 
 pub fn map_new_discount_code_to_domain(
-    new_discount: rmodels::NewDiscountCode,
+    new_discount: &rmodels::NewDiscountCode,
 ) -> Result<dmodels::DiscountCodeDomain, MapperError> {
     if new_discount.percentage_discount < 1 || new_discount.percentage_discount > 80 {
         return Err(MapperError::DiscountPercentageOutOfBounds {
@@ -174,22 +174,21 @@ pub fn map_new_discount_code_to_domain(
         percentage_discount: new_discount.percentage_discount,
         valid_from: new_discount.valid_from,
         valid_to: new_discount.valid_to,
-        code: new_discount.code,
+        code: new_discount.code.clone(),
     })
 }
 
-pub fn map_new_genre_to_domain(genre: String) -> dmodels::GenereDomain {
+pub fn map_new_genre_to_domain(genre: &str) -> dmodels::GenereDomain {
     dmodels::GenereDomain {
         id: Ksuid::new(None, None),
-        name: genre,
+        name: String::from(genre),
     }
 }
 
 pub fn map_new_order_to_domain(
-    new_order: rmodels::NewOrder,
+    new_order: &rmodels::NewOrder,
 ) -> Result<dmodels::OrderDomain, MapperError> {
-    let books = new_order
-        .books
+    let books = Vec::to_owned(&new_order.books)
         .into_iter()
         .map(|b| {
             if b.quantity < 1 {
@@ -217,8 +216,8 @@ pub fn map_new_order_to_domain(
 
     // Handle shipping address: if override exists use it, otherwise use billing address
     let shipping_address = match &new_order.shipping_address_override {
-        Some(override_address) => map_address_to_domain(override_address.clone()),
-        None => map_address_to_domain(new_order.billing_address.clone()),
+        Some(override_address) => map_address_to_domain(&override_address.clone()),
+        None => map_address_to_domain(&new_order.billing_address.clone()),
     };
 
     Ok(dmodels::OrderDomain {
@@ -226,18 +225,18 @@ pub fn map_new_order_to_domain(
         books,
         customer_id,
         shipping_date: new_order.shipping_date,
-        billing_address: map_address_to_domain(new_order.billing_address),
+        billing_address: map_address_to_domain(&new_order.billing_address),
         shipping_address,
         status: dmodels::OrderStatus::Placed,
     })
 }
 
 pub fn map_order_props_to_domain(
-    id: String,
-    props: rmodels::OrderProperties,
+    id: &str,
+    props: &rmodels::OrderProperties,
 ) -> Result<dmodels::OrderUpdateProps, MapperError> {
-    let kid = Ksuid::from_str(&id).map_err(|e| MapperError::InvalidKsuid {
-        id: id.clone(),
+    let kid = Ksuid::from_str(id).map_err(|e| MapperError::InvalidKsuid {
+        id: String::from(id),
         source: e,
     })?;
 
@@ -255,7 +254,7 @@ pub fn map_order_props_to_domain(
     })
 }
 
-pub fn map_strings_to_ksuids(ids_str: Vec<String>) -> Result<Vec<Ksuid>, MapperError> {
+pub fn map_strings_to_ksuids(ids_str: &Vec<String>) -> Result<Vec<Ksuid>, MapperError> {
     ids_str
         .into_iter()
         .map(|id| {
@@ -268,7 +267,7 @@ pub fn map_strings_to_ksuids(ids_str: Vec<String>) -> Result<Vec<Ksuid>, MapperE
 }
 
 pub fn map_book_status_list_to_domain(
-    status_str: Vec<String>,
+    status_str: &Vec<String>,
 ) -> Result<Vec<dmodels::BookStatus>, MapperError> {
     status_str
         .into_iter()
@@ -310,7 +309,7 @@ mod tests {
         };
 
         // Act
-        let result = map_new_order_to_domain(new_order);
+        let result = map_new_order_to_domain(&new_order);
 
         // Assert
         assert!(result.is_ok());
@@ -351,7 +350,7 @@ mod tests {
         };
 
         // Act
-        let result = map_new_order_to_domain(new_order);
+        let result = map_new_order_to_domain(&new_order);
 
         // Assert
         assert!(result.is_ok());
@@ -382,7 +381,7 @@ mod tests {
         };
 
         // Act
-        let result = map_new_order_to_domain(new_order);
+        let result = map_new_order_to_domain(&new_order);
 
         // Assert
         assert!(result.is_err());
@@ -416,7 +415,7 @@ mod tests {
         };
 
         // Act
-        let result = map_new_order_to_domain(new_order);
+        let result = map_new_order_to_domain(&new_order);
 
         // Assert
         assert!(result.is_err());
@@ -450,7 +449,7 @@ mod tests {
         };
 
         // Act
-        let result = map_new_order_to_domain(new_order);
+        let result = map_new_order_to_domain(&new_order);
 
         // Assert
         assert!(result.is_err());
@@ -479,7 +478,7 @@ mod tests {
         };
 
         // Act
-        let result = map_new_book_to_domain(new_book);
+        let result = map_new_book_to_domain(&new_book);
 
         // Assert
         assert!(result.is_ok());
@@ -509,7 +508,7 @@ mod tests {
         };
 
         // Act
-        let result = map_new_book_to_domain(new_book);
+        let result = map_new_book_to_domain(&new_book);
 
         // Assert
         assert!(result.is_err());
@@ -540,7 +539,7 @@ mod tests {
         };
 
         // Act
-        let result = map_new_book_to_domain(new_book);
+        let result = map_new_book_to_domain(&new_book);
 
         // Assert
         assert!(result.is_err());
@@ -569,7 +568,7 @@ mod tests {
         };
 
         // Act
-        let result = map_new_book_to_domain(new_book);
+        let result = map_new_book_to_domain(&new_book);
 
         // Assert
         assert!(result.is_err());
@@ -598,7 +597,7 @@ mod tests {
         };
 
         // Act
-        let result = map_new_book_to_domain(new_book);
+        let result = map_new_book_to_domain(&new_book);
 
         // Assert
         assert!(result.is_err());
@@ -623,7 +622,7 @@ mod tests {
         };
 
         // Act
-        let result = map_new_author_to_domain(new_author);
+        let result = map_new_author_to_domain(&new_author);
 
         // Assert
         assert_eq!(result.first_name, "John");
@@ -650,7 +649,7 @@ mod tests {
         };
 
         // Act
-        let result = map_new_author_to_domain(new_author);
+        let result = map_new_author_to_domain(&new_author);
 
         // Assert
         assert_eq!(result.first_name, "John");
@@ -663,10 +662,10 @@ mod tests {
     #[test]
     fn test_map_new_genre_to_domain() {
         // Arrange
-        let genre_name = String::from("Science Fiction");
+        let genre_name = "Science Fiction";
 
         // Act
-        let result = map_new_genre_to_domain(genre_name.clone());
+        let result = map_new_genre_to_domain(genre_name);
 
         // Assert
         assert_eq!(result.name, genre_name);
@@ -675,11 +674,7 @@ mod tests {
 
     #[test]
     fn test_map_new_genre_to_domain_empty_name() {
-        // Arrange
-        let genre_name = String::from("");
-
-        // Act
-        let result = map_new_genre_to_domain(genre_name);
+        let result = map_new_genre_to_domain("");
 
         // Assert
         assert_eq!(result.name, "");
@@ -697,7 +692,7 @@ mod tests {
         };
 
         // Act
-        let result = map_new_discount_code_to_domain(new_discount);
+        let result = map_new_discount_code_to_domain(&new_discount);
 
         // Assert
         assert!(result.is_ok());
@@ -726,7 +721,7 @@ mod tests {
         };
 
         // Act
-        let result = map_new_discount_code_to_domain(new_discount);
+        let result = map_new_discount_code_to_domain(&new_discount);
 
         // Assert
         assert!(result.is_err());
@@ -749,7 +744,7 @@ mod tests {
         };
 
         // Act
-        let result = map_new_discount_code_to_domain(new_discount);
+        let result = map_new_discount_code_to_domain(&new_discount);
 
         // Assert
         assert!(result.is_err());
@@ -772,7 +767,7 @@ mod tests {
         };
 
         // Act
-        let result = map_new_discount_code_to_domain(new_discount);
+        let result = map_new_discount_code_to_domain(&new_discount);
 
         // Assert
         assert!(result.is_ok());
@@ -792,8 +787,7 @@ mod tests {
         };
 
         // Act
-        let result =
-            map_order_props_to_domain(String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"), order_props);
+        let result = map_order_props_to_domain("2N1yQqzh1fhkGEPv5rJRqOZqxE3", &order_props);
 
         // Assert
         assert!(result.is_ok());
@@ -810,7 +804,7 @@ mod tests {
         };
 
         // Act
-        let result = map_order_props_to_domain(String::from("invalid-id"), order_props);
+        let result = map_order_props_to_domain("invalid-id", &order_props);
 
         // Assert
         assert!(result.is_err());
@@ -831,8 +825,7 @@ mod tests {
         };
 
         // Act
-        let result =
-            map_order_props_to_domain(String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"), order_props);
+        let result = map_order_props_to_domain("2N1yQqzh1fhkGEPv5rJRqOZqxE3", &order_props);
 
         // Assert
         assert!(result.is_err());
@@ -861,8 +854,7 @@ mod tests {
         };
 
         // Act
-        let result =
-            map_book_props_to_domain(String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"), book_props);
+        let result = map_book_props_to_domain("2N1yQqzh1fhkGEPv5rJRqOZqxE3", &book_props);
 
         // Assert
         assert!(result.is_ok());
@@ -889,8 +881,7 @@ mod tests {
         };
 
         // Act
-        let result =
-            map_book_props_to_domain(String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"), book_props);
+        let result = map_book_props_to_domain("2N1yQqzh1fhkGEPv5rJRqOZqxE3", &book_props);
 
         // Assert
         assert!(result.is_ok());
@@ -918,7 +909,7 @@ mod tests {
         };
 
         // Act
-        let result = map_book_props_to_domain(String::from("invalid-id"), book_props);
+        let result = map_book_props_to_domain("invalid-id", &book_props);
 
         // Assert
         assert!(result.is_err());
@@ -947,8 +938,7 @@ mod tests {
         };
 
         // Act
-        let result =
-            map_book_props_to_domain(String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"), book_props);
+        let result = map_book_props_to_domain("2N1yQqzh1fhkGEPv5rJRqOZqxE3", &book_props);
 
         // Assert
         assert!(result.is_err());
@@ -977,8 +967,7 @@ mod tests {
         };
 
         // Act
-        let result =
-            map_book_props_to_domain(String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"), book_props);
+        let result = map_book_props_to_domain("2N1yQqzh1fhkGEPv5rJRqOZqxE3", &book_props);
 
         // Assert
         assert!(result.is_err());
@@ -1001,10 +990,8 @@ mod tests {
         };
 
         // Act
-        let result = map_author_update_props_to_domain(
-            String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
-            author_props,
-        );
+        let result =
+            map_author_update_props_to_domain("2N1yQqzh1fhkGEPv5rJRqOZqxE3", &author_props);
 
         // Assert
         assert!(result.is_ok());
@@ -1025,10 +1012,8 @@ mod tests {
         };
 
         // Act
-        let result = map_author_update_props_to_domain(
-            String::from("2N1yQqzh1fhkGEPv5rJRqOZqxE3"),
-            author_props,
-        );
+        let result =
+            map_author_update_props_to_domain("2N1yQqzh1fhkGEPv5rJRqOZqxE3", &author_props);
 
         // Assert
         assert!(result.is_ok());
@@ -1050,7 +1035,7 @@ mod tests {
         };
 
         // Act
-        let result = map_author_update_props_to_domain(String::from("invalid-id"), author_props);
+        let result = map_author_update_props_to_domain("invalid-id", &author_props);
 
         // Assert
         assert!(result.is_err());
@@ -1072,7 +1057,7 @@ mod tests {
         ];
 
         // Act
-        let result = map_book_status_list_to_domain(status_list);
+        let result = map_book_status_list_to_domain(&status_list);
 
         // Assert
         assert!(result.is_ok());
@@ -1093,7 +1078,7 @@ mod tests {
         ];
 
         // Act
-        let result = map_book_status_list_to_domain(status_list);
+        let result = map_book_status_list_to_domain(&status_list);
 
         // Assert
         assert!(result.is_err());
@@ -1111,7 +1096,7 @@ mod tests {
         let status_list: Vec<String> = vec![];
 
         // Act
-        let result = map_book_status_list_to_domain(status_list);
+        let result = map_book_status_list_to_domain(&status_list);
 
         // Assert
         assert!(result.is_ok());

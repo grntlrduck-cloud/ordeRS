@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use axum::extract::*;
-use axum_extra::extract::{CookieJar, Multipart};
+use axum_extra::extract::{CookieJar, Host};
 use bytes::Bytes;
 use http::Method;
 use serde::{Deserialize, Serialize};
@@ -68,49 +68,49 @@ pub enum UpdateAuthorResponse {
 /// Author
 #[async_trait]
 #[allow(clippy::ptr_arg)]
-pub trait Author {
+pub trait Author<E: std::fmt::Debug + Send + Sync + 'static = ()>: super::ErrorHandler<E> {
     /// Add a new author to the store.
     ///
     /// AddAuthor - POST /api/v1/authors
     async fn add_author(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        body: models::NewAuthor,
-    ) -> Result<AddAuthorResponse, ()>;
+        method: &Method,
+        host: &Host,
+        cookies: &CookieJar,
+        body: &models::NewAuthor,
+    ) -> Result<AddAuthorResponse, E>;
 
     /// Deletes a author.
     ///
     /// DeleteAuthor - DELETE /api/v1/authors/{authorId}
     async fn delete_author(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        path_params: models::DeleteAuthorPathParams,
-    ) -> Result<DeleteAuthorResponse, ()>;
+        method: &Method,
+        host: &Host,
+        cookies: &CookieJar,
+        path_params: &models::DeleteAuthorPathParams,
+    ) -> Result<DeleteAuthorResponse, E>;
 
     /// Finds book by Id.
     ///
     /// GetAuthorById - GET /api/v1/authors/{authorId}
     async fn get_author_by_id(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        path_params: models::GetAuthorByIdPathParams,
-    ) -> Result<GetAuthorByIdResponse, ()>;
+        method: &Method,
+        host: &Host,
+        cookies: &CookieJar,
+        path_params: &models::GetAuthorByIdPathParams,
+    ) -> Result<GetAuthorByIdResponse, E>;
 
     /// Update an existing author.
     ///
     /// UpdateAuthor - PATCH /api/v1/authors/{authorId}
     async fn update_author(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        path_params: models::UpdateAuthorPathParams,
-        body: models::AuthorProperties,
-    ) -> Result<UpdateAuthorResponse, ()>;
+        method: &Method,
+        host: &Host,
+        cookies: &CookieJar,
+        path_params: &models::UpdateAuthorPathParams,
+        body: &models::AuthorProperties,
+    ) -> Result<UpdateAuthorResponse, E>;
 }

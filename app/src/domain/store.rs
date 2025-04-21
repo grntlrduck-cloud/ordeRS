@@ -112,7 +112,7 @@ pub trait BookHandler {
 
     /// Get an existing author by id
     async fn get_author_by_id(&self, id: Ksuid)
-        -> Result<models::AuthorDomain, error::DomainError>;
+    -> Result<models::AuthorDomain, error::DomainError>;
 
     /// Update an existing author
     async fn update_author(

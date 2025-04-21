@@ -1,9 +1,8 @@
 use async_trait::async_trait;
-use axum::extract::*;
 use axum::http::header::HeaderMap;
-use axum_extra::extract::CookieJar;
+use axum_extra::extract::{CookieJar, Host};
 use http::Method;
-use openapi::apis::{author, book, discount, genre, health, store, ApiKeyAuthHeader};
+use openapi::apis::{ApiKeyAuthHeader, author, book, discount, genre, health, store};
 use openapi::models;
 use std::str::FromStr;
 use std::sync::Arc;
@@ -23,6 +22,8 @@ pub struct BookStoreServer {
     order_service: Arc<dyn domain::store::OrderHandler + Send + Sync>,
     book_service: Arc<dyn domain::store::BookHandler + Send + Sync>,
 }
+
+impl openapi::apis::ErrorHandler for BookStoreServer {}
 
 pub async fn start_server(addr: &str) {
     // initialize tracing
@@ -68,7 +69,7 @@ async fn shutdown_signal() {
     let terminate = std::future::pending::<()>();
 
     tokio::select! {
-        // TODO:: handle shut down
+        // TODO:: handle shut down with DB connection
         _ = ctrl_c => println!("Received ctrl + c"),
         _ = terminate => println!("Received terminate"),
     }
@@ -79,12 +80,12 @@ async fn shutdown_signal() {
 impl health::Health for BookStoreServer {
     async fn get_readiness(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
+        method: &Method,
+        host: &Host,
+        cookies: &CookieJar,
     ) -> Result<health::GetReadinessResponse, ()> {
         Ok(
-            health::GetReadinessResponse::Status200_TheHealthCheckReadinessResponses(
+            health::GetReadinessResponse::Status200_Successful(
                 models::HealthCheckResponse {
                     status: Some(String::from("serving")),
                 },
@@ -98,10 +99,10 @@ impl health::Health for BookStoreServer {
 impl author::Author for BookStoreServer {
     async fn add_author(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        body: models::NewAuthor,
+        method: &Method,
+        host: &Host,
+        cookies: &CookieJar,
+        body: &models::NewAuthor,
     ) -> Result<author::AddAuthorResponse, ()> {
         let domain = map_new_author_to_domain(body);
         match self.book_service.create_author(domain).await {
@@ -117,10 +118,10 @@ impl author::Author for BookStoreServer {
 
     async fn delete_author(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        path_params: models::DeleteAuthorPathParams,
+        method:&Method,
+        host: &Host,
+        cookies: &CookieJar,
+        path_params: &models::DeleteAuthorPathParams,
     ) -> Result<author::DeleteAuthorResponse, ()> {
         match Ksuid::from_str(&path_params.author_id) {
             Ok(id) => match self.book_service.delte_author_by_id(id).await {
@@ -136,10 +137,10 @@ impl author::Author for BookStoreServer {
 
     async fn get_author_by_id(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        path_params: models::GetAuthorByIdPathParams,
+        method:&Method,
+        host: &Host,
+        cookies: &CookieJar,
+        path_params: &models::GetAuthorByIdPathParams,
     ) -> Result<author::GetAuthorByIdResponse, ()> {
         match Ksuid::from_str(&path_params.author_id) {
             Ok(id) => match self.book_service.get_author_by_id(id).await {
@@ -158,13 +159,13 @@ impl author::Author for BookStoreServer {
 
     async fn update_author(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        path_params: models::UpdateAuthorPathParams,
-        body: models::AuthorProperties,
+        method:&Method,
+        host: &Host,
+        cookies: &CookieJar,
+        path_params: &models::UpdateAuthorPathParams,
+        body: &models::AuthorProperties,
     ) -> Result<author::UpdateAuthorResponse, ()> {
-        match map_author_update_props_to_domain(path_params.author_id, body) {
+        match map_author_update_props_to_domain(&path_params.author_id, body) {
             Ok(props) => match self.book_service.update_author(props).await {
                 Ok(author) => {
                     let model = map_author_to_rest(author);
@@ -190,10 +191,10 @@ impl author::Author for BookStoreServer {
 impl book::Book for BookStoreServer {
     async fn add_book(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        body: models::NewBook,
+        method:&Method,
+        host: &Host,
+        cookies: &CookieJar,
+        body: &models::NewBook,
     ) -> Result<book::AddBookResponse, ()> {
         match map_new_book_to_domain(body) {
             Ok(new_book) => match self.book_service.create_book(new_book).await {
@@ -212,10 +213,10 @@ impl book::Book for BookStoreServer {
 
     async fn delete_book(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        path_params: models::DeleteBookPathParams,
+        method:&Method,
+        host: &Host,
+        cookies: &CookieJar,
+        path_params: &models::DeleteBookPathParams,
     ) -> Result<book::DeleteBookResponse, ()> {
         match Ksuid::from_str(&path_params.book_id) {
             Ok(id) => match self.book_service.delete_book_by_id(id).await {
@@ -231,10 +232,10 @@ impl book::Book for BookStoreServer {
 
     async fn get_book_by_id(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        path_params: models::GetBookByIdPathParams,
+        method:&Method,
+        host: &Host,
+        cookies: &CookieJar,
+        path_params: &models::GetBookByIdPathParams,
     ) -> Result<book::GetBookByIdResponse, ()> {
         match Ksuid::from_str(&path_params.book_id) {
             Ok(id) => match self.book_service.get_book_by_id(id).await {
@@ -255,12 +256,12 @@ impl book::Book for BookStoreServer {
 
     async fn get_books_by_authors(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        query_params: models::GetBooksByAuthorsQueryParams,
+        method:&Method,
+        host: &Host,
+        cookies: &CookieJar,
+        query_params: &models::GetBooksByAuthorsQueryParams,
     ) -> Result<book::GetBooksByAuthorsResponse, ()> {
-        match map_strings_to_ksuids(query_params.authors) {
+        match map_strings_to_ksuids(&query_params.authors) {
             Ok(ids) => match self.book_service.get_books_by_authors(ids).await {
                 Ok(books) => {
                     let models = books.into_iter().map(map_book_to_rest).collect();
@@ -274,12 +275,12 @@ impl book::Book for BookStoreServer {
 
     async fn get_books_by_generes(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        query_params: models::GetBooksByGeneresQueryParams,
+        method:&Method,
+        host: &Host,
+        cookies: &CookieJar,
+        query_params: &models::GetBooksByGeneresQueryParams,
     ) -> Result<book::GetBooksByGeneresResponse, ()> {
-        match map_strings_to_ksuids(query_params.genres) {
+        match map_strings_to_ksuids(&query_params.genres) {
             Ok(ids) => match self.book_service.get_books_by_generes(ids).await {
                 Ok(books) => {
                     let models = books.into_iter().map(map_book_to_rest).collect();
@@ -293,12 +294,12 @@ impl book::Book for BookStoreServer {
 
     async fn get_books_by_status(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        query_params: models::GetBooksByStatusQueryParams,
+        method:&Method,
+        host: &Host,
+        cookies: &CookieJar,
+        query_params: &models::GetBooksByStatusQueryParams,
     ) -> Result<book::GetBooksByStatusResponse, ()> {
-        match map_book_status_list_to_domain(query_params.status) {
+        match map_book_status_list_to_domain(&query_params.status) {
             Ok(status_list) => match self.book_service.get_books_by_status(status_list).await {
                 Ok(books) => {
                     let models = books.into_iter().map(map_book_to_rest).collect();
@@ -312,13 +313,13 @@ impl book::Book for BookStoreServer {
 
     async fn update_book(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        path_params: models::UpdateBookPathParams,
-        body: models::BookProperties,
+        method:&Method,
+        host: &Host,
+        cookies: &CookieJar,
+        path_params: &models::UpdateBookPathParams,
+        body: &models::BookProperties,
     ) -> Result<book::UpdateBookResponse, ()> {
-        match map_book_props_to_domain(path_params.book_id, body) {
+        match map_book_props_to_domain(&path_params.book_id, body) {
             Ok(props) => match self.book_service.update_book(props).await {
                 Ok(book) => {
                     let model = map_book_to_rest(book);
@@ -344,10 +345,10 @@ impl book::Book for BookStoreServer {
 impl discount::Discount for BookStoreServer {
     async fn add_discount(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        body: models::NewDiscountCode,
+        method:&Method,
+        host: &Host,
+        cookies: &CookieJar,
+        body: &models::NewDiscountCode,
     ) -> Result<discount::AddDiscountResponse, ()> {
         match map_new_discount_code_to_domain(body) {
             Ok(new_discount) => match self.book_service.create_discount_code(new_discount).await {
@@ -363,10 +364,10 @@ impl discount::Discount for BookStoreServer {
 
     async fn delete_discount(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        path_params: models::DeleteDiscountPathParams,
+        method:&Method,
+        host: &Host,
+        cookies: &CookieJar,
+        path_params: &models::DeleteDiscountPathParams,
     ) -> Result<discount::DeleteDiscountResponse, ()> {
         match Ksuid::from_str(&path_params.discount_id) {
             Ok(id) => match self.book_service.delte_discount_code_by_id(id).await {
@@ -382,10 +383,10 @@ impl discount::Discount for BookStoreServer {
 
     async fn get_discount_by_id(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        path_params: models::GetDiscountByIdPathParams,
+        method:&Method,
+        host: &Host,
+        cookies: &CookieJar,
+        path_params: &models::GetDiscountByIdPathParams,
     ) -> Result<discount::GetDiscountByIdResponse, ()> {
         match Ksuid::from_str(&path_params.discount_id) {
             Ok(id) => match self.book_service.get_discount_code_by_id(id).await {
@@ -408,10 +409,10 @@ impl discount::Discount for BookStoreServer {
 impl store::Store for BookStoreServer {
     async fn delete_order(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        path_params: models::DeleteOrderPathParams,
+        method:&Method,
+        host: &Host,
+        cookies: &CookieJar,
+        path_params: &models::DeleteOrderPathParams,
     ) -> Result<store::DeleteOrderResponse, ()> {
         match Ksuid::from_str(&path_params.order_id) {
             Ok(order_id) => {
@@ -427,9 +428,9 @@ impl store::Store for BookStoreServer {
 
     async fn get_inventory(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
+        method:&Method,
+        host: &Host,
+        cookies: &CookieJar,
     ) -> Result<store::GetInventoryResponse, ()> {
         match self.order_service.get_inventory().await {
             Ok(inventory) => {
@@ -444,10 +445,10 @@ impl store::Store for BookStoreServer {
 
     async fn get_order_by_id(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        path_params: models::GetOrderByIdPathParams,
+        method:&Method,
+        host: &Host,
+        cookies: &CookieJar,
+        path_params: &models::GetOrderByIdPathParams,
     ) -> Result<store::GetOrderByIdResponse, ()> {
         match Ksuid::from_str(&path_params.order_id) {
             Ok(order_id) => match self.order_service.get_order_by_id(order_id).await {
@@ -473,10 +474,10 @@ impl store::Store for BookStoreServer {
 
     async fn place_order(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        body: models::NewOrder,
+        method:&Method,
+        host: &Host,
+        cookies: &CookieJar,
+        body: &models::NewOrder,
     ) -> Result<store::PlaceOrderResponse, ()> {
         match map_new_order_to_domain(body) {
             Ok(domain) => match self.order_service.create_order(domain).await {
@@ -497,13 +498,13 @@ impl store::Store for BookStoreServer {
 
     async fn update_order(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        path_params: models::UpdateOrderPathParams,
-        body: models::OrderProperties,
+        method:&Method,
+        host: &Host,
+        cookies: &CookieJar,
+        path_params: &models::UpdateOrderPathParams,
+        body: &models::OrderProperties,
     ) -> Result<store::UpdateOrderResponse, ()> {
-        match map_order_props_to_domain(path_params.order_id, body) {
+        match map_order_props_to_domain(path_params.order_id.as_str(), body) {
             Ok(domain) => match self.order_service.update_order(domain).await {
                 Ok(result) => {
                     let model = map_order_to_rest(result);
@@ -529,12 +530,12 @@ impl store::Store for BookStoreServer {
 impl genre::Genre for BookStoreServer {
     async fn add_genre(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        body: models::NewGenre,
+        method:&Method,
+        host: &Host,
+        cookies: &CookieJar,
+        body: &models::NewGenre,
     ) -> Result<genre::AddGenreResponse, ()> {
-        let new_genre = map_new_genre_to_domain(body.name);
+        let new_genre = map_new_genre_to_domain(&body.name);
         match self.book_service.create_genre(new_genre).await {
             Ok(genre) => {
                 let model = map_genre_to_rest(genre);
@@ -551,10 +552,10 @@ impl genre::Genre for BookStoreServer {
 
     async fn delete_genre(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        path_params: models::DeleteGenrePathParams,
+        method:&Method,
+        host: &Host,
+        cookies: &CookieJar,
+        path_params: &models::DeleteGenrePathParams,
     ) -> Result<genre::DeleteGenreResponse, ()> {
         match Ksuid::from_str(&path_params.genre_id) {
             Ok(id) => match self.book_service.delte_genre_by_id(id).await {
@@ -570,10 +571,10 @@ impl genre::Genre for BookStoreServer {
 
     async fn get_genre_by_id(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-        path_params: models::GetGenreByIdPathParams,
+        method:&Method,
+        host: &Host,
+        cookies: &CookieJar,
+        path_params: &models::GetGenreByIdPathParams,
     ) -> Result<genre::GetGenreByIdResponse, ()> {
         match Ksuid::from_str(&path_params.genre_id) {
             Ok(id) => match self.book_service.get_genre_by_id(id).await {
@@ -597,7 +598,7 @@ impl genre::Genre for BookStoreServer {
 #[async_trait]
 impl ApiKeyAuthHeader for BookStoreServer {
     type Claims = bool;
-    // TODO: check how to add API key auth as request interceptor
+    // TODO: check how to add API key auth as request interceptor, or offload to CloudFront/ALB
     async fn extract_claims_from_header(
         &self,
         headers: &HeaderMap,

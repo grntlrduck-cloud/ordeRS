@@ -16,7 +16,7 @@ api_codegen:
     -g rust-axum \
     -o openapi \
    --additional-properties=generateAliasAsModel=true,modelPackage=models,singleFile=true
-	@find openapi -type f -name "*.rs" -exec sed -i '' 's/pub fn new<I, A>(api_impl: I) -> Router/pub fn new<I, A, C>(api_impl: I) -> Router/g' {} +
+	@find openapi -type f -name "*.rs" -exec sed -i '' 's/pub fn new<I, A, E>(api_impl: I) -> Router/pub fn new<I, A, E, C>(api_impl: I) -> Router/g' {} +
 	@cargo fmt
 
 build_container:

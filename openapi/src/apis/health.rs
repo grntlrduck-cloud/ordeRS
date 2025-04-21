@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use axum::extract::*;
-use axum_extra::extract::{CookieJar, Multipart};
+use axum_extra::extract::{CookieJar, Host};
 use bytes::Bytes;
 use http::Method;
 use serde::{Deserialize, Serialize};
@@ -11,8 +11,8 @@ use crate::{models, types::*};
 #[must_use]
 #[allow(clippy::large_enum_variant)]
 pub enum GetReadinessResponse {
-    /// The health check readiness responses
-    Status200_TheHealthCheckReadinessResponses(models::HealthCheckResponse),
+    /// Successful
+    Status200_Successful(models::HealthCheckResponse),
     /// Server error
     Status500_ServerError,
     /// Service unavailable
@@ -22,14 +22,14 @@ pub enum GetReadinessResponse {
 /// Health
 #[async_trait]
 #[allow(clippy::ptr_arg)]
-pub trait Health {
+pub trait Health<E: std::fmt::Debug + Send + Sync + 'static = ()>: super::ErrorHandler<E> {
     /// Get health status.
     ///
     /// GetReadiness - GET /api/v1/health/readiness
     async fn get_readiness(
         &self,
-        method: Method,
-        host: Host,
-        cookies: CookieJar,
-    ) -> Result<GetReadinessResponse, ()>;
+        method: &Method,
+        host: &Host,
+        cookies: &CookieJar,
+    ) -> Result<GetReadinessResponse, E>;
 }

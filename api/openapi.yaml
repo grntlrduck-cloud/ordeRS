@@ -29,7 +29,7 @@ paths:
       operationId: GetReadiness
       responses:
         "200":
-          description: The health check readiness responses
+          description: Successful
           content:
             application/json:
               schema:
