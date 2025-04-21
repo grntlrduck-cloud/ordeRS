@@ -1,1 +1,2 @@
 -- https://docs.rs/sqlx-pg-migrate/latest/sqlx_pg_migrate/
+-- watching the migrations dir https://docs.rs/sqlx/latest/sqlx/macro.migrate.html
