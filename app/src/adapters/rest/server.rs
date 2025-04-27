@@ -271,22 +271,22 @@ impl book::Book for BookStoreServer {
         }
     }
 
-    async fn get_books_by_generes(
+    async fn get_books_by_genres(
         &self,
         method: &Method,
         host: &Host,
         cookies: &CookieJar,
-        query_params: &models::GetBooksByGeneresQueryParams,
-    ) -> Result<book::GetBooksByGeneresResponse, ()> {
+        query_params: &models::GetBooksByGenresQueryParams,
+    ) -> Result<book::GetBooksByGenresResponse, ()> {
         match map_strings_to_ksuids(&query_params.genres) {
             Ok(ids) => match self.book_service.get_books_by_generes(ids).await {
                 Ok(books) => {
                     let models = books.into_iter().map(map_book_to_rest).collect();
-                    Ok(book::GetBooksByGeneresResponse::Status200_SuccessfulOperation(models))
+                    Ok(book::GetBooksByGenresResponse::Status200_SuccessfulOperation(models))
                 }
-                Err(_) => Ok(book::GetBooksByGeneresResponse::Status500_ServerError),
+                Err(_) => Ok(book::GetBooksByGenresResponse::Status500_ServerError),
             },
-            Err(_) => Ok(book::GetBooksByGeneresResponse::Status400_InvalidGenreValues),
+            Err(_) => Ok(book::GetBooksByGenresResponse::Status400_InvalidGenreValues),
         }
     }
 
@@ -371,7 +371,7 @@ impl discount::Discount for BookStoreServer {
             Ok(id) => match self.book_service.delte_discount_code_by_id(id).await {
                 Ok(_) => Ok(discount::DeleteDiscountResponse::Status200_SuccessfulOperation),
                 Err(domain::error::DomainError::NotFound { .. }) => {
-                    Ok(discount::DeleteDiscountResponse::Status404_DiscontNotFound)
+                    Ok(discount::DeleteDiscountResponse::Status404_DiscountNotFound)
                 }
                 Err(_) => Ok(discount::DeleteDiscountResponse::Status500_ServerError),
             },
@@ -563,7 +563,7 @@ impl genre::Genre for BookStoreServer {
                 }
                 Err(_) => Ok(genre::DeleteGenreResponse::Status500_ServerError),
             },
-            Err(_) => Ok(genre::DeleteGenreResponse::Status400_InvalidGenereIdValue),
+            Err(_) => Ok(genre::DeleteGenreResponse::Status400_InvalidGenreIdValue),
         }
     }
 
@@ -583,7 +583,7 @@ impl genre::Genre for BookStoreServer {
                     ))
                 }
                 Err(domain::error::DomainError::NotFound { .. }) => {
-                    Ok(genre::GetGenreByIdResponse::Status404_GenrNotFound)
+                    Ok(genre::GetGenreByIdResponse::Status404_GenreNotFound)
                 }
                 Err(_) => Ok(genre::GetGenreByIdResponse::Status500_ServerError),
             },

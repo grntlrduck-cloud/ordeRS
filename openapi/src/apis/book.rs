@@ -64,7 +64,7 @@ pub enum GetBooksByAuthorsResponse {
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[must_use]
 #[allow(clippy::large_enum_variant)]
-pub enum GetBooksByGeneresResponse {
+pub enum GetBooksByGenresResponse {
     /// successful operation
     Status200_SuccessfulOperation(Vec<models::Book>),
     /// Invalid genre values
@@ -149,20 +149,20 @@ pub trait Book<E: std::fmt::Debug + Send + Sync + 'static = ()>: super::ErrorHan
         query_params: &models::GetBooksByAuthorsQueryParams,
     ) -> Result<GetBooksByAuthorsResponse, E>;
 
-    /// Finds Books by GenereId.
+    /// Finds Books by GenreId.
     ///
-    /// GetBooksByGeneres - GET /api/v1/books/findbyGenereId
-    async fn get_books_by_generes(
+    /// GetBooksByGenres - GET /api/v1/books/findByGenreId
+    async fn get_books_by_genres(
         &self,
         method: &Method,
         host: &Host,
         cookies: &CookieJar,
-        query_params: &models::GetBooksByGeneresQueryParams,
-    ) -> Result<GetBooksByGeneresResponse, E>;
+        query_params: &models::GetBooksByGenresQueryParams,
+    ) -> Result<GetBooksByGenresResponse, E>;
 
     /// Finds Books by status.
     ///
-    /// GetBooksByStatus - GET /api/v1/books/findbyStatus
+    /// GetBooksByStatus - GET /api/v1/books/findByStatus
     async fn get_books_by_status(
         &self,
         method: &Method,

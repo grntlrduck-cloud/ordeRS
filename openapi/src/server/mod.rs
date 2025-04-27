@@ -43,11 +43,11 @@ where
             get(get_books_by_authors::<I, A, E>),
         )
         .route(
-            "/api/v1/books/findbyGenereId",
-            get(get_books_by_generes::<I, A, E>),
+            "/api/v1/books/findByGenreId",
+            get(get_books_by_genres::<I, A, E>),
         )
         .route(
-            "/api/v1/books/findbyStatus",
+            "/api/v1/books/findByStatus",
             get(get_books_by_status::<I, A, E>),
         )
         .route(
@@ -831,20 +831,20 @@ where
 }
 
 #[tracing::instrument(skip_all)]
-fn get_books_by_generes_validation(
-    query_params: models::GetBooksByGeneresQueryParams,
-) -> std::result::Result<(models::GetBooksByGeneresQueryParams,), ValidationErrors> {
+fn get_books_by_genres_validation(
+    query_params: models::GetBooksByGenresQueryParams,
+) -> std::result::Result<(models::GetBooksByGenresQueryParams,), ValidationErrors> {
     query_params.validate()?;
 
     Ok((query_params,))
 }
-/// GetBooksByGeneres - GET /api/v1/books/findbyGenereId
+/// GetBooksByGenres - GET /api/v1/books/findByGenreId
 #[tracing::instrument(skip_all)]
-async fn get_books_by_generes<I, A, E>(
+async fn get_books_by_genres<I, A, E>(
     method: Method,
     host: Host,
     cookies: CookieJar,
-    Query(query_params): Query<models::GetBooksByGeneresQueryParams>,
+    Query(query_params): Query<models::GetBooksByGenresQueryParams>,
     State(api_impl): State<I>,
 ) -> Result<Response, StatusCode>
 where
@@ -854,7 +854,7 @@ where
 {
     #[allow(clippy::redundant_closure)]
     let validation =
-        tokio::task::spawn_blocking(move || get_books_by_generes_validation(query_params))
+        tokio::task::spawn_blocking(move || get_books_by_genres_validation(query_params))
             .await
             .unwrap();
 
@@ -867,14 +867,14 @@ where
 
     let result = api_impl
         .as_ref()
-        .get_books_by_generes(&method, &host, &cookies, &query_params)
+        .get_books_by_genres(&method, &host, &cookies, &query_params)
         .await;
 
     let mut response = Response::builder();
 
     let resp = match result {
         Ok(rsp) => match rsp {
-            apis::book::GetBooksByGeneresResponse::Status200_SuccessfulOperation(body) => {
+            apis::book::GetBooksByGenresResponse::Status200_SuccessfulOperation(body) => {
                 let mut response = response.status(200);
                 {
                     let mut response_headers = response.headers_mut().unwrap();
@@ -897,11 +897,11 @@ where
                 .unwrap()?;
                 response.body(Body::from(body_content))
             }
-            apis::book::GetBooksByGeneresResponse::Status400_InvalidGenreValues => {
+            apis::book::GetBooksByGenresResponse::Status400_InvalidGenreValues => {
                 let mut response = response.status(400);
                 response.body(Body::empty())
             }
-            apis::book::GetBooksByGeneresResponse::Status500_ServerError => {
+            apis::book::GetBooksByGenresResponse::Status500_ServerError => {
                 let mut response = response.status(500);
                 response.body(Body::empty())
             }
@@ -930,7 +930,7 @@ fn get_books_by_status_validation(
 
     Ok((query_params,))
 }
-/// GetBooksByStatus - GET /api/v1/books/findbyStatus
+/// GetBooksByStatus - GET /api/v1/books/findByStatus
 #[tracing::instrument(skip_all)]
 async fn get_books_by_status<I, A, E>(
     method: Method,
@@ -1278,7 +1278,7 @@ where
                 let mut response = response.status(400);
                 response.body(Body::empty())
             }
-            apis::discount::DeleteDiscountResponse::Status404_DiscontNotFound => {
+            apis::discount::DeleteDiscountResponse::Status404_DiscountNotFound => {
                 let mut response = response.status(404);
                 response.body(Body::empty())
             }
@@ -1549,7 +1549,7 @@ where
                 let mut response = response.status(200);
                 response.body(Body::empty())
             }
-            apis::genre::DeleteGenreResponse::Status400_InvalidGenereIdValue => {
+            apis::genre::DeleteGenreResponse::Status400_InvalidGenreIdValue => {
                 let mut response = response.status(400);
                 response.body(Body::empty())
             }
@@ -1648,7 +1648,7 @@ where
                 let mut response = response.status(400);
                 response.body(Body::empty())
             }
-            apis::genre::GetGenreByIdResponse::Status404_GenrNotFound => {
+            apis::genre::GetGenreByIdResponse::Status404_GenreNotFound => {
                 let mut response = response.status(404);
                 response.body(Body::empty())
             }

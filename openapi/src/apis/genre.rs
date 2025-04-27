@@ -27,8 +27,8 @@ pub enum AddGenreResponse {
 pub enum DeleteGenreResponse {
     /// Successful operation
     Status200_SuccessfulOperation,
-    /// Invalid genereId value
-    Status400_InvalidGenereIdValue,
+    /// Invalid genreId value
+    Status400_InvalidGenreIdValue,
     /// Genre not found
     Status404_GenreNotFound,
     /// Server error
@@ -43,8 +43,8 @@ pub enum GetGenreByIdResponse {
     Status200_SuccessfulOperation(models::Genre),
     /// Invalid parameters
     Status400_InvalidParameters,
-    /// Genr not found
-    Status404_GenrNotFound,
+    /// Genre not found
+    Status404_GenreNotFound,
     /// Server error
     Status500_ServerError,
 }
@@ -53,7 +53,7 @@ pub enum GetGenreByIdResponse {
 #[async_trait]
 #[allow(clippy::ptr_arg)]
 pub trait Genre<E: std::fmt::Debug + Send + Sync + 'static = ()>: super::ErrorHandler<E> {
-    /// Add a new genere to the store.
+    /// Add a new genre to the store.
     ///
     /// AddGenre - POST /api/v1/genres
     async fn add_genre(
@@ -64,7 +64,7 @@ pub trait Genre<E: std::fmt::Debug + Send + Sync + 'static = ()>: super::ErrorHa
         body: &models::NewGenre,
     ) -> Result<AddGenreResponse, E>;
 
-    /// Deletes a genere.
+    /// Deletes a genre.
     ///
     /// DeleteGenre - DELETE /api/v1/genres/{genreId}
     async fn delete_genre(

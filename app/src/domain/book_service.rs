@@ -4,6 +4,7 @@ use super::error;
 use super::models;
 use super::store;
 use async_trait::async_trait;
+use chrono::Days;
 use chrono::NaiveDate;
 use chrono::Utc;
 use svix_ksuid::Ksuid;
@@ -61,7 +62,7 @@ impl store::BookHandler for BookService {
             genres: None,
             id,
             price: 12.5,
-            release: NaiveDate::from_ymd_opt(2023, 12, 28).unwrap(),
+            release: Utc::now().date_naive(),
             series: Some(String::from("1")),
             status: models::BookStatus::Available,
             title: String::from("The best book"),
@@ -78,11 +79,11 @@ impl store::BookHandler for BookService {
             available: 2,
             discounts: None,
             edition: 1,
-            firs_release: Utc::now().date_naive(),
+            firs_release: Utc::now().naive_utc().date(),
             genres: None,
             id: Ksuid::new(None, None),
             price: 12.5,
-            release: NaiveDate::from_ymd_opt(2023, 12, 28).unwrap(),
+            release: Utc::now().naive_utc().date(),
             series: Some(String::from("1")),
             status: models::BookStatus::Available,
             title: String::from("The best book"),
@@ -99,11 +100,11 @@ impl store::BookHandler for BookService {
             available: 2,
             discounts: None,
             edition: 1,
-            firs_release: Utc::now().date_naive(),
+            firs_release: Utc::now().naive_utc().date(),
             genres: None,
             id: Ksuid::new(None, None),
             price: 12.5,
-            release: NaiveDate::from_ymd_opt(2023, 12, 28).unwrap(),
+            release: Utc::now().naive_utc().date(),
             series: Some(String::from("1")),
             status: models::BookStatus::Available,
             title: String::from("The best book"),
@@ -124,7 +125,7 @@ impl store::BookHandler for BookService {
             genres: None,
             id: Ksuid::new(None, None),
             price: 12.5,
-            release: NaiveDate::from_ymd_opt(2023, 12, 28).unwrap(),
+            release: Utc::now().naive_utc().date(),
             series: Some(String::from("1")),
             status: models::BookStatus::Available,
             title: String::from("The best book"),
@@ -145,7 +146,7 @@ impl store::BookHandler for BookService {
             genres: None,
             id: props.id,
             price: 12.5,
-            release: NaiveDate::from_ymd_opt(2023, 12, 28).unwrap(),
+            release: Utc::now().date_naive(),
             series: Some(String::from("1")),
             status: models::BookStatus::Available,
             title: String::from("The best book"),
@@ -178,8 +179,11 @@ impl store::BookHandler for BookService {
             code: String::from("CODE25"),
             id,
             percentage_discount: 25,
-            valid_from: NaiveDate::from_ymd_opt(2024, 11, 1).unwrap(),
-            valid_to: NaiveDate::from_ymd_opt(2025, 2, 1).unwrap(),
+            valid_from: Utc::now().date_naive(),
+            valid_to: Utc::now()
+                .date_naive()
+                .checked_add_days(Days::new(30))
+                .unwrap(),
         })
     }
 
@@ -231,8 +235,8 @@ impl store::BookHandler for BookService {
         id: Ksuid,
     ) -> Result<models::AuthorDomain, error::DomainError> {
         Ok(models::AuthorDomain {
-            date_of_birth: NaiveDate::from_ymd_opt(1980, 12, 12).unwrap(),
-            date_of_death: NaiveDate::from_ymd_opt(2024, 12, 13),
+            date_of_birth: NaiveDate::from_ymd_opt(1920, 06, 06).unwrap(),
+            date_of_death: Some(NaiveDate::from_ymd_opt(1980, 12, 12).unwrap()),
             first_name: String::from("Hans"),
             id,
             last_name: String::from("Wurst"),

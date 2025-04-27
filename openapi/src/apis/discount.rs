@@ -17,7 +17,7 @@ pub enum AddDiscountResponse {
     Status400_InvalidInput,
     /// Validation exception
     Status422_ValidationException,
-    /// server error
+    /// Server error
     Status500_ServerError,
 }
 
@@ -29,8 +29,8 @@ pub enum DeleteDiscountResponse {
     Status200_SuccessfulOperation,
     /// Invalid discountId value
     Status400_InvalidDiscountIdValue,
-    /// Discont not found
-    Status404_DiscontNotFound,
+    /// Discount not found
+    Status404_DiscountNotFound,
     /// Server error
     Status500_ServerError,
 }

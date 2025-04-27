@@ -52,8 +52,8 @@ pub struct GetBooksByAuthorsQueryParams {
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
-pub struct GetBooksByGeneresQueryParams {
-    /// Generef to filter by
+pub struct GetBooksByGenresQueryParams {
+    /// Genres to filter by
     #[serde(rename = "genres")]
     pub genres: Vec<String>,
 }
@@ -90,7 +90,7 @@ pub struct GetDiscountByIdPathParams {
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize, validator::Validate)]
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
 pub struct DeleteGenrePathParams {
-    /// GenereId to delete
+    /// GenreId to delete
     pub genre_id: String,
 }
 
@@ -1406,7 +1406,8 @@ pub struct DiscountCode {
     pub id: String,
 
     #[serde(rename = "percentage_discount")]
-    pub percentage_discount: i32,
+    #[validate(range(min = 0u8, max = 100u8))]
+    pub percentage_discount: u8,
 
     #[serde(rename = "valid_from")]
     pub valid_from: chrono::naive::NaiveDate,
@@ -1422,7 +1423,7 @@ impl DiscountCode {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
     pub fn new(
         id: String,
-        percentage_discount: i32,
+        percentage_discount: u8,
         valid_from: chrono::naive::NaiveDate,
         valid_to: chrono::naive::NaiveDate,
         code: String,
@@ -1474,7 +1475,7 @@ impl std::str::FromStr for DiscountCode {
         #[allow(dead_code)]
         struct IntermediateRep {
             pub id: Vec<String>,
-            pub percentage_discount: Vec<i32>,
+            pub percentage_discount: Vec<u8>,
             pub valid_from: Vec<chrono::naive::NaiveDate>,
             pub valid_to: Vec<chrono::naive::NaiveDate>,
             pub code: Vec<String>,
@@ -1504,9 +1505,9 @@ impl std::str::FromStr for DiscountCode {
                         <String as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
                     ),
                     #[allow(clippy::redundant_clone)]
-                    "percentage_discount" => intermediate_rep.percentage_discount.push(
-                        <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
-                    ),
+                    "percentage_discount" => intermediate_rep
+                        .percentage_discount
+                        .push(<u8 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
                     #[allow(clippy::redundant_clone)]
                     "valid_from" => intermediate_rep.valid_from.push(
                         <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
@@ -2608,7 +2609,8 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<NewBook> {
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
 pub struct NewDiscountCode {
     #[serde(rename = "percentage_discount")]
-    pub percentage_discount: i32,
+    #[validate(range(min = 0u8, max = 100u8))]
+    pub percentage_discount: u8,
 
     #[serde(rename = "valid_from")]
     pub valid_from: chrono::naive::NaiveDate,
@@ -2623,7 +2625,7 @@ pub struct NewDiscountCode {
 impl NewDiscountCode {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
     pub fn new(
-        percentage_discount: i32,
+        percentage_discount: u8,
         valid_from: chrono::naive::NaiveDate,
         valid_to: chrono::naive::NaiveDate,
         code: String,
@@ -2671,7 +2673,7 @@ impl std::str::FromStr for NewDiscountCode {
         #[derive(Default)]
         #[allow(dead_code)]
         struct IntermediateRep {
-            pub percentage_discount: Vec<i32>,
+            pub percentage_discount: Vec<u8>,
             pub valid_from: Vec<chrono::naive::NaiveDate>,
             pub valid_to: Vec<chrono::naive::NaiveDate>,
             pub code: Vec<String>,
@@ -2697,9 +2699,9 @@ impl std::str::FromStr for NewDiscountCode {
                 #[allow(clippy::match_single_binding)]
                 match key {
                     #[allow(clippy::redundant_clone)]
-                    "percentage_discount" => intermediate_rep.percentage_discount.push(
-                        <i32 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?,
-                    ),
+                    "percentage_discount" => intermediate_rep
+                        .percentage_discount
+                        .push(<u8 as std::str::FromStr>::from_str(val).map_err(|x| x.to_string())?),
                     #[allow(clippy::redundant_clone)]
                     "valid_from" => intermediate_rep.valid_from.push(
                         <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
@@ -3395,7 +3397,7 @@ impl std::convert::TryFrom<HeaderValue> for header::IntoHeaderValue<Order> {
 #[cfg_attr(feature = "conversion", derive(frunk::LabelledGeneric))]
 pub struct OrderProperties {
     #[serde(rename = "shipping_date")]
-    pub shipping_date: chrono::DateTime<chrono::Utc>,
+    pub shipping_date: chrono::naive::NaiveDate,
 
     /// Order Status
     /// Note: inline enums are not fully supported by openapi-generator
@@ -3405,7 +3407,7 @@ pub struct OrderProperties {
 
 impl OrderProperties {
     #[allow(clippy::new_without_default, clippy::too_many_arguments)]
-    pub fn new(shipping_date: chrono::DateTime<chrono::Utc>, status: String) -> OrderProperties {
+    pub fn new(shipping_date: chrono::naive::NaiveDate, status: String) -> OrderProperties {
         OrderProperties {
             shipping_date,
             status,
@@ -3443,7 +3445,7 @@ impl std::str::FromStr for OrderProperties {
         #[derive(Default)]
         #[allow(dead_code)]
         struct IntermediateRep {
-            pub shipping_date: Vec<chrono::DateTime<chrono::Utc>>,
+            pub shipping_date: Vec<chrono::naive::NaiveDate>,
             pub status: Vec<String>,
         }
 
@@ -3468,7 +3470,7 @@ impl std::str::FromStr for OrderProperties {
                 match key {
                     #[allow(clippy::redundant_clone)]
                     "shipping_date" => intermediate_rep.shipping_date.push(
-                        <chrono::DateTime<chrono::Utc> as std::str::FromStr>::from_str(val)
+                        <chrono::naive::NaiveDate as std::str::FromStr>::from_str(val)
                             .map_err(|x| x.to_string())?,
                     ),
                     #[allow(clippy::redundant_clone)]

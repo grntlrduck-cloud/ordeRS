@@ -2,6 +2,7 @@ use std::str::FromStr;
 
 use super::mapper_errors::*;
 use crate::domain::models as dmodels;
+use chrono::{DateTime, Utc};
 use openapi::models as rmodels;
 use svix_ksuid::*;
 
@@ -164,14 +165,16 @@ pub fn map_new_discount_code_to_domain(
 ) -> Result<dmodels::DiscountCodeDomain, MapperError> {
     if new_discount.percentage_discount < 1 || new_discount.percentage_discount > 80 {
         return Err(MapperError::DiscountPercentageOutOfBounds {
-            percentage: new_discount.percentage_discount,
-            source: Box::new(DiscountPercentageError(new_discount.percentage_discount)),
+            percentage: new_discount.percentage_discount as i32,
+            source: Box::new(DiscountPercentageError(
+                new_discount.percentage_discount as i32,
+            )),
         });
     }
 
     Ok(dmodels::DiscountCodeDomain {
         id: Ksuid::new(None, None),
-        percentage_discount: new_discount.percentage_discount,
+        percentage_discount: new_discount.percentage_discount as i32,
         valid_from: new_discount.valid_from,
         valid_to: new_discount.valid_to,
         code: new_discount.code.clone(),
@@ -249,7 +252,10 @@ pub fn map_order_props_to_domain(
 
     Ok(dmodels::OrderUpdateProps {
         id: kid,
-        shipping_date: props.shipping_date,
+        shipping_date: DateTime::from_naive_utc_and_offset(
+            props.shipping_date.and_hms_opt(0, 0, 0).unwrap(),
+            Utc,
+        ),
         status,
     })
 }
@@ -284,7 +290,7 @@ pub fn map_book_status_list_to_domain(
 mod tests {
     use super::*;
     use crate::domain::models::BookStatus;
-    use chrono::{DateTime, NaiveDate, Utc};
+    use chrono::{NaiveDate, Utc};
     use openapi::models as rmodels;
 
     #[test]
@@ -782,7 +788,7 @@ mod tests {
     fn test_map_order_props_to_domain_success() {
         // Arrange
         let order_props = rmodels::OrderProperties {
-            shipping_date: DateTime::from_timestamp(1640995200, 0).unwrap(),
+            shipping_date: Utc::now().date_naive(),
             status: String::from("shipped"),
         };
 
@@ -799,7 +805,7 @@ mod tests {
     fn test_map_order_props_to_domain_invalid_id() {
         // Arrange
         let order_props = rmodels::OrderProperties {
-            shipping_date: DateTime::from_timestamp(1640995200, 0).unwrap(),
+            shipping_date: Utc::now().date_naive(),
             status: String::from("shipped"),
         };
 
@@ -820,7 +826,7 @@ mod tests {
     fn test_map_order_props_to_domain_invalid_status() {
         // Arrange
         let order_props = rmodels::OrderProperties {
-            shipping_date: DateTime::from_timestamp(1640995200, 0).unwrap(),
+            shipping_date: Utc::now().date_naive(),
             status: String::from("invalid-status"),
         };
 

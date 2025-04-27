@@ -68,7 +68,7 @@ pub fn map_book_to_rest(book: dmodels::BookDomain) -> rmodels::Book {
 pub fn map_discount_code_to_rest(discount: dmodels::DiscountCodeDomain) -> rmodels::DiscountCode {
     rmodels::DiscountCode {
         id: discount.id.to_string(),
-        percentage_discount: discount.percentage_discount,
+        percentage_discount: discount.percentage_discount as u8,
         valid_from: discount.valid_from,
         valid_to: discount.valid_to,
         code: discount.code,
